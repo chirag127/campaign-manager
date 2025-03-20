@@ -29,6 +29,7 @@ const PlatformScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [connectedPlatforms, setConnectedPlatforms] = useState({});
     const [connectingPlatform, setConnectingPlatform] = useState(null);
+    const [processingOAuth, setProcessingOAuth] = useState(false);
 
     const loadPlatformData = async () => {
         try {
@@ -50,8 +51,116 @@ const PlatformScreen = () => {
         }
     };
 
+    // Handle deep linking for OAuth callbacks
+    const handleDeepLink = async (url) => {
+        if (!url || processingOAuth) return;
+
+        try {
+            setProcessingOAuth(true);
+            console.log("Received deep link:", url);
+
+            // Parse the URL to extract parameters
+            const urlObj = new URL(url);
+            const params = new URLSearchParams(urlObj.search);
+
+            const code = params.get("code");
+            const state = params.get("state");
+            const platform = getPlatformFromState(state);
+
+            console.log(
+                "Extracted from URL - code:",
+                code ? "present" : "missing",
+                "state:",
+                state,
+                "platform:",
+                platform
+            );
+
+            if (code && platform) {
+                console.log(
+                    `Processing OAuth callback for ${platform} with code: ${code.substring(
+                        0,
+                        10
+                    )}...`
+                );
+
+                // Call the backend to exchange the code for tokens
+                const redirectUri = "https://campaign-manager127.netlify.app";
+                console.log(
+                    `Calling API to connect platform ${platform.toLowerCase()} with redirect URI ${redirectUri}`
+                );
+                const response = await platformAPI.connectPlatform(
+                    platform.toLowerCase(),
+                    code,
+                    redirectUri
+                );
+                console.log("Platform connection response:", response.data);
+
+                // Update the connected platforms state
+                const updatedPlatforms = { ...connectedPlatforms };
+                updatedPlatforms[platform.toLowerCase()] = true;
+                setConnectedPlatforms(updatedPlatforms);
+
+                Alert.alert("Success", `Connected to ${platform}`);
+            }
+        } catch (error) {
+            console.error("Error processing OAuth callback:", error);
+            Alert.alert(
+                "Error",
+                "Failed to complete platform connection. Please try again."
+            );
+        } finally {
+            setProcessingOAuth(false);
+            setConnectingPlatform(null);
+        }
+    };
+
+    // Helper function to extract platform from state parameter
+    const getPlatformFromState = (state) => {
+        if (!state) return null;
+
+        // Check if the state contains a platform identifier
+        // Format: platformId_randomString
+        const platforms = [
+            "google",
+            "facebook",
+            "instagram",
+            "youtube",
+            "linkedin",
+            "twitter",
+            "snapchat",
+        ];
+
+        for (const platform of platforms) {
+            if (state.toLowerCase().startsWith(platform + "_")) {
+                return platform.toUpperCase();
+            }
+        }
+
+        // Fallback to the current connecting platform if we can't determine from state
+        return connectingPlatform;
+    };
+
     useEffect(() => {
+        // Set up deep link listener when component mounts
+        const linkingListener = Linking.addEventListener("url", ({ url }) => {
+            handleDeepLink(url);
+        });
+
+        // Check if app was opened with a deep link
+        Linking.getInitialURL().then((url) => {
+            if (url) {
+                handleDeepLink(url);
+            }
+        });
+
+        // Load platform data
         loadPlatformData();
+
+        // Clean up listener when component unmounts
+        return () => {
+            linkingListener.remove();
+        };
     }, []);
 
     const onRefresh = () => {
@@ -64,10 +173,13 @@ const PlatformScreen = () => {
             setConnectingPlatform(platform.id);
 
             // Generate a random state for OAuth security
-            const state = Math.random().toString(36).substring(2, 15);
+            // Include platform ID in the state to identify it when we get the callback
+            const state =
+                platform.id.toLowerCase() +
+                "_" +
+                Math.random().toString(36).substring(2, 15);
 
             // Redirect URI for the OAuth flow
-            // const redirectUri = `${API_URL}/api/platforms/${platform.id.toLowerCase()}/oauth-callback`;
             const redirectUri = `https://campaign-manager127.netlify.app`;
 
             // Construct the OAuth URL
@@ -121,17 +233,12 @@ const PlatformScreen = () => {
             if (supported) {
                 await Linking.openURL(authUrl);
 
-                // In a real app, you would handle the OAuth callback and token exchange
-                // For this demo, we'll simulate a successful connection after a delay
-                setTimeout(async () => {
-                    // Simulate successful connection
-                    const updatedPlatforms = { ...connectedPlatforms };
-                    updatedPlatforms[platform.id.toLowerCase()] = true;
-                    setConnectedPlatforms(updatedPlatforms);
-                    setConnectingPlatform(null);
-
-                    Alert.alert("Success", `Connected to ${platform.name}`);
-                }, 3000);
+                // The OAuth callback will be handled by the deep link handler
+                // We'll keep the connecting platform state until the callback is processed
+                Alert.alert(
+                    "Authorization",
+                    `Please complete the authorization in your browser. The app will update once you've granted permission.`
+                );
             } else {
                 Alert.alert("Error", `Cannot open URL: ${authUrl}`);
                 setConnectingPlatform(null);
