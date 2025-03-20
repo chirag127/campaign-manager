@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import {
+    View,
+    StyleSheet,
+    FlatList,
+    RefreshControl,
+    ScrollView,
+} from "react-native";
 import {
     Text,
     Card,
@@ -11,9 +17,11 @@ import {
     ActivityIndicator,
     Searchbar,
     useTheme,
+    Banner,
 } from "react-native-paper";
 import { campaignAPI } from "../../api/apiClient";
 import { CAMPAIGN_STATUSES } from "../../config";
+import { generateDummyCampaigns } from "../../utils/dummyData";
 
 const CampaignListScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -21,6 +29,7 @@ const CampaignListScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [campaigns, setCampaigns] = useState([]);
     const [filteredCampaigns, setFilteredCampaigns] = useState([]);
+    const [showDummyData, setShowDummyData] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState(null);
 
@@ -172,18 +181,37 @@ const CampaignListScreen = ({ navigation }) => {
         );
     };
 
-    const renderEmptyList = () => (
-        <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No campaigns found</Text>
-            <Button
-                mode="contained"
-                onPress={() => navigation.navigate("CampaignCreate")}
-                style={styles.createButton}
-            >
-                Create Campaign
-            </Button>
-        </View>
-    );
+    const renderEmptyList = () => {
+        // Generate dummy campaigns if needed
+        const dummyCampaigns = generateDummyCampaigns(3);
+
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No campaigns found</Text>
+                <Button
+                    mode="contained"
+                    onPress={() => navigation.navigate("CampaignCreate")}
+                    style={styles.createButton}
+                >
+                    Create Campaign
+                </Button>
+
+                <Text style={styles.orText}>or</Text>
+
+                <Button
+                    mode="outlined"
+                    onPress={() => {
+                        setShowDummyData(true);
+                        setCampaigns(dummyCampaigns);
+                        setFilteredCampaigns(dummyCampaigns);
+                    }}
+                    style={styles.dummyButton}
+                >
+                    Show Sample Campaigns
+                </Button>
+            </View>
+        );
+    };
 
     if (loading && !refreshing) {
         return (
@@ -196,6 +224,25 @@ const CampaignListScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            {showDummyData && (
+                <Banner
+                    visible={true}
+                    actions={[
+                        {
+                            label: "Hide Samples",
+                            onPress: () => {
+                                setShowDummyData(false);
+                                setCampaigns([]);
+                                setFilteredCampaigns([]);
+                            },
+                        },
+                    ]}
+                    icon="information"
+                >
+                    Showing sample campaign data. These are not real campaigns.
+                </Banner>
+            )}
+
             <Searchbar
                 placeholder="Search campaigns"
                 onChangeText={setSearchQuery}
@@ -344,7 +391,16 @@ const styles = StyleSheet.create({
         color: "#666",
         marginBottom: 20,
     },
+    orText: {
+        fontSize: 14,
+        color: "#666",
+        marginVertical: 10,
+    },
     createButton: {
+        paddingHorizontal: 20,
+    },
+    dummyButton: {
+        marginTop: 10,
         paddingHorizontal: 20,
     },
     fab: {

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
+import {
+    View,
+    StyleSheet,
+    FlatList,
+    RefreshControl,
+    ScrollView,
+} from "react-native";
 import {
     Text,
     Card,
@@ -12,9 +18,14 @@ import {
     useTheme,
     Menu,
     Divider,
+    Banner,
 } from "react-native-paper";
 import { leadAPI, campaignAPI } from "../../api/apiClient";
 import { LEAD_STATUSES } from "../../config";
+import {
+    generateDummyLeads,
+    generateDummyCampaigns,
+} from "../../utils/dummyData";
 
 const LeadListScreen = ({ route, navigation }) => {
     const { campaignId } = route.params || {};
@@ -29,6 +40,7 @@ const LeadListScreen = ({ route, navigation }) => {
     const [statusFilter, setStatusFilter] = useState(null);
     const [campaignFilter, setCampaignFilter] = useState(campaignId || null);
     const [campaignMenuVisible, setCampaignMenuVisible] = useState(false);
+    const [showDummyData, setShowDummyData] = useState(false);
 
     const loadData = async () => {
         try {
@@ -179,20 +191,48 @@ const LeadListScreen = ({ route, navigation }) => {
         </Card>
     );
 
-    const renderEmptyList = () => (
-        <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No leads found</Text>
-            {campaignFilter && (
+    const renderEmptyList = () => {
+        // Generate dummy data if needed
+        const dummyCampaigns = generateDummyCampaigns(2);
+        const dummyLeads = generateDummyLeads(
+            5,
+            campaignFilter ||
+                (dummyCampaigns.length > 0 ? dummyCampaigns[0]._id : null)
+        );
+
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No leads found</Text>
+                {campaignFilter && (
+                    <Button
+                        mode="contained"
+                        onPress={() => setCampaignFilter(null)}
+                        style={styles.clearFilterButton}
+                    >
+                        Clear Campaign Filter
+                    </Button>
+                )}
+
+                <Text style={styles.orText}>or</Text>
+
                 <Button
-                    mode="contained"
-                    onPress={() => setCampaignFilter(null)}
-                    style={styles.clearFilterButton}
+                    mode="outlined"
+                    onPress={() => {
+                        setShowDummyData(true);
+                        // If we don't have campaigns yet, add the dummy ones
+                        if (campaigns.length === 0) {
+                            setCampaigns(dummyCampaigns);
+                        }
+                        setLeads(dummyLeads);
+                        setFilteredLeads(dummyLeads);
+                    }}
+                    style={styles.dummyButton}
                 >
-                    Clear Campaign Filter
+                    Show Sample Leads
                 </Button>
-            )}
-        </View>
-    );
+            </View>
+        );
+    };
 
     if (loading && !refreshing) {
         return (
@@ -205,6 +245,33 @@ const LeadListScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+            {showDummyData && (
+                <Banner
+                    visible={true}
+                    actions={[
+                        {
+                            label: "Hide Samples",
+                            onPress: () => {
+                                setShowDummyData(false);
+                                setLeads([]);
+                                setFilteredLeads([]);
+                                // Only clear campaigns if they were dummy ones
+                                if (
+                                    campaigns.some((c) =>
+                                        c._id.startsWith("sample-")
+                                    )
+                                ) {
+                                    setCampaigns([]);
+                                }
+                            },
+                        },
+                    ]}
+                    icon="information"
+                >
+                    Showing sample lead data. These are not real leads.
+                </Banner>
+            )}
+
             <Searchbar
                 placeholder="Search leads"
                 onChangeText={setSearchQuery}
@@ -390,6 +457,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     clearFilterButton: {
+        paddingHorizontal: 20,
+    },
+    orText: {
+        fontSize: 14,
+        color: "#666",
+        marginVertical: 10,
+    },
+    dummyButton: {
+        marginTop: 10,
         paddingHorizontal: 20,
     },
 });
