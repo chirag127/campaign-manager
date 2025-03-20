@@ -67,7 +67,8 @@ const PlatformScreen = () => {
             const state = Math.random().toString(36).substring(2, 15);
 
             // Redirect URI for the OAuth flow
-            const redirectUri = `${API_URL}/api/platforms/${platform.id.toLowerCase()}/oauth-callback`;
+            // const redirectUri = `${API_URL}/api/platforms/${platform.id.toLowerCase()}/oauth-callback`;
+            const redirectUri = `https://campaign-manager127.netlify.app`;
 
             // Construct the OAuth URL
             let authUrl = platform.authUrl;
