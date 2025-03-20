@@ -1,5 +1,8 @@
 // API configuration
-export const API_URL = "http://localhost:5000";
+// export const API_URL = "http://localhost:5000";
+
+export const API_URL = "http://192.168.31.232:5000"; // Use your backend server IP and port
+// export const API_URL = "https://sketch2artai.onrender.com/api";
 
 // Platform configuration
 export const PLATFORMS = [
