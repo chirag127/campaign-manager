@@ -6,7 +6,6 @@
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "light",
-        "scheme": "campaignmanager",
         "splash": {
             "image": "./assets/splash.png",
             "resizeMode": "contain",
@@ -25,8 +24,7 @@
             }
         },
         "web": {
-            "favicon": "./assets/favicon.png",
-            "bundler": "metro"
+            "favicon": "./assets/favicon.png"
         }
     }
 }
