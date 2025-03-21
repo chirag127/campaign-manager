@@ -131,15 +131,16 @@ const ProfileScreen = () => {
     };
 
     const handleLogout = async () => {
-        showDialog("Logout", "Are you sure you want to logout?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Logout",
-                onPress: async () => {
-                    await logout();
-                },
-            },
-        ]);
+        // showDialog("Logout", "Are you sure you want to logout?", [
+        //     { text: "Cancel", style: "cancel" },
+        //     {
+        //         text: "Logout",
+        //         onPress: async () => {
+        //             await logout();
+        //         },
+        //     },
+        // ]);
+        await logout();
     };
 
     if (loading) {
