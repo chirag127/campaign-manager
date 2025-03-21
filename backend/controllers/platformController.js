@@ -27,6 +27,11 @@ exports.getPlatforms = async (req, res) => {
 // @access  Private
 exports.getPlatform = async (req, res) => {
     try {
+        // Special case for 'connected' - this is a fallback in case the route order doesn't work
+        if (req.params.id === "connected") {
+            return exports.getConnectedPlatforms(req, res);
+        }
+
         const platform = await Platform.findById(req.params.id);
 
         if (!platform) {
