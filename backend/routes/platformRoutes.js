@@ -12,10 +12,13 @@ const router = express.Router();
 
 router.route("/").get(protect, getPlatforms);
 
-router.route("/:id").get(protect, getPlatform);
+// Specific routes must come before parameterized routes
+router.get("/connected", protect, getConnectedPlatforms);
 
 router.post("/:platform/connect", protect, connectPlatform);
 router.post("/:platform/disconnect", protect, disconnectPlatform);
-router.get("/connected", protect, getConnectedPlatforms);
+
+// Generic parameterized route should be last
+router.route("/:id").get(protect, getPlatform);
 
 module.exports = router;

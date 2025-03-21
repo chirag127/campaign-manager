@@ -6,6 +6,7 @@ import {
     RefreshControl,
     ScrollView,
 } from "react-native";
+import { getAnimationConfig } from "../../utils/animationUtils";
 import {
     Text,
     Card,
@@ -283,10 +284,13 @@ const CampaignListScreen = ({ navigation }) => {
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={renderEmptyList}
+                // Configure animations properly for all platforms
+                {...getAnimationConfig()}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
+                        {...getAnimationConfig()}
                     />
                 }
             />

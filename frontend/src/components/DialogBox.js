@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, View, StyleSheet } from "react-native";
 import { Button, Text, Title, useTheme } from "react-native-paper";
+import { shouldUseNativeDriver } from "../utils/animationUtils";
 
 /**
  * Custom dialog box component for web platform
@@ -26,6 +27,8 @@ const DialogBox = ({ visible, title, message, buttons = [], onDismiss }) => {
             transparent={true}
             animationType="fade"
             onRequestClose={onDismiss}
+            // Note: Modal doesn't accept useNativeDriver prop directly
+            // It's handled internally based on platform
         >
             <View style={styles.centeredView}>
                 <View

@@ -6,6 +6,7 @@ import {
     RefreshControl,
     ScrollView,
 } from "react-native";
+import { getAnimationConfig } from "../../utils/animationUtils";
 import {
     Text,
     Card,

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
+import { shouldUseNativeDriver } from "../utils/animationUtils";
 
 // Auth Screens
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -34,7 +35,12 @@ const AuthNavigator = () => (
 
 // Campaign Stack Navigator
 const CampaignStackNavigator = () => (
-    <Stack.Navigator>
+    <Stack.Navigator
+        screenOptions={{
+            animation: "slide_from_right",
+            useNativeDriver: shouldUseNativeDriver(),
+        }}
+    >
         <Stack.Screen
             name="CampaignList"
             component={CampaignListScreen}
@@ -76,6 +82,12 @@ const MainNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
+                // Use appropriate animation driver based on platform
+                animationEnabled: true,
+                // Only use native driver on native platforms, not on web
+                animationTypeForReplace: "push",
+                animation: "fade",
+                useNativeDriver: shouldUseNativeDriver(),
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 

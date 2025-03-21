@@ -472,6 +472,8 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                         width={screenWidth - 40}
                         height={220}
                         chartConfig={{
+                            // Use appropriate animation driver based on platform
+                            useNativeDriver: shouldUseNativeDriver(),
                             backgroundColor: "#ffffff",
                             backgroundGradientFrom: "#ffffff",
                             backgroundGradientTo: "#ffffff",
@@ -501,6 +503,8 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                         width={screenWidth - 40}
                         height={220}
                         chartConfig={{
+                            // Use appropriate animation driver based on platform
+                            useNativeDriver: shouldUseNativeDriver(),
                             backgroundColor: "#ffffff",
                             backgroundGradientFrom: "#ffffff",
                             backgroundGradientTo: "#ffffff",

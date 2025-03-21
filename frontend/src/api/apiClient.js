@@ -1,6 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../config";
+import showDialog from "../utils/showDialog";
 
 // Create axios instance
 const apiClient = axios.create({
