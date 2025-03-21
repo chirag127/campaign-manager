@@ -6,6 +6,7 @@ const platformServices = require("../services");
 // @access  Private
 exports.createCampaign = async (req, res) => {
     try {
+        
         // Add user to req.body
         req.body.user = req.user.id;
 
