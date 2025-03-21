@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import showDialog from "../../utils/showDialog";
+import { useNavigation } from "@react-navigation/native";
 import {
     Text,
     Card,
@@ -20,6 +21,7 @@ import { Platform } from "react-native";
 const ProfileScreen = () => {
     const { user, updateProfile, logout } = useContext(AuthContext);
     const theme = useTheme();
+    const navigation = useNavigation();
 
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState({
@@ -296,6 +298,30 @@ const ProfileScreen = () => {
                 </Card.Actions>
             </Card>
 
+            <Card style={styles.legalCard}>
+                <Card.Content>
+                    <Title style={styles.cardTitle}>Legal</Title>
+                    
+                    <Button
+                        mode="text"
+                        icon="shield-account"
+                        onPress={() => navigation.navigate('PrivacyPolicy')}
+                        style={styles.legalButton}
+                    >
+                        Privacy Policy
+                    </Button>
+                    
+                    <Button
+                        mode="text"
+                        icon="file-document"
+                        onPress={() => navigation.navigate('TermsOfService')}
+                        style={styles.legalButton}
+                    >
+                        Terms of Service
+                    </Button>
+                </Card.Content>
+            </Card>
+
             <Button
                 mode="outlined"
                 onPress={handleLogout}
@@ -410,6 +436,14 @@ const styles = StyleSheet.create({
     },
     footer: {
         height: 20,
+    },
+    legalCard: {
+        marginHorizontal: 15,
+        marginBottom: 15,
+        elevation: 2,
+    },
+    legalButton: {
+        marginBottom: 10,
     },
 });
 

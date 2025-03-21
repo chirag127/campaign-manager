@@ -53,7 +53,9 @@ const linking = {
                     Login: 'login',
                     Register: 'register',
                 }
-            }
+            },
+            PrivacyPolicy: 'privacy-policy',
+            TermsOfService: 'terms-of-service',
         },
     },
 };

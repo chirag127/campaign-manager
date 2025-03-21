@@ -5,6 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 import showDialog from "../../utils/showDialog";
 import { authAPI } from "../../api/apiClient";
 import { Platform } from "react-native";
+import LegalFooter from "../../components/LegalFooter";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
@@ -94,6 +95,7 @@ const LoginScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <LegalFooter />
         </View>
     );
 };

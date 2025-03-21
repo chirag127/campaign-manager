@@ -19,6 +19,10 @@ import LeadDetailScreen from "../screens/leads/LeadDetailScreen";
 import PlatformScreen from "../screens/platforms/PlatformScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 
+// Legal Screens
+import PrivacyPolicyScreen from "../screens/legal/PrivacyPolicyScreen";
+import TermsOfServiceScreen from "../screens/legal/TermsOfServiceScreen";
+
 // Context
 import { AuthContext } from "../context/AuthContext";
 
@@ -137,6 +141,9 @@ const AppNavigator = () => {
             ) : (
                 <Stack.Screen name="Auth" component={AuthNavigator} />
             )}
+            {/* Legal screens accessible from anywhere */}
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: true, title: "Privacy Policy" }} />
+            <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: true, title: "Terms of Service" }} />
         </Stack.Navigator>
     );
 };
