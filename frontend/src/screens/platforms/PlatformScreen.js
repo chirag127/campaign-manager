@@ -188,17 +188,13 @@ const PlatformScreen = () => {
             switch (platform.id) {
                 case "FACEBOOK":
                 case "INSTAGRAM":
-                    authUrl += `?client_id=${
-                        process.env.FACEBOOK_APP_ID
-                    }&redirect_uri=${encodeURIComponent(
+                    authUrl += `?client_id=658690223460169&redirect_uri=${encodeURIComponent(
                         redirectUri
                     )}&state=${state}&scope=ads_management,ads_read`;
                     break;
                 case "GOOGLE":
                 case "YOUTUBE":
-                    authUrl += `?client_id=${
-                        process.env.GOOGLE_CLIENT_ID
-                    }&redirect_uri=${encodeURIComponent(
+                    authUrl += `?client_id=30939962098-1meotnhi28381q98q758q3gif2qsnqcc.apps.googleusercontent.com&redirect_uri=${encodeURIComponent(
                         redirectUri
                     )}&response_type=code&state=${state}&scope=https://www.googleapis.com/auth/adwords`;
                     break;
@@ -436,6 +432,7 @@ const PlatformScreen = () => {
             ))}
 
             <View style={styles.footer} />
+
         </ScrollView>
     );
 };
