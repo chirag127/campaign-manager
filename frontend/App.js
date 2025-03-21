@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
+import * as Linking from 'expo-linking';
 import { AuthProvider } from "./src/context/AuthContext";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { DialogProvider, useDialog } from "./src/utils/dialogUtils";
@@ -22,6 +23,41 @@ const theme = {
     },
 };
 
+// Define linking configuration
+const linking = {
+    prefixes: [Linking.createURL('/'), 'https://campaign-manager1271.netlify.app', 'https://campaign-manager1271.netlify.app'],
+    config: {
+        screens: {
+            Main: {
+                screens: {
+                    Dashboard: 'dashboard',
+                    Campaigns: {
+                        screens: {
+                            CampaignList: 'campaigns',
+                            CampaignDetail: 'campaigns/:id',
+                            CampaignCreate: 'campaigns/create',
+                        }
+                    },
+                    Leads: {
+                        screens: {
+                            LeadList: 'leads',
+                            LeadDetail: 'leads/:id',
+                        }
+                    },
+                    Platforms: 'platforms',
+                    Profile: 'profile',
+                }
+            },
+            Auth: {
+                screens: {
+                    Login: 'login',
+                    Register: 'register',
+                }
+            }
+        },
+    },
+};
+
 // Wrap the app with DialogProvider
 export default function App() {
     return (
@@ -29,7 +65,7 @@ export default function App() {
             <PaperProvider theme={theme}>
                 <DialogProvider>
                     <AuthProvider>
-                        <NavigationContainer>
+                        <NavigationContainer linking={linking}>
                             <AppNavigator />
                             <StatusBar style="auto" />
 
