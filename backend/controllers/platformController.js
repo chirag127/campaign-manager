@@ -258,12 +258,41 @@ exports.disconnectPlatform = async (req, res) => {
 // @access  Private
 exports.getConnectedPlatforms = async (req, res) => {
     try {
+        // Check if req.user exists
+        if (!req.user || !req.user.id) {
+            console.error("User not available in request object:", req.user);
+            return res.status(401).json({
+                success: false,
+                message: "Authentication failed. Please login again.",
+            });
+        }
+
+        // Log the user ID for debugging
+        console.log(`Fetching connected platforms for user ID: ${req.user.id}`);
+
         const user = await User.findById(req.user.id);
 
         if (!user) {
+            console.error(`User not found with ID: ${req.user.id}`);
             return res.status(404).json({
                 success: false,
                 message: "User not found",
+            });
+        }
+
+        // Check if platformCredentials exists
+        if (!user.platformCredentials) {
+            console.warn(`User ${req.user.id} has no platformCredentials`);
+            // Return default values if platformCredentials doesn't exist
+            return res.status(200).json({
+                success: true,
+                data: {
+                    facebook: false,
+                    google: false,
+                    linkedin: false,
+                    twitter: false,
+                    snapchat: false,
+                },
             });
         }
 
@@ -280,9 +309,10 @@ exports.getConnectedPlatforms = async (req, res) => {
             data: connectedPlatforms,
         });
     } catch (error) {
+        console.error("Error in getConnectedPlatforms:", error);
         res.status(500).json({
             success: false,
-            message: error.message,
+            message: error.message || "An unexpected error occurred",
         });
     }
 };

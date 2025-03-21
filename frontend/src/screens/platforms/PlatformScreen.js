@@ -35,11 +35,36 @@ const PlatformScreen = () => {
             setLoading(true);
 
             // Get connected platforms
-            const platformsResponse = await platformAPI.getConnectedPlatforms();
-            const platformsData = platformsResponse.data.data;
-            setConnectedPlatforms(platformsData);
+            try {
+                const platformsResponse =
+                    await platformAPI.getConnectedPlatforms();
+                const platformsData = platformsResponse.data.data || {
+                    facebook: false,
+                    google: false,
+                    linkedin: false,
+                    twitter: false,
+                    snapchat: false,
+                };
+                setConnectedPlatforms(platformsData);
+            } catch (error) {
+                console.error("Error loading platform data:", error);
+                // Set default values if API call fails
+                setConnectedPlatforms({
+                    facebook: false,
+                    google: false,
+                    linkedin: false,
+                    twitter: false,
+                    snapchat: false,
+                });
+
+                // Show error dialog but don't block the UI
+                showDialog(
+                    "Connection Error",
+                    "Could not load platform connection status. Using default values."
+                );
+            }
         } catch (error) {
-            console.error("Error loading platform data:", error);
+            console.error("Unexpected error in loadPlatformData:", error);
             showDialog(
                 "Error",
                 "Failed to load platform data. Please try again."
