@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
+import showDialog from "../../utils/showDialog";
 import {
     Text,
     Card,
@@ -43,7 +44,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
             setCampaign(campaignData);
         } catch (error) {
             console.error("Error loading lead data:", error);
-            Alert.alert("Error", "Failed to load lead data. Please try again.");
+            showDialog("Error", "Failed to load lead data. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -77,10 +78,10 @@ const LeadDetailScreen = ({ route, navigation }) => {
             await leadAPI.updateLead(leadId, { status: newStatus });
             setStatusMenuVisible(false);
             await loadLeadData();
-            Alert.alert("Success", "Lead status updated successfully");
+            showDialog("Success", "Lead status updated successfully");
         } catch (error) {
             console.error("Error updating lead status:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to update lead status. Please try again."
             );
@@ -89,7 +90,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
 
     const handleDeleteLead = () => {
         setMenuVisible(false);
-        Alert.alert(
+        showDialog(
             "Delete Lead",
             "Are you sure you want to delete this lead? This action cannot be undone.",
             [
@@ -100,11 +101,11 @@ const LeadDetailScreen = ({ route, navigation }) => {
                     onPress: async () => {
                         try {
                             await leadAPI.deleteLead(leadId);
-                            Alert.alert("Success", "Lead deleted successfully");
+                            showDialog("Success", "Lead deleted successfully");
                             navigation.goBack();
                         } catch (error) {
                             console.error("Error deleting lead:", error);
-                            Alert.alert(
+                            showDialog(
                                 "Error",
                                 "Failed to delete lead. Please try again."
                             );
@@ -286,10 +287,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
                     <Button
                         icon="email"
                         onPress={() =>
-                            Alert.alert(
-                                "Contact",
-                                `Send email to ${lead.email}`
-                            )
+                            showDialog("Contact", `Send email to ${lead.email}`)
                         }
                     >
                         Email
@@ -298,7 +296,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
                         <Button
                             icon="phone"
                             onPress={() =>
-                                Alert.alert("Contact", `Call ${lead.phone}`)
+                                showDialog("Contact", `Call ${lead.phone}`)
                             }
                         >
                             Call
@@ -307,7 +305,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
                     <Button
                         icon="file-document"
                         onPress={() =>
-                            Alert.alert(
+                            showDialog(
                                 "Notes",
                                 "Add notes functionality would be implemented here"
                             )

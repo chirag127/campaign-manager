@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
+import showDialog from "../../utils/showDialog";
 import {
     Text,
     Card,
@@ -84,17 +85,17 @@ const ProfileScreen = () => {
     const handleUpdateProfile = async () => {
         // Validate form
         if (!name.trim()) {
-            Alert.alert("Error", "Please enter your name");
+            showDialog("Error", "Please enter your name");
             return;
         }
 
         if (newPassword && newPassword !== confirmPassword) {
-            Alert.alert("Error", "Passwords do not match");
+            showDialog("Error", "Passwords do not match");
             return;
         }
 
         if (newPassword && newPassword.length < 6) {
-            Alert.alert("Error", "Password must be at least 6 characters");
+            showDialog("Error", "Password must be at least 6 characters");
             return;
         }
 
@@ -115,7 +116,7 @@ const ProfileScreen = () => {
             const success = await updateProfile(userData);
 
             if (success) {
-                Alert.alert("Success", "Profile updated successfully");
+                showDialog("Success", "Profile updated successfully");
                 // Clear password fields
                 setCurrentPassword("");
                 setNewPassword("");
@@ -123,14 +124,14 @@ const ProfileScreen = () => {
             }
         } catch (error) {
             console.error("Error updating profile:", error);
-            Alert.alert("Error", "Failed to update profile. Please try again.");
+            showDialog("Error", "Failed to update profile. Please try again.");
         } finally {
             setSubmitting(false);
         }
     };
 
     const handleLogout = async () => {
-        Alert.alert("Logout", "Are you sure you want to logout?", [
+        showDialog("Logout", "Are you sure you want to logout?", [
             { text: "Cancel", style: "cancel" },
             {
                 text: "Logout",

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-    View,
-    StyleSheet,
-    ScrollView,
-    RefreshControl,
-    Alert,
-} from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
+import showDialog from "../../utils/showDialog";
 import {
     Text,
     Card,
@@ -81,7 +76,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             prepareChartData(campaignData);
         } catch (error) {
             console.error("Error loading campaign data:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to load campaign data. Please try again."
             );
@@ -150,10 +145,10 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             setSyncingMetrics(true);
             await campaignAPI.syncCampaignMetrics(campaignId);
             await loadCampaignData();
-            Alert.alert("Success", "Campaign metrics synced successfully");
+            showDialog("Success", "Campaign metrics synced successfully");
         } catch (error) {
             console.error("Error syncing campaign metrics:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to sync campaign metrics. Please try again."
             );
@@ -168,13 +163,13 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             const response = await campaignAPI.syncCampaignLeads(campaignId);
             const { newLeadsCount } = response.data.data;
             await loadCampaignData();
-            Alert.alert(
+            showDialog(
                 "Success",
                 `${newLeadsCount} new leads synced successfully`
             );
         } catch (error) {
             console.error("Error syncing campaign leads:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to sync campaign leads. Please try again."
             );
@@ -190,7 +185,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
 
     const handleDeleteCampaign = () => {
         setMenuVisible(false);
-        Alert.alert(
+        showDialog(
             "Delete Campaign",
             "Are you sure you want to delete this campaign? This action cannot be undone.",
             [
@@ -201,14 +196,14 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                     onPress: async () => {
                         try {
                             await campaignAPI.deleteCampaign(campaignId);
-                            Alert.alert(
+                            showDialog(
                                 "Success",
                                 "Campaign deleted successfully"
                             );
                             navigation.goBack();
                         } catch (error) {
                             console.error("Error deleting campaign:", error);
-                            Alert.alert(
+                            showDialog(
                                 "Error",
                                 "Failed to delete campaign. Please try again."
                             );
@@ -227,13 +222,13 @@ const CampaignDetailScreen = ({ route, navigation }) => {
         try {
             await campaignAPI.updateCampaign(campaignId, { status: newStatus });
             await loadCampaignData();
-            Alert.alert(
+            showDialog(
                 "Success",
                 `Campaign ${newStatus.toLowerCase()} successfully`
             );
         } catch (error) {
             console.error("Error updating campaign status:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to update campaign status. Please try again."
             );

@@ -4,9 +4,9 @@ import {
     StyleSheet,
     ScrollView,
     RefreshControl,
-    Alert,
     Linking,
 } from "react-native";
+import showDialog from "../../utils/showDialog";
 import {
     Text,
     Card,
@@ -40,7 +40,7 @@ const PlatformScreen = () => {
             setConnectedPlatforms(platformsData);
         } catch (error) {
             console.error("Error loading platform data:", error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 "Failed to load platform data. Please try again."
             );
@@ -129,15 +129,15 @@ const PlatformScreen = () => {
                     setConnectedPlatforms(updatedPlatforms);
                     setConnectingPlatform(null);
 
-                    Alert.alert("Success", `Connected to ${platform.name}`);
+                    showDialog("Success", `Connected to ${platform.name}`);
                 }, 3000);
             } else {
-                Alert.alert("Error", `Cannot open URL: ${authUrl}`);
+                showDialog("Error", `Cannot open URL: ${authUrl}`);
                 setConnectingPlatform(null);
             }
         } catch (error) {
             console.error(`Error connecting to ${platform.id}:`, error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 `Failed to connect to ${platform.name}. Please try again.`
             );
@@ -157,10 +157,10 @@ const PlatformScreen = () => {
             updatedPlatforms[platform.id.toLowerCase()] = false;
             setConnectedPlatforms(updatedPlatforms);
 
-            Alert.alert("Success", `Disconnected from ${platform.name}`);
+            showDialog("Success", `Disconnected from ${platform.name}`);
         } catch (error) {
             console.error(`Error disconnecting from ${platform.id}:`, error);
-            Alert.alert(
+            showDialog(
                 "Error",
                 `Failed to disconnect from ${platform.name}. Please try again.`
             );
@@ -172,7 +172,7 @@ const PlatformScreen = () => {
     const toggleConnection = (platform) => {
         if (connectedPlatforms[platform.id.toLowerCase()]) {
             // Confirm before disconnecting
-            Alert.alert(
+            showDialog(
                 "Disconnect Platform",
                 `Are you sure you want to disconnect from ${platform.name}?`,
                 [
