@@ -15,6 +15,7 @@ import {
 } from "react-native-paper";
 import { AuthContext } from "../../context/AuthContext";
 import { campaignAPI, leadAPI } from "../../api/apiClient";
+import { Platform } from "react-native";
 
 const ProfileScreen = () => {
     const { user, updateProfile, logout } = useContext(AuthContext);
@@ -140,6 +141,7 @@ const ProfileScreen = () => {
         //         },
         //     },
         // ]);
+        console.log("platform", Platform.OS);
         await logout();
     };
 
