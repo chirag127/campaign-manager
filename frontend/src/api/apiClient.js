@@ -90,27 +90,40 @@ apiClient.interceptors.response.use(
             endpoint.charAt(0).toUpperCase() + endpoint.slice(1);
 
         // Handle authentication errors
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-            console.log("Authentication error detected, clearing credentials");
+        if (error.response?.status === 401) {
+            // Check if this is a login attempt or a token expiration
+            const isLoginAttempt =
+                error.config?.url?.includes("/api/auth/login");
 
-            // Clear token and user data
-            try {
-                await AsyncStorage.removeItem("userToken");
-                await AsyncStorage.removeItem("user");
-                console.log("User credentials cleared");
-
-                // Show authentication error to user
-                showDialog(
-                    "Session Expired",
-                    "Your session has expired. Please log in again."
+            if (!isLoginAttempt && !originalRequest._retry) {
+                // This is a token expiration scenario
+                originalRequest._retry = true;
+                console.log(
+                    "Authentication error detected, clearing credentials"
                 );
 
-                // Force app to re-render and show login screen
-                // This would typically be handled by your auth context
-                // window.location.href = '/login'; // For web
-            } catch (storageError) {
-                console.error("Error clearing storage:", storageError);
+                // Clear token and user data
+                try {
+                    await AsyncStorage.removeItem("userToken");
+                    await AsyncStorage.removeItem("user");
+                    console.log("User credentials cleared");
+
+                    // Show authentication error to user
+                    showDialog(
+                        "Session Expired",
+                        "Your session has expired. Please log in again."
+                    );
+
+                    // Force app to re-render and show login screen
+                    // This would typically be handled by your auth context
+                    // window.location.href = '/login'; // For web
+                } catch (storageError) {
+                    console.error("Error clearing storage:", storageError);
+                }
+            } else if (isLoginAttempt) {
+                // For login attempts, let the error propagate to the login function
+                // The error will be handled there with a specific error message
+                console.log("Login attempt failed with invalid credentials");
             }
         }
         // For server errors, provide more context and show to user

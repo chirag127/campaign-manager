@@ -1,29 +1,46 @@
 import React, { useState, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { TextInput, Button, Text, Title, Snackbar } from "react-native-paper";
+import { TextInput, Button, Text, Title } from "react-native-paper";
 import { AuthContext } from "../../context/AuthContext";
+import showDialog from "../../utils/showDialog";
+import { authAPI } from "../../api/apiClient";
+import { Platform } from "react-native";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const { login, error, isLoading } = useContext(AuthContext);
 
     const handleLogin = async () => {
         if (!email || !password) {
-            setSnackbarMessage("Please enter both email and password");
-            setSnackbarVisible(true);
+            // Use dialog for validation errors
+            showDialog(
+                "Validation Error",
+                "Please enter both email and password"
+            );
             return;
         }
 
-        const success = await login(email, password);
+        try {
+            // Call the login function directly - it will handle auth state and errors
+            const success = await login(email, password);
 
-        if (!success && error) {
-            setSnackbarMessage(error);
-            setSnackbarVisible(true);
+            // If login was not successful, the error will be shown by the login function
+            // No need to handle it here
+        } catch (error) {
+            console.log("Login error:", error);
+
+            // Extract error message
+            const errorMessage =
+                error.response?.data?.message ||
+                "Invalid credentials. Please check your email and password.";
+
+            // Show error dialog
+            showDialog("Login Failed", errorMessage);
+
+           
         }
     };
 
@@ -77,18 +94,6 @@ const LoginScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-                duration={3000}
-                action={{
-                    label: "Close",
-                    onPress: () => setSnackbarVisible(false),
-                }}
-            >
-                {snackbarMessage}
-            </Snackbar>
         </View>
     );
 };

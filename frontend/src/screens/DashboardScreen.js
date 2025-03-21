@@ -9,7 +9,8 @@ import {
     useTheme,
     ActivityIndicator,
 } from "react-native-paper";
-import { LineChart } from "react-native-chart-kit";
+// Import the web-compatible chart component instead of the original
+import { WebCompatibleLineChart } from "../components/WebCompatibleChart";
 import { Dimensions } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { campaignAPI, leadAPI, platformAPI } from "../api/apiClient";
@@ -193,7 +194,7 @@ const DashboardScreen = ({ navigation }) => {
             <Card style={styles.chartCard}>
                 <Card.Content>
                     <Title style={styles.chartTitle}>Leads This Week</Title>
-                    <LineChart
+                    <WebCompatibleLineChart
                         data={chartData}
                         width={screenWidth - 40}
                         height={220}

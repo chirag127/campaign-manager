@@ -53,3 +53,43 @@ export const AnimationPresets = {
         },
     },
 };
+
+/**
+ * Get cross-platform shadow styles
+ * This helps avoid warnings about deprecated shadow* props on web
+ *
+ * @param {Object} shadowProps - Shadow configuration
+ * @returns {Object} Platform-specific shadow styles
+ */
+export const getShadowStyles = (shadowProps = {}) => {
+    const {
+        shadowColor = "#000",
+        shadowOffset = { width: 0, height: 2 },
+        shadowOpacity = 0.25,
+        shadowRadius = 3.84,
+        elevation = 5,
+    } = shadowProps;
+
+    if (Platform.OS === "web") {
+        // For web, use boxShadow
+        const offsetX = shadowOffset.width;
+        const offsetY = shadowOffset.height;
+        const blurRadius = shadowRadius;
+        const color = shadowColor
+            .replace("rgb", "rgba")
+            .replace(")", `, ${shadowOpacity})`);
+
+        return {
+            boxShadow: `${offsetX}px ${offsetY}px ${blurRadius}px ${color}`,
+        };
+    } else {
+        // For native platforms, use the regular shadow props
+        return {
+            shadowColor,
+            shadowOffset,
+            shadowOpacity,
+            shadowRadius,
+            elevation,
+        };
+    }
+};

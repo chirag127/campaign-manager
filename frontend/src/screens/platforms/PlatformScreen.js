@@ -22,6 +22,9 @@ import { platformAPI } from "../../api/apiClient";
 import { PLATFORMS } from "../../config";
 import { API_URL } from "../../config";
 
+// process.env.FACEBOOK_APP_ID is undefined
+// require("dotenv").config();
+
 const PlatformScreen = () => {
     const theme = useTheme();
 
@@ -100,9 +103,7 @@ const PlatformScreen = () => {
             switch (platform.id) {
                 case "FACEBOOK":
                 case "INSTAGRAM":
-                    authUrl += `?client_id=${
-                        process.env.FACEBOOK_APP_ID
-                    }&redirect_uri=${encodeURIComponent(
+                    authUrl += `?client_id=658690223460169&redirect_uri=${encodeURIComponent(
                         redirectUri
                     )}&state=${state}&scope=ads_management,ads_read`;
                     break;

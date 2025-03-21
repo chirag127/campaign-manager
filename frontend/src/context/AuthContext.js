@@ -43,10 +43,10 @@ export const AuthProvider = ({ children }) => {
         setError(null);
 
         try {
-            const response = await axios.post(`${API_URL}/api/auth/login`, {
-                email,
-                password,
-            });
+            // Import apiClient here to avoid circular dependency
+            const { authAPI } = require("../api/apiClient");
+
+            const response = await authAPI.login(email, password);
 
             const { token, user } = response.data;
 
@@ -63,10 +63,20 @@ export const AuthProvider = ({ children }) => {
 
             return true;
         } catch (error) {
-            setError(
+            // Get a user-friendly error message
+            const errorMessage =
                 error.response?.data?.message ||
-                    "Login failed. Please try again."
-            );
+                "Login failed. Please try again.";
+
+            // Set the error state
+            setError(errorMessage);
+
+            // Import showDialog to display the error
+            const showDialog = require("../utils/showDialog").default;
+
+            // Show a dialog with the error message
+            showDialog("Login Failed", errorMessage);
+
             return false;
         } finally {
             setIsLoading(false);
@@ -79,11 +89,10 @@ export const AuthProvider = ({ children }) => {
         setError(null);
 
         try {
-            const response = await axios.post(`${API_URL}/api/auth/register`, {
-                name,
-                email,
-                password,
-            });
+            // Import apiClient here to avoid circular dependency
+            const { authAPI } = require("../api/apiClient");
+
+            const response = await authAPI.register(name, email, password);
 
             const { token, user } = response.data;
 
@@ -100,10 +109,20 @@ export const AuthProvider = ({ children }) => {
 
             return true;
         } catch (error) {
-            setError(
+            // Get a user-friendly error message
+            const errorMessage =
                 error.response?.data?.message ||
-                    "Registration failed. Please try again."
-            );
+                "Registration failed. Please try again.";
+
+            // Set the error state
+            setError(errorMessage);
+
+            // Import showDialog to display the error
+            const showDialog = require("../utils/showDialog").default;
+
+            // Show a dialog with the error message
+            showDialog("Registration Failed", errorMessage);
+
             return false;
         } finally {
             setIsLoading(false);

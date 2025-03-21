@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { TextInput, Button, Text, Title, Snackbar } from "react-native-paper";
+import { TextInput, Button, Text, Title } from "react-native-paper";
 import { AuthContext } from "../../context/AuthContext";
+import showDialog from "../../utils/showDialog";
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState("");
@@ -9,37 +10,33 @@ const RegisterScreen = ({ navigation }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const { register, error, isLoading } = useContext(AuthContext);
 
     const handleRegister = async () => {
         // Validate inputs
         if (!name || !email || !password || !confirmPassword) {
-            setSnackbarMessage("Please fill in all fields");
-            setSnackbarVisible(true);
+            showDialog("Validation Error", "Please fill in all fields");
             return;
         }
 
         if (password !== confirmPassword) {
-            setSnackbarMessage("Passwords do not match");
-            setSnackbarVisible(true);
+            showDialog("Validation Error", "Passwords do not match");
             return;
         }
 
         if (password.length < 6) {
-            setSnackbarMessage("Password must be at least 6 characters");
-            setSnackbarVisible(true);
+            showDialog(
+                "Validation Error",
+                "Password must be at least 6 characters"
+            );
             return;
         }
 
+        // Update the register function in AuthContext to show dialog for errors
         const success = await register(name, email, password);
 
-        if (!success && error) {
-            setSnackbarMessage(error);
-            setSnackbarVisible(true);
-        }
+        // No need to show error here as it should be handled in the register function
     };
 
     return (
@@ -109,18 +106,6 @@ const RegisterScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={() => setSnackbarVisible(false)}
-                duration={3000}
-                action={{
-                    label: "Close",
-                    onPress: () => setSnackbarVisible(false),
-                }}
-            >
-                {snackbarMessage}
-            </Snackbar>
         </ScrollView>
     );
 };

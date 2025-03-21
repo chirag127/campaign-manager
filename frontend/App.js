@@ -5,7 +5,7 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./src/context/AuthContext";
 import AppNavigator from "./src/navigation/AppNavigator";
-import { DialogProvider } from "./src/utils/dialogUtils";
+import { DialogProvider, useDialog } from "./src/utils/dialogUtils";
 import DialogBox from "./src/components/DialogBox";
 
 // Define the theme
@@ -22,30 +22,8 @@ const theme = {
     },
 };
 
+// Wrap the app with DialogProvider
 export default function App() {
-    // State for the dialog box
-    const [dialogVisible, setDialogVisible] = useState(false);
-    const [dialogConfig, setDialogConfig] = useState({
-        title: "",
-        message: "",
-        buttons: [],
-    });
-
-    // Function to show a dialog
-    const showDialog = (title, message, buttons = []) => {
-        setDialogConfig({
-            title,
-            message,
-            buttons,
-        });
-        setDialogVisible(true);
-    };
-
-    // Function to hide the dialog
-    const hideDialog = () => {
-        setDialogVisible(false);
-    };
-
     return (
         <SafeAreaProvider>
             <PaperProvider theme={theme}>
@@ -55,14 +33,7 @@ export default function App() {
                             <AppNavigator />
                             <StatusBar style="auto" />
 
-                            {/* Global dialog box for web platform */}
-                            <DialogBox
-                                visible={dialogVisible}
-                                title={dialogConfig.title}
-                                message={dialogConfig.message}
-                                buttons={dialogConfig.buttons}
-                                onDismiss={hideDialog}
-                            />
+                            {/* The DialogBox component is now managed by the DialogProvider */}
                         </NavigationContainer>
                     </AuthProvider>
                 </DialogProvider>

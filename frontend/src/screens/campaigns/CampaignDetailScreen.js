@@ -14,7 +14,11 @@ import {
     IconButton,
     Menu,
 } from "react-native-paper";
-import { BarChart, LineChart } from "react-native-chart-kit";
+// Import the web-compatible chart components instead of the originals
+import {
+    WebCompatibleBarChart,
+    WebCompatibleLineChart,
+} from "../../components/WebCompatibleChart";
 import { Dimensions } from "react-native";
 import { campaignAPI, leadAPI } from "../../api/apiClient";
 import { PLATFORMS, CAMPAIGN_STATUSES } from "../../config";

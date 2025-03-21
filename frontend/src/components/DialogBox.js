@@ -1,7 +1,10 @@
 import React from "react";
 import { Modal, View, StyleSheet } from "react-native";
 import { Button, Text, Title, useTheme } from "react-native-paper";
-import { shouldUseNativeDriver } from "../utils/animationUtils";
+import {
+    shouldUseNativeDriver,
+    getShadowStyles,
+} from "../utils/animationUtils";
 
 /**
  * Custom dialog box component for web platform
@@ -87,16 +90,18 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 24,
         alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
         minWidth: 300,
         maxWidth: "80%",
+        ...getShadowStyles({
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+        }),
     },
     title: {
         marginBottom: 12,

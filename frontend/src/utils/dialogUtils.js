@@ -1,5 +1,6 @@
 import { Alert, Platform } from "react-native";
 import { createContext, useState, useContext } from "react";
+import DialogBox from "../components/DialogBox";
 
 // Create a context to manage dialog state
 export const DialogContext = createContext();
@@ -59,6 +60,15 @@ export const DialogProvider = ({ children }) => {
             }}
         >
             {children}
+
+            {/* Render the DialogBox component */}
+            <DialogBox
+                visible={dialogVisible}
+                title={dialogConfig.title}
+                message={dialogConfig.message}
+                buttons={dialogConfig.buttons}
+                onDismiss={hideDialog}
+            />
         </DialogContext.Provider>
     );
 };
