@@ -124,6 +124,15 @@ apiClient.interceptors.response.use(
                 // For login attempts, let the error propagate to the login function
                 // The error will be handled there with a specific error message
                 console.log("Login attempt failed with invalid credentials");
+                console.log("Error response data:", error.response?.data);
+
+                // Make sure the error has a proper response data structure
+                if (!error.response.data) {
+                    error.response.data = {
+                        message:
+                            "Invalid credentials. Please check your email and password.",
+                    };
+                }
             }
         }
         // For server errors, provide more context and show to user
