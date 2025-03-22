@@ -85,6 +85,12 @@ const RegisterScreen = ({ navigation }) => {
                     mode="outlined"
                     style={styles.input}
                     secureTextEntry={!showPassword}
+                    right={
+                        <TextInput.Icon
+                            icon={showPassword ? "eye-off" : "eye"}
+                            onPress={() => setShowPassword(!showPassword)}
+                        />
+                    }
                 />
 
                 <Button

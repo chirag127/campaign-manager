@@ -251,6 +251,12 @@ const ProfileScreen = () => {
                         mode="outlined"
                         style={styles.input}
                         secureTextEntry={!showPassword}
+                        right={
+                            <TextInput.Icon
+                                icon={showPassword ? "eye-off" : "eye"}
+                                onPress={() => setShowPassword(!showPassword)}
+                            />
+                        }
                     />
 
                     <TextInput
@@ -260,6 +266,12 @@ const ProfileScreen = () => {
                         mode="outlined"
                         style={styles.input}
                         secureTextEntry={!showPassword}
+                        right={
+                            <TextInput.Icon
+                                icon={showPassword ? "eye-off" : "eye"}
+                                onPress={() => setShowPassword(!showPassword)}
+                            />
+                        }
                     />
 
                     <Divider style={styles.divider} />
@@ -301,20 +313,20 @@ const ProfileScreen = () => {
             <Card style={styles.legalCard}>
                 <Card.Content>
                     <Title style={styles.cardTitle}>Legal</Title>
-                    
+
                     <Button
                         mode="text"
                         icon="shield-account"
-                        onPress={() => navigation.navigate('PrivacyPolicy')}
+                        onPress={() => navigation.navigate("PrivacyPolicy")}
                         style={styles.legalButton}
                     >
                         Privacy Policy
                     </Button>
-                    
+
                     <Button
                         mode="text"
                         icon="file-document"
-                        onPress={() => navigation.navigate('TermsOfService')}
+                        onPress={() => navigation.navigate("TermsOfService")}
                         style={styles.legalButton}
                     >
                         Terms of Service
