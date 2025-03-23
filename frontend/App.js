@@ -51,9 +51,12 @@ const linking = {
                     Platforms: {
                         path: 'platforms',
                         // This will handle OAuth callbacks with code and state parameters
+                        // as well as error codes and messages
                         parse: {
                             code: (code) => code,
                             state: (state) => state,
+                            error_code: (error_code) => error_code,
+                            error_message: (error_message) => error_message,
                         },
                     },
                     Profile: 'profile',

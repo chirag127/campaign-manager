@@ -6,8 +6,10 @@ import {
     RefreshControl,
     Linking,
     Alert,
+    Platform,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+
 import showDialog from "../../utils/showDialog";
 import {
     Text,
@@ -30,16 +32,76 @@ import { API_URL } from "../../config";
 const PlatformScreen = () => {
     const theme = useTheme();
     const route = useRoute();
+    const navigation = useNavigation();
 
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [connectedPlatforms, setConnectedPlatforms] = useState({});
     const [connectingPlatform, setConnectingPlatform] = useState(null);
 
+    // Parse URL query parameters for error codes and messages
+    useEffect(() => {
+        const parseUrlParams = () => {
+            try {
+                // Get the current URL
+                const url = window.location.href;
+                const urlObj = new URL(url);
+
+                // Check for error parameters
+                const errorCode = urlObj.searchParams.get('error_code');
+                const errorMessage = urlObj.searchParams.get('error_message');
+
+                if (errorCode && errorMessage) {
+                    // Decode the error message (it's URL encoded)
+                    const decodedMessage = decodeURIComponent(errorMessage);
+
+                    console.log('Facebook error detected:', { errorCode, errorMessage: decodedMessage });
+
+                    // Show dialog with error information
+                    showDialog(
+                        'Facebook Connection Error',
+                        `Error Code: ${errorCode}\n\nError Message: ${decodedMessage}\n\nPlease make sure your Facebook app is properly configured.`
+                    );
+
+                    // Clean up the URL to remove error parameters
+                    // This prevents showing the same error multiple times if the user refreshes
+                    const cleanUrl = url.split('?')[0];
+                    window.history.replaceState({}, document.title, cleanUrl);
+                }
+            } catch (error) {
+                console.error('Error parsing URL parameters:', error);
+            }
+        };
+
+        // Only run on web platform
+        if (Platform.OS === 'web') {
+            parseUrlParams();
+        }
+    }, []);
+
     // Handle OAuth callback parameters if they exist in the route
     useEffect(() => {
         const handleOAuthCallback = async () => {
             try {
+                // Check for error parameters in route.params
+                if (route.params?.error_code && route.params?.error_message) {
+                    const { error_code, error_message } = route.params;
+                    console.log('Facebook error detected in route params:', { error_code, error_message });
+
+                    // Decode the error message (it's URL encoded)
+                    const decodedMessage = decodeURIComponent(error_message);
+
+                    // Show dialog with error information
+                    showDialog(
+                        'Facebook Connection Error',
+                        `Error Code: ${error_code}\n\nError Message: ${decodedMessage}\n\nPlease make sure your Facebook app is properly configured.`
+                    );
+
+                    // Reset connecting state
+                    setConnectingPlatform(null);
+                    return;
+                }
+
                 // Check if we have code and state parameters from OAuth callback
                 if (route.params?.code && route.params?.state) {
                     const { code, state } = route.params;
