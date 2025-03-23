@@ -331,6 +331,16 @@ const ProfileScreen = () => {
                     >
                         Terms of Service
                     </Button>
+
+                    <Button
+                        mode="text"
+                        icon="account-remove"
+                        onPress={() => navigation.navigate("DeleteAccount")}
+                        style={styles.legalButton}
+                        color={theme.colors.error}
+                    >
+                        Delete Account
+                    </Button>
                 </Card.Content>
             </Card>
 

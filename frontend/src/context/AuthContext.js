@@ -185,6 +185,41 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Delete user account
+    const deleteAccount = async (password) => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // Import apiClient here to avoid circular dependency
+            const { authAPI } = require("../api/apiClient");
+
+            // Make API call to delete account
+            await authAPI.deleteAccount(password);
+
+            // Clear storage
+            await AsyncStorage.removeItem("userToken");
+            await AsyncStorage.removeItem("user");
+
+            // Clear state
+            setUserToken(null);
+            setUser(null);
+
+            // Clear axios default header
+            delete axios.defaults.headers.common["Authorization"];
+
+            return true;
+        } catch (error) {
+            setError(
+                error.response?.data?.message ||
+                    "Account deletion failed. Please try again."
+            );
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -196,6 +231,7 @@ export const AuthProvider = ({ children }) => {
                 register,
                 logout,
                 updateProfile,
+                deleteAccount,
             }}
         >
             {children}

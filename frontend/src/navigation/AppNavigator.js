@@ -22,6 +22,7 @@ import ProfileScreen from "../screens/profile/ProfileScreen";
 // Legal Screens
 import PrivacyPolicyScreen from "../screens/legal/PrivacyPolicyScreen";
 import TermsOfServiceScreen from "../screens/legal/TermsOfServiceScreen";
+import DeleteAccountScreen from "../screens/legal/DeleteAccountScreen";
 
 // Context
 import { AuthContext } from "../context/AuthContext";
@@ -144,6 +145,7 @@ const AppNavigator = () => {
             {/* Legal screens accessible from anywhere */}
             <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: true, title: "Privacy Policy" }} />
             <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: true, title: "Terms of Service" }} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={{ headerShown: true, title: "Delete Account" }} />
         </Stack.Navigator>
     );
 };

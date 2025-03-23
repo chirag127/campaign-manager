@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Campaign = require("../models/Campaign");
+const Lead = require("../models/Lead");
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -106,6 +108,63 @@ exports.logout = async (req, res) => {
         success: true,
         message: "User logged out successfully",
     });
+};
+
+// @desc    Delete user account and all associated data
+// @route   DELETE /api/auth/delete-account
+// @access  Private
+exports.deleteAccount = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { password } = req.body;
+
+        // Verify password before deletion
+        if (password) {
+            // Get user with password
+            const user = await User.findById(userId).select("+password");
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+
+            // Verify password
+            const isMatch = await user.matchPassword(password);
+
+            if (!isMatch) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Incorrect password. Account deletion failed.",
+                });
+            }
+
+            // Delete all campaigns associated with the user
+            await Campaign.deleteMany({ user: userId });
+
+            // Delete all leads associated with the user
+            await Lead.deleteMany({ user: userId });
+
+            // Delete the user
+            await User.findByIdAndDelete(userId);
+
+            return res.status(200).json({
+                success: true,
+                message: "Account and all associated data deleted successfully",
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: "Password is required to delete account",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 
 // Helper function to get token from model, create cookie and send response

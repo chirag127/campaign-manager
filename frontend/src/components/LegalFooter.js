@@ -22,6 +22,13 @@ const LegalFooter = () => {
       >
         Terms of Service
       </Text>
+      <Text style={styles.separator}>|</Text>
+      <Text
+        style={[styles.link, { color: theme.colors.error }]}
+        onPress={() => navigation.navigate('DeleteAccount')}
+      >
+        Delete Account
+      </Text>
     </View>
   );
 };
