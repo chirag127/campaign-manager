@@ -25,7 +25,11 @@ const theme = {
 
 // Define linking configuration
 const linking = {
-    prefixes: [Linking.createURL('/'), 'https://campaign-manager1271.netlify.app', 'https://campaign-manager1271.netlify.app'],
+    prefixes: [
+        Linking.createURL('/'),
+        'https://campaign-manager1271.netlify.app',
+        'https://campaign-manager1271.netlify.app/'
+    ],
     config: {
         screens: {
             Main: {
@@ -44,7 +48,14 @@ const linking = {
                             LeadDetail: 'leads/:id',
                         }
                     },
-                    Platforms: 'platforms',
+                    Platforms: {
+                        path: 'platforms',
+                        // This will handle OAuth callbacks with code and state parameters
+                        parse: {
+                            code: (code) => code,
+                            state: (state) => state,
+                        },
+                    },
                     Profile: 'profile',
                 }
             },
@@ -52,6 +63,7 @@ const linking = {
                 screens: {
                     Login: 'login',
                     Register: 'register',
+                    ForgotPassword: 'forgot-password',
                 }
             },
             PrivacyPolicy: 'privacy-policy',

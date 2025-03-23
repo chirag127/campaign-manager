@@ -5,7 +5,9 @@ import {
     ScrollView,
     RefreshControl,
     Linking,
+    Alert,
 } from "react-native";
+import { useRoute } from "@react-navigation/native";
 import showDialog from "../../utils/showDialog";
 import {
     Text,
@@ -27,11 +29,41 @@ import { API_URL } from "../../config";
 
 const PlatformScreen = () => {
     const theme = useTheme();
+    const route = useRoute();
 
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [connectedPlatforms, setConnectedPlatforms] = useState({});
     const [connectingPlatform, setConnectingPlatform] = useState(null);
+
+    // Handle OAuth callback parameters if they exist in the route
+    useEffect(() => {
+        const handleOAuthCallback = async () => {
+            try {
+                // Check if we have code and state parameters from OAuth callback
+                if (route.params?.code && route.params?.state) {
+                    const { code, state } = route.params;
+                    console.log('Received OAuth callback:', { code, state });
+
+                    // Here you would normally send this code to your backend
+                    // For now, we'll simulate a successful connection
+                    const platform = connectingPlatform || 'FACEBOOK';
+                    const updatedPlatforms = { ...connectedPlatforms };
+                    updatedPlatforms[platform.toLowerCase()] = true;
+                    setConnectedPlatforms(updatedPlatforms);
+
+                    showDialog('Success', `Connected to ${platform}`);
+                    setConnectingPlatform(null);
+                }
+            } catch (error) {
+                console.error('Error handling OAuth callback:', error);
+                showDialog('Error', 'Failed to complete authentication. Please try again.');
+                setConnectingPlatform(null);
+            }
+        };
+
+        handleOAuthCallback();
+    }, [route.params]);
 
     const loadPlatformData = async () => {
         try {
@@ -94,9 +126,11 @@ const PlatformScreen = () => {
             // Generate a random state for OAuth security
             const state = Math.random().toString(36).substring(2, 15);
 
-            // Redirect URI for the OAuth flow
-            // const redirectUri = `${API_URL}/api/platforms/${platform.id.toLowerCase()}/oauth-callback`;
-            const redirectUri = `https://campaign-manager1271.netlify.app`;
+            // Redirect URI for the OAuth flow - must match exactly what's in Facebook App settings
+            // Including the trailing slash if that's how you configured it in Facebook
+            const redirectUri = `https://campaign-manager1271.netlify.app/platforms`;
+
+            console.log('Using redirect URI:', redirectUri);
 
             // Construct the OAuth URL
             let authUrl = platform.authUrl;
@@ -106,8 +140,8 @@ const PlatformScreen = () => {
                 case "INSTAGRAM":
                     authUrl += `?client_id=1665139311029264&redirect_uri=${encodeURIComponent(
                         redirectUri
-                    )}&state=${state}&scope=ads_management,ads_read`;
-                    console.log(authUrl);
+                    )}&state=${state}&scope=ads_management,ads_read&response_type=code`;
+                    console.log('Facebook Auth URL:', authUrl);
                     break;
                 case "GOOGLE":
                 case "YOUTUBE":
@@ -142,32 +176,35 @@ const PlatformScreen = () => {
                     throw new Error(`Unsupported platform: ${platform.id}`);
             }
 
+            // Store the platform ID being connected for use in the callback
+            // This is important for the OAuth callback to know which platform was being connected
+            global.connectingPlatformId = platform.id;
+
             // Open the OAuth URL in the browser
             const supported = await Linking.canOpenURL(authUrl);
 
             if (supported) {
+                console.log(`Opening auth URL for ${platform.id}...`);
                 await Linking.openURL(authUrl);
 
-                // In a real app, you would handle the OAuth callback and token exchange
-                // For this demo, we'll simulate a successful connection after a delay
-                setTimeout(async () => {
-                    // Simulate successful connection
-                    const updatedPlatforms = { ...connectedPlatforms };
-                    updatedPlatforms[platform.id.toLowerCase()] = true;
-                    setConnectedPlatforms(updatedPlatforms);
-                    setConnectingPlatform(null);
+                // We'll no longer simulate success here as we'll handle the real callback
+                // The OAuth callback will be handled by the useEffect we added earlier
 
-                    showDialog("Success", `Connected to ${platform.name}`);
-                }, 3000);
+                // Show a message to the user that they need to complete authentication in the browser
+                showDialog(
+                    "Authentication Started",
+                    `Please complete the authentication process in your browser for ${platform.name}.`
+                );
             } else {
-                showDialog("Error", `Cannot open URL: ${authUrl}`);
+                console.error(`Cannot open URL: ${authUrl}`);
+                showDialog("Error", `Cannot open authentication URL. Please check your internet connection and try again.`);
                 setConnectingPlatform(null);
             }
         } catch (error) {
             console.error(`Error connecting to ${platform.id}:`, error);
             showDialog(
                 "Error",
-                `Failed to connect to ${platform.name}. Please try again.`
+                `Failed to connect to ${platform.name}. Error: ${error.message}`
             );
             setConnectingPlatform(null);
         }
