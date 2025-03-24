@@ -21,6 +21,7 @@ import {
     CAMPAIGN_OBJECTIVES,
     CAMPAIGN_STATUSES,
 } from "../../config";
+import showDialog from "../../utils/showDialog";
 
 const CampaignCreateScreen = ({ route, navigation }) => {
     const { campaignId } = route.params || {};
@@ -190,16 +191,16 @@ const CampaignCreateScreen = ({ route, navigation }) => {
 
             if (isEditing) {
                 await campaignAPI.updateCampaign(campaignId, campaignData);
-                Alert.alert("Success", "Campaign updated successfully");
+                showDialog("Success", "Campaign updated successfully");
             } else {
                 await campaignAPI.createCampaign(campaignData);
-                Alert.alert("Success", "Campaign created successfully");
+                showDialog("Success", "Campaign created successfully");
             }
 
             navigation.goBack();
         } catch (error) {
             console.error("Error saving campaign:", error);
-            Alert.alert("Error", "Failed to save campaign. Please try again.");
+            showDialog("Error", "Failed to save campaign. Please try again.");
         } finally {
             setSubmitting(false);
         }
