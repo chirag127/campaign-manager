@@ -95,10 +95,10 @@ export const useDialog = () => {
  */
 export const showDialog = (title, message, buttons = []) => {
     // For non-web platforms, use the native Alert
-    if (Platform.OS !== "web") {
-        Alert.alert(title, message, buttons);
-        return;
-    }
+    // if (Platform.OS !== "web") {
+    //     Alert.alert(title, message, buttons);
+    //     return;
+    // }
 
     // For web platform, try to use the global dialog context
     if (typeof window !== "undefined" && window.__DIALOG_CONTEXT__) {

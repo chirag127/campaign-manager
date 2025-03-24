@@ -55,7 +55,9 @@ const CampaignCreateScreen = ({ route, navigation }) => {
     // Load campaign data if editing
     useEffect(() => {
         const loadCampaignData = async () => {
-            if (!isEditing) return;
+            if (!isEditing) {
+              return;
+            }
 
             try {
                 setLoading(true);
