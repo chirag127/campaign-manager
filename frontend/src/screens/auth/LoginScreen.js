@@ -41,7 +41,7 @@ const LoginScreen = ({ navigation }) => {
             // Show error dialog
             showDialog("Login Failed", errorMessage);
 
-           
+
         }
     };
 
@@ -75,6 +75,13 @@ const LoginScreen = ({ navigation }) => {
                         />
                     }
                 />
+
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("ForgotPassword")}
+                    style={styles.forgotPasswordContainer}
+                >
+                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                </TouchableOpacity>
 
                 <Button
                     mode="contained"
@@ -135,6 +142,14 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     registerText: {
+        color: "#1976D2",
+        fontWeight: "bold",
+    },
+    forgotPasswordContainer: {
+        alignItems: "flex-end",
+        marginBottom: 10,
+    },
+    forgotPasswordText: {
         color: "#1976D2",
         fontWeight: "bold",
     },

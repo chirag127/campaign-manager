@@ -190,6 +190,12 @@ export const authAPI = {
     updateProfile: (userData) => apiClient.put("/api/auth/me", userData),
     deleteAccount: (password) =>
         apiClient.delete("/api/auth/delete-account", { data: { password } }),
+    forgotPassword: (email) =>
+        apiClient.post("/api/auth/forgot-password", { email }),
+    verifyResetCode: (email, resetCode) =>
+        apiClient.post("/api/auth/verify-reset-code", { email, resetCode }),
+    resetPassword: (email, resetCode, password) =>
+        apiClient.post("/api/auth/reset-password", { email, resetCode, password }),
 };
 
 // Campaign API

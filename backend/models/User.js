@@ -74,6 +74,12 @@ const UserSchema = new mongoose.Schema({
             },
         },
     },
+    resetPasswordToken: {
+        type: String,
+    },
+    resetPasswordExpire: {
+        type: Date,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -100,6 +106,20 @@ UserSchema.methods.getSignedJwtToken = function () {
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Generate and hash password reset token
+UserSchema.methods.getResetPasswordToken = function () {
+    // Generate a 6-digit reset code
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = resetToken;
+
+    // Set expire (10 minutes)
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 };
 
 module.exports = mongoose.model("User", UserSchema);
