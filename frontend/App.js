@@ -27,6 +27,7 @@ const theme = {
 const linking = {
     prefixes: [
         Linking.createURL('/'),
+        'campaignmanager://',
         'https://campaign-manager1271.netlify.app',
         'https://campaign-manager1271.netlify.app/'
     ],
