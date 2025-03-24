@@ -11,10 +11,10 @@ import { useDialog } from "./dialogUtils";
  */
 const showDialog = (title, message, buttons = []) => {
     // For non-web platforms, use the native Alert
-    if (Platform.OS !== "web") {
-        Alert.alert(title, message, buttons);
-        return;
-    }
+    // if (Platform.OS !== "web") {
+    //     Alert.alert(title, message, buttons);
+    //     return;
+    // }
 
     // For web platform, use our custom dialog
     // Get the global dialog context from the DialogProvider
@@ -43,10 +43,10 @@ export const useShowDialog = () => {
     const { showDialog: contextShowDialog } = useDialog();
 
     return (title, message, buttons = []) => {
-        if (Platform.OS !== "web") {
-            Alert.alert(title, message, buttons);
-            return;
-        }
+        // if (Platform.OS !== "web") {
+        //     Alert.alert(title, message, buttons);
+        //     return;
+        // }
 
         contextShowDialog(title, message, buttons);
     };

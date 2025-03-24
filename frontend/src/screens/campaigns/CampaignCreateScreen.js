@@ -89,7 +89,7 @@ const CampaignCreateScreen = ({ route, navigation }) => {
                 setSelectedPlatforms(platforms);
             } catch (error) {
                 console.error("Error loading campaign data:", error);
-                Alert.alert(
+                (
                     "Error",
                     "Failed to load campaign data. Please try again."
                 );
