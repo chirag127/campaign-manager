@@ -2,6 +2,108 @@
 
 A comprehensive campaign management application that allows users to create and manage advertising campaigns across multiple platforms (Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, Twitter) from a single interface.
 
+## running
+
+1. Clone the repository
+
+    ```
+    git clone https://github.com/yourusername/campaign-manager-app.git
+    cd campaign-manager-app
+    ```
+    2. Install backend dependencies
+
+        ```
+        cd backend
+        npm install
+        ```
+        3. Install frontend dependencies
+
+        ```
+        cd ../frontend
+        npm install
+        ```
+        4. Create a `.env` file in the backend directory with the following variables:
+
+        ```
+        PORT=5000
+        MONGO_URI=mongodb://localhost:27017/campaign-manager
+        JWT_SECRET=your_jwt_secret_key
+        JWT_EXPIRE=30d
+
+        # Add your API keys for each platform
+        FACEBOOK_APP_ID=your_facebook_app_id
+        FACEBOOK_APP_SECRET=your_facebook_app_secret
+        GOOGLE_CLIENT_ID=your_google_client_id
+        GOOGLE_CLIENT_SECRET=your_google_client_secret
+        LINKEDIN_CLIENT_ID=your_linkedin_client_id
+        LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+        TWITTER_CLIENT_ID=your_twitter_client_id
+        TWITTER_CLIENT_SECRET=your_twitter_client_secret
+        SNAPCHAT_CLIENT_ID=your_snapchat_client_id
+        SNAPCHAT_CLIENT_SECRET=your_snapchat_client_secret
+        ```
+5. Start the backend server
+
+    ```
+    cd backend
+    npm run dev
+    ```
+6. Start the frontend app
+
+    ```
+    cd frontend
+    npm start
+    ```
+7. Use the Expo Go app on your mobile device to scan the QR code, or run in an emulator
+
+## deploy
+
+1. Install the Expo CLI globally if you haven't already:
+
+    ```
+    npm install -g expo-cli
+    ```
+2. Build the app for deployment using Expo's build service. You can choose between Android and iOS builds. For example, to build for Android:
+
+    ```
+    eas build -p android --profile preview
+    ```
+
+3. Build the app for iOS:
+
+    ```
+    eas build -p ios --profile preview
+    ```
+4. Follow the prompts to log in to your Expo account and configure the build settings.
+
+5. Once the build is complete, you will receive a link to download the APK (for Android) or the IPA (for iOS) file.
+6. You can also publish the app to the Expo Go app for testing:
+
+    ```
+    eas publish --profile preview
+
+    ```
+
+### deploy to app stores
+1. For Android, you can upload the generated APK file to the Google Play Console and follow their guidelines for publishing your app.
+2. For iOS, you can upload the generated IPA file to the Apple App Store using Xcode and follow their submission guidelines.
+
+
+## deploy to web
+
+1. Install the Expo CLI globally if you haven't already:
+
+    ```
+    npm install -g expo-cli
+    ```
+2. Build the app for web:
+
+    ```
+npx expo export -p web
+netlify deploy --prod --dir dist
+
+    ```
+
 ## Features
 
 -   **Unified Campaign Management**: Create campaigns once and deploy them across multiple platforms
