@@ -26,7 +26,11 @@ const LoginScreen = ({ navigation }) => {
 
         try {
             // Call the login function directly - it will handle auth state and errors
+            // The isLoading state will be set to true in the AuthContext
             const success = await login(email, password);
+
+            // If login was successful, the navigation will be handled by the AppNavigator
+            // which will show the loading screen during the transition
 
             // If login was not successful, the error will be shown by the login function
             // No need to handle it here
@@ -40,8 +44,6 @@ const LoginScreen = ({ navigation }) => {
 
             // Show error dialog
             showDialog("Login Failed", errorMessage);
-
-
         }
     };
 
@@ -89,8 +91,9 @@ const LoginScreen = ({ navigation }) => {
                     style={styles.button}
                     loading={isLoading}
                     disabled={isLoading}
+                    labelStyle={styles.buttonLabel}
                 >
-                    Sign In
+                    {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
 
                 <View style={styles.registerContainer}>
@@ -134,7 +137,14 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 10,
-        paddingVertical: 6,
+        paddingVertical: 8,
+        borderRadius: 8,
+        elevation: 2,
+    },
+    buttonLabel: {
+        fontSize: 16,
+        fontWeight: "bold",
+        paddingVertical: 4,
     },
     registerContainer: {
         flexDirection: "row",

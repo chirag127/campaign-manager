@@ -136,8 +136,9 @@ const ResetPasswordScreen = ({ navigation, route }) => {
                     style={styles.button}
                     loading={isLoading}
                     disabled={isLoading}
+                    labelStyle={styles.buttonLabel}
                 >
-                    Reset Password
+                    {isLoading ? "Resetting password..." : "Reset Password"}
                 </Button>
 
                 <TouchableOpacity
@@ -187,7 +188,14 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 10,
-        paddingVertical: 6,
+        paddingVertical: 8,
+        borderRadius: 8,
+        elevation: 2,
+    },
+    buttonLabel: {
+        fontSize: 16,
+        fontWeight: "bold",
+        paddingVertical: 4,
     },
     linkContainer: {
         alignItems: "center",

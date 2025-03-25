@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import { shouldUseNativeDriver } from "../utils/animationUtils";
+import LoadingScreen from "../components/LoadingScreen";
 
 // Auth Screens
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -135,8 +136,8 @@ const AppNavigator = () => {
     const { userToken, isLoading } = useContext(AuthContext);
 
     if (isLoading) {
-        // You could return a loading screen here
-        return null;
+        // Show the loading screen during authentication transitions
+        return <LoadingScreen message="Preparing your dashboard..." />;
     }
 
     return (

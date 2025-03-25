@@ -33,10 +33,27 @@ const RegisterScreen = ({ navigation }) => {
             return;
         }
 
-        // Update the register function in AuthContext to show dialog for errors
-        const success = await register(name, email, password);
+        try {
+            // Call the register function - it will handle auth state and errors
+            // The isLoading state will be set to true in the AuthContext
+            const success = await register(name, email, password);
 
-        // No need to show error here as it should be handled in the register function
+            // If registration was successful, the navigation will be handled by the AppNavigator
+            // which will show the loading screen during the transition
+
+            // If registration was not successful, the error will be shown by the register function
+            // No need to handle it here
+        } catch (error) {
+            console.log("Registration error:", error);
+
+            // Extract error message
+            const errorMessage =
+                error.response?.data?.message ||
+                "Registration failed. Please try again.";
+
+            // Show error dialog
+            showDialog("Registration Failed", errorMessage);
+        }
     };
 
     return (
@@ -99,8 +116,9 @@ const RegisterScreen = ({ navigation }) => {
                     style={styles.button}
                     loading={isLoading}
                     disabled={isLoading}
+                    labelStyle={styles.buttonLabel}
                 >
-                    Sign Up
+                    {isLoading ? "Creating account..." : "Sign Up"}
                 </Button>
 
                 <View style={styles.loginContainer}>
@@ -145,7 +163,14 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 10,
-        paddingVertical: 6,
+        paddingVertical: 8,
+        borderRadius: 8,
+        elevation: 2,
+    },
+    buttonLabel: {
+        fontSize: 16,
+        fontWeight: "bold",
+        paddingVertical: 4,
     },
     loginContainer: {
         flexDirection: "row",
