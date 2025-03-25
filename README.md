@@ -104,6 +104,14 @@ netlify deploy --prod --dir dist
 
     ```
 
+4. deploy to expo web:
+
+    ```
+npx expo export --platform web
+eas deploy
+
+```
+
 ## Features
 
 -   **Unified Campaign Management**: Create campaigns once and deploy them across multiple platforms

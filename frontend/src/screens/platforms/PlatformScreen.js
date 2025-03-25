@@ -200,7 +200,7 @@ const PlatformScreen = () => {
             switch (platform.id) {
                 case "FACEBOOK":
                 case "INSTAGRAM":
-                    authUrl += `?client_id=1665139311029264&redirect_uri=${encodeURIComponent(
+                    authUrl += `?client_id=512708801911830&redirect_uri=${encodeURIComponent(
                         redirectUri
                     )}&state=${state}&scope=ads_management,ads_read&response_type=code`;
                     console.log('Facebook Auth URL:', authUrl);
