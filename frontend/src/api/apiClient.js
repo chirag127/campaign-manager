@@ -114,7 +114,11 @@ apiClient.interceptors.response.use(
                         "Your session has expired. Please log in again.",
                         [
                             {
-                                text: "OK",
+                                text: "Cancel",
+                                style: "cancel"
+                            },
+                            {
+                                text: "Logout",
                                 onPress: () => {
                                     // Get auth context to call logout
                                     const authContext = window.__AUTH_CONTEXT__;
