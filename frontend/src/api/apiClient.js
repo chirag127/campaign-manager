@@ -108,10 +108,23 @@ apiClient.interceptors.response.use(
                     await AsyncStorage.removeItem("user");
                     console.log("User credentials cleared");
 
-                    // Show authentication error to user
+                    // Show authentication error to user with logout button
                     showDialog(
                         "Session Expired",
-                        "Your session has expired. Please log in again."
+                        "Your session has expired. Please log in again.",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => {
+                                    // Get auth context to call logout
+                                    const authContext = window.__AUTH_CONTEXT__;
+                                    if (authContext && authContext.logout) {
+                                        authContext.logout();
+                                    }
+                                },
+                                style: "default"
+                            }
+                        ]
                     );
 
                     // Force app to re-render and show login screen

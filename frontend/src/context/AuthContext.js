@@ -154,6 +154,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Make auth context available globally for session expiration handling
+    useEffect(() => {
+        // Expose auth context to window for access from API client
+        if (typeof window !== 'undefined') {
+            window.__AUTH_CONTEXT__ = {
+                logout,
+            };
+        }
+    }, [logout]);
+
     // Update user profile
     const updateProfile = async (userData) => {
         setIsLoading(true);
