@@ -108,8 +108,7 @@ netlify deploy --prod --dir dist
 
     ```
 npx expo export --platform web
-eas deploy
-
+eas deploy --prod
 ```
 
 ## Features
