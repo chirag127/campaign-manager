@@ -60,6 +60,7 @@ const linking = {
                             error_message: (error_message) => error_message,
                         },
                     },
+                    Profile: 'profile',
                 }
             },
             Auth: {
@@ -69,7 +70,6 @@ const linking = {
                     ForgotPassword: 'forgot-password',
                 }
             },
-            Profile: 'profile',
             PrivacyPolicy: 'privacy-policy',
             TermsOfService: 'terms-of-service',
         },

@@ -5,7 +5,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import { shouldUseNativeDriver } from "../utils/animationUtils";
 import LoadingScreen from "../components/LoadingScreen";
-import AppHeader from "../components/AppHeader";
 
 // Auth Screens
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -86,60 +85,49 @@ const LeadStackNavigator = () => (
     </Stack.Navigator>
 );
 
-// Profile Stack Navigator
-const ProfileStackNavigator = () => (
-    <Stack.Navigator>
-        <Stack.Screen
-            name="ProfileScreen"
-            component={ProfileScreen}
-            options={{ title: "Profile" }}
-        />
-    </Stack.Navigator>
-);
-
 // Main Tab Navigator
 const MainNavigator = () => {
     const theme = useTheme();
 
     return (
-        <>
-            <AppHeader />
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    // Use appropriate animation driver based on platform
-                    animationEnabled: true,
-                    // Only use native driver on native platforms, not on web
-                    animationTypeForReplace: "push",
-                    animation: "fade",
-                    useNativeDriver: shouldUseNativeDriver(),
-                    tabBarIcon: ({ focused, color, size }) => {
-                        let iconName;
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                // Use appropriate animation driver based on platform
+                animationEnabled: true,
+                // Only use native driver on native platforms, not on web
+                animationTypeForReplace: "push",
+                animation: "fade",
+                useNativeDriver: shouldUseNativeDriver(),
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
 
-                        if (route.name === "Dashboard") {
-                            iconName = focused ? "home" : "home-outline";
-                        } else if (route.name === "Campaigns") {
-                            iconName = focused ? "megaphone" : "megaphone-outline";
-                        } else if (route.name === "Leads") {
-                            iconName = focused ? "people" : "people-outline";
-                        } else if (route.name === "Platforms") {
-                            iconName = focused ? "apps" : "apps-outline";
-                        }
+                    if (route.name === "Dashboard") {
+                        iconName = focused ? "home" : "home-outline";
+                    } else if (route.name === "Campaigns") {
+                        iconName = focused ? "megaphone" : "megaphone-outline";
+                    } else if (route.name === "Leads") {
+                        iconName = focused ? "people" : "people-outline";
+                    } else if (route.name === "Platforms") {
+                        iconName = focused ? "apps" : "apps-outline";
+                    } else if (route.name === "Profile") {
+                        iconName = focused ? "person" : "person-outline";
+                    }
 
-                        return (
-                            <Ionicons name={iconName} size={size} color={color} />
-                        );
-                    },
-                    tabBarActiveTintColor: theme.colors.primary,
-                    tabBarInactiveTintColor: "gray",
-                    headerShown: false,
-                })}
-            >
-                <Tab.Screen name="Dashboard" component={DashboardScreen} />
-                <Tab.Screen name="Campaigns" component={CampaignStackNavigator} />
-                <Tab.Screen name="Leads" component={LeadStackNavigator} />
-                <Tab.Screen name="Platforms" component={PlatformScreen} />
-            </Tab.Navigator>
-        </>
+                    return (
+                        <Ionicons name={iconName} size={size} color={color} />
+                    );
+                },
+                tabBarActiveTintColor: theme.colors.primary,
+                tabBarInactiveTintColor: "gray",
+                headerShown: false,
+            })}
+        >
+            <Tab.Screen name="Dashboard" component={DashboardScreen} />
+            <Tab.Screen name="Campaigns" component={CampaignStackNavigator} />
+            <Tab.Screen name="Leads" component={LeadStackNavigator} />
+            <Tab.Screen name="Platforms" component={PlatformScreen} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
     );
 };
 
@@ -159,8 +147,7 @@ const AppNavigator = () => {
             ) : (
                 <Stack.Screen name="Auth" component={AuthNavigator} />
             )}
-            {/* Profile and Legal screens accessible from anywhere */}
-            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true, title: "Profile" }} />
+            {/* Legal screens accessible from anywhere */}
             <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: true, title: "Privacy Policy" }} />
             <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: true, title: "Terms of Service" }} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={{ headerShown: true, title: "Delete Account" }} />
