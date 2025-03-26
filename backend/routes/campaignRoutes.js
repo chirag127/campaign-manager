@@ -6,6 +6,7 @@ const {
     updateCampaign,
     deleteCampaign,
     syncCampaignMetrics,
+    launchCampaign,
 } = require("../controllers/campaignController");
 const { syncCampaignLeads } = require("../controllers/leadController");
 const { protect } = require("../middleware/auth");
@@ -22,5 +23,6 @@ router
 
 router.get("/:id/sync", protect, syncCampaignMetrics);
 router.get("/:campaignId/sync-leads", protect, syncCampaignLeads);
+router.post("/:id/launch/:platform", protect, launchCampaign);
 
 module.exports = router;

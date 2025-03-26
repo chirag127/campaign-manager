@@ -6,7 +6,7 @@ const platformServices = require("../services");
 // @access  Private
 exports.createCampaign = async (req, res) => {
     try {
-        
+
         // Add user to req.body
         req.body.user = req.user.id;
 
@@ -342,6 +342,79 @@ exports.syncCampaignMetrics = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            data: campaign,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+// @desc    Launch campaign on platform
+// @route   POST /api/campaigns/:id/launch/:platform
+// @access  Private
+exports.launchCampaign = async (req, res) => {
+    try {
+        const { id, platform } = req.params;
+
+        // Find campaign
+        const campaign = await Campaign.findById(id);
+
+        if (!campaign) {
+            return res.status(404).json({
+                success: false,
+                message: `Campaign not found with id of ${id}`,
+            });
+        }
+
+        // Make sure user owns the campaign
+        if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+            return res.status(401).json({
+                success: false,
+                message: `User ${req.user.id} is not authorized to launch this campaign`,
+            });
+        }
+
+        // Find the platform in the campaign's platforms array
+        const platformData = campaign.platforms.find(p => p.platform === platform.toUpperCase());
+
+        if (!platformData) {
+            return res.status(404).json({
+                success: false,
+                message: `Platform ${platform} not found in campaign`,
+            });
+        }
+
+        if (!platformData.platformCampaignId) {
+            return res.status(400).json({
+                success: false,
+                message: `Campaign not yet created on ${platform}`,
+            });
+        }
+
+        // Get the appropriate service for the platform
+        const service = platformServices[platform.toLowerCase()];
+
+        if (!service || !service.launchCampaign) {
+            return res.status(400).json({
+                success: false,
+                message: `Launch functionality not available for ${platform}`,
+            });
+        }
+
+        // Launch campaign on the platform
+        await service.launchCampaign(platformData.platformCampaignId, req.user);
+
+        // Update campaign status
+        platformData.status = "ACTIVE";
+        campaign.status = "ACTIVE";
+        await campaign.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Campaign successfully launched on ${platform}`,
             data: campaign,
         });
     } catch (error) {

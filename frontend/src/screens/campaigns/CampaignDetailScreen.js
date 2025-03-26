@@ -13,6 +13,8 @@ import {
     useTheme,
     IconButton,
     Menu,
+    Portal,
+    Dialog,
 } from "react-native-paper";
 // Import the web-compatible chart components instead of the originals
 import {
@@ -36,6 +38,9 @@ const CampaignDetailScreen = ({ route, navigation }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [syncingMetrics, setSyncingMetrics] = useState(false);
     const [syncingLeads, setSyncingLeads] = useState(false);
+    const [launchingPlatform, setLaunchingPlatform] = useState(null);
+    const [launchDialogVisible, setLaunchDialogVisible] = useState(false);
+    const [selectedPlatform, setSelectedPlatform] = useState(null);
 
     // Chart data
     const [metricsData, setMetricsData] = useState({
@@ -179,6 +184,37 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             );
         } finally {
             setSyncingLeads(false);
+        }
+    };
+
+    const handleLaunchCampaign = (platform) => {
+        setSelectedPlatform(platform);
+        setLaunchDialogVisible(true);
+    };
+
+    const confirmLaunchCampaign = async () => {
+        if (!selectedPlatform) return;
+
+        try {
+            setLaunchingPlatform(selectedPlatform.platform);
+            setLaunchDialogVisible(false);
+
+            await campaignAPI.launchCampaign(campaignId, selectedPlatform.platform);
+            await loadCampaignData();
+
+            showDialog(
+                "Success",
+                `Campaign successfully launched on ${selectedPlatform.platform}`
+            );
+        } catch (error) {
+            console.error("Error launching campaign:", error);
+            showDialog(
+                "Error",
+                `Failed to launch campaign on ${selectedPlatform.platform}. Please try again.`
+            );
+        } finally {
+            setLaunchingPlatform(null);
+            setSelectedPlatform(null);
         }
     };
 
@@ -589,6 +625,18 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                                         Impressions
                                     </Text>
                                 </View>
+                                {platform.status !== "ACTIVE" && platform.platformCampaignId && (
+                                    <Button
+                                        mode="contained"
+                                        compact
+                                        style={styles.launchButton}
+                                        onPress={() => handleLaunchCampaign(platform)}
+                                        loading={launchingPlatform === platform.platform}
+                                        disabled={launchingPlatform === platform.platform}
+                                    >
+                                        Launch
+                                    </Button>
+                                )}
                             </View>
                         );
                     })}
@@ -651,6 +699,25 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             </Card>
 
             <View style={styles.footer} />
+
+            <Portal>
+                <Dialog
+                    visible={launchDialogVisible}
+                    onDismiss={() => setLaunchDialogVisible(false)}
+                >
+                    <Dialog.Title>Launch Campaign</Dialog.Title>
+                    <Dialog.Content>
+                        <Paragraph>
+                            Are you sure you want to launch this campaign on {selectedPlatform?.platform}?
+                            This will make the campaign live and may incur charges on your ad account.
+                        </Paragraph>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setLaunchDialogVisible(false)}>Cancel</Button>
+                        <Button onPress={confirmLaunchCampaign}>Launch</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
         </ScrollView>
     );
 };
@@ -814,6 +881,10 @@ const styles = StyleSheet.create({
     platformMetricLabel: {
         fontSize: 10,
         color: "#666",
+    },
+    launchButton: {
+        marginLeft: 10,
+        marginRight: 10,
     },
     leadsCard: {
         margin: 10,

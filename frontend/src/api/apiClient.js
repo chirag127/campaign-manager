@@ -227,6 +227,7 @@ export const campaignAPI = {
     deleteCampaign: (id) => apiClient.delete(`/api/campaigns/${id}`),
     syncCampaignMetrics: (id) => apiClient.get(`/api/campaigns/${id}/sync`),
     syncCampaignLeads: (id) => apiClient.get(`/api/campaigns/${id}/sync-leads`),
+    launchCampaign: (id, platform) => apiClient.post(`/api/campaigns/${id}/launch/${platform.toLowerCase()}`),
 };
 
 // Lead API
