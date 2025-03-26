@@ -21,6 +21,13 @@ export const PLATFORMS = [
         authUrl: "https://www.facebook.com/v18.0/dialog/oauth", // Instagram uses Facebook's auth
     },
     {
+        id: "WHATSAPP",
+        name: "WhatsApp",
+        icon: "whatsapp",
+        color: "#25D366",
+        authUrl: "https://www.facebook.com/v18.0/dialog/oauth", // WhatsApp uses Facebook's auth system
+    },
+    {
         id: "GOOGLE",
         name: "Google",
         icon: "google",
@@ -54,13 +61,6 @@ export const PLATFORMS = [
         icon: "snapchat",
         color: "#FFFC00",
         authUrl: "https://accounts.snapchat.com/login/oauth2/authorize",
-    },
-    {
-        id: "WHATSAPP",
-        name: "WhatsApp",
-        icon: "whatsapp",
-        color: "#25D366",
-        authUrl: "https://www.facebook.com/v18.0/dialog/oauth", // WhatsApp uses Facebook's auth system
     },
 ];
 

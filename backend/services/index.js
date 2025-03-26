@@ -8,10 +8,10 @@ const snapchatService = require("./snapchatService");
 module.exports = {
     facebook: facebookService,
     instagram: facebookService, // Instagram uses Facebook's API
+    whatsapp: facebookService, // WhatsApp uses Facebook's API
     google: googleService,
     youtube: youtubeService,
     linkedin: linkedinService,
     twitter: twitterService,
     snapchat: snapchatService,
-    whatsapp: facebookService, // WhatsApp uses Facebook's API
 };

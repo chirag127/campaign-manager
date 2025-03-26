@@ -29,12 +29,13 @@ const LeadSchema = new mongoose.Schema({
             enum: [
                 "FACEBOOK",
                 "INSTAGRAM",
+                "WHATSAPP",
+
                 "GOOGLE",
                 "YOUTUBE",
                 "LINKEDIN",
                 "TWITTER",
                 "SNAPCHAT",
-                "WHATSAPP",
             ],
         },
         campaignId: {

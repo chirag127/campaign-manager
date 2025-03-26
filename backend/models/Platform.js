@@ -7,12 +7,12 @@ const PlatformSchema = new mongoose.Schema({
         enum: [
             "FACEBOOK",
             "INSTAGRAM",
+            "WHATSAPP",
             "GOOGLE",
             "YOUTUBE",
             "LINKEDIN",
             "TWITTER",
             "SNAPCHAT",
-            "WHATSAPP",
         ],
         unique: true,
     },

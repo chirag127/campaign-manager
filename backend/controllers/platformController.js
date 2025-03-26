@@ -68,7 +68,6 @@ exports.connectPlatform = async (req, res) => {
             "linkedin",
             "twitter",
             "snapchat",
-            "whatsapp",
         ];
         if (!validPlatforms.includes(platform.toLowerCase())) {
             return res.status(400).json({
