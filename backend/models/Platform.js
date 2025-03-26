@@ -12,6 +12,7 @@ const PlatformSchema = new mongoose.Schema({
             "LINKEDIN",
             "TWITTER",
             "SNAPCHAT",
+            "WHATSAPP",
         ],
         unique: true,
     },

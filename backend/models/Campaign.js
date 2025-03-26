@@ -100,6 +100,7 @@ const CampaignSchema = new mongoose.Schema({
                     "LINKEDIN",
                     "TWITTER",
                     "SNAPCHAT",
+                    "WHATSAPP",
                 ],
             },
             platformCampaignId: {

@@ -68,6 +68,7 @@ exports.connectPlatform = async (req, res) => {
             "linkedin",
             "twitter",
             "snapchat",
+            "whatsapp",
         ];
         if (!validPlatforms.includes(platform.toLowerCase())) {
             return res.status(400).json({
@@ -360,8 +361,7 @@ exports.getConnectedPlatforms = async (req, res) => {
             linkedin: user.platformCredentials.linkedin?.isConnected || false,
             twitter: user.platformCredentials.twitter?.isConnected || false,
             snapchat: user.platformCredentials.snapchat?.isConnected || false,
-        };
-
+        }
         res.status(200).json({
             success: true,
             data: connectedPlatforms,

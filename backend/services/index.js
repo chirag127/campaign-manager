@@ -4,6 +4,7 @@ const youtubeService = require("./youtubeService");
 const linkedinService = require("./linkedinService");
 const twitterService = require("./twitterService");
 const snapchatService = require("./snapchatService");
+const whatsappService = require("./whatsappService");
 
 module.exports = {
     facebook: facebookService,
@@ -13,4 +14,5 @@ module.exports = {
     linkedin: linkedinService,
     twitter: twitterService,
     snapchat: snapchatService,
+    whatsapp: whatsappService,
 };

@@ -34,6 +34,7 @@ const LeadSchema = new mongoose.Schema({
                 "LINKEDIN",
                 "TWITTER",
                 "SNAPCHAT",
+                "WHATSAPP",
             ],
         },
         campaignId: {
