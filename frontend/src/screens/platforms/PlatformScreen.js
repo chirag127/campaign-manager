@@ -202,7 +202,7 @@ const PlatformScreen = () => {
                 case "INSTAGRAM":
                     authUrl += `?client_id=512708801911830&redirect_uri=${encodeURIComponent(
                         redirectUri
-                    )}&state=${state}&scope=ads_management,ads_read&response_type=code`;
+                    )}&state=${state}&scope=ads_management,ads_read&config_id=1629488587771756&response_type=code`;
                     console.log('Facebook Auth URL:', authUrl);
                     break;
                 case "GOOGLE":
