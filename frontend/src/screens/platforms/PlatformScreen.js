@@ -39,9 +39,9 @@ const PlatformScreen = () => {
     const [connectedPlatforms, setConnectedPlatforms] = useState({});
     const [connectingPlatform, setConnectingPlatform] = useState(null);
 
-    // Parse URL query parameters for error codes and messages
+    // Parse URL query parameters for error codes and messages or OAuth callback
     useEffect(() => {
-        const parseUrlParams = () => {
+        const parseUrlParams = async () => {
             try {
                 // Get the current URL
                 const url = window.location.href;
@@ -67,9 +67,91 @@ const PlatformScreen = () => {
                     // This prevents showing the same error multiple times if the user refreshes
                     const cleanUrl = url.split('?')[0];
                     window.history.replaceState({}, document.title, cleanUrl);
+                    return;
+                }
+
+                // Check for OAuth callback parameters
+                const code = urlObj.searchParams.get('code');
+                const state = urlObj.searchParams.get('state');
+
+                // Log all URL parameters for debugging
+                console.log('URL parameters:', {
+                    full_url: url,
+                    all_params: Object.fromEntries(urlObj.searchParams.entries()),
+                    code: code,
+                    state: state
+                });
+
+                if (code) {
+                    console.log('Detected OAuth callback in URL parameters');
+
+                    // Determine which platform is being connected
+                    // Default to Facebook since that's what we're fixing
+                    const platform = 'facebook';
+
+                    // Set connecting platform state for UI feedback
+                    setConnectingPlatform('FACEBOOK');
+
+                    // Redirect URI must match exactly what was used in the authorization request
+                    const redirectUri = `https://campaign-manager1271.netlify.app/platforms`;
+
+                    try {
+                        console.log('Sending code to backend for platform:', platform);
+
+                        // Call the backend API to exchange the code for an access token
+                        const response = await platformAPI.connectPlatform(platform, code, redirectUri);
+
+                        console.log('Platform connection response:', response.data);
+
+                        // Update the UI to show the platform is connected
+                        const updatedPlatforms = { ...connectedPlatforms };
+                        updatedPlatforms[platform] = true;
+                        setConnectedPlatforms(updatedPlatforms);
+
+                        // Show success message
+                        showDialog('Success', `Connected to ${platform.toUpperCase()}`);
+
+                        // Clean up the URL to remove OAuth parameters
+                        const cleanUrl = url.split('?')[0];
+                        window.history.replaceState({}, document.title, cleanUrl);
+                    } catch (apiError) {
+                        console.error('Error connecting to platform:', apiError);
+
+                        let errorMessage = 'Failed to complete platform connection. ';
+
+                        // Extract more detailed error information if available
+                        if (apiError.response?.data?.message) {
+                            errorMessage += apiError.response.data.message;
+                        } else if (apiError.request) {
+                            // The request was made but no response was received
+                            errorMessage += 'No response received from server. Please check your internet connection.';
+                        } else {
+                            // Something happened in setting up the request
+                            errorMessage += `Error: ${apiError.message}`;
+                        }
+
+                        showDialog('Connection Error', errorMessage);
+
+                        // Clean up the URL even on error
+                        const cleanUrl = url.split('?')[0];
+                        window.history.replaceState({}, document.title, cleanUrl);
+                    }
+
+                    // Reset connecting state
+                    setConnectingPlatform(null);
                 }
             } catch (error) {
                 console.error('Error parsing URL parameters:', error);
+                showDialog('Error', 'Failed to process authentication response. Please try again.');
+                setConnectingPlatform(null);
+
+                // Clean up the URL on error
+                try {
+                    const cleanUrl = window.location.href.split('?')[0];
+                    window.history.replaceState({}, document.title, cleanUrl);
+                } catch (e) {
+                    console.error('Error cleaning URL:', e);
+                }
             }
         };
 
@@ -102,19 +184,60 @@ const PlatformScreen = () => {
                     return;
                 }
 
-                // Check if we have code and state parameters from OAuth callback
-                if (route.params?.code && route.params?.state) {
-                    const { code, state } = route.params;
-                    console.log('Received OAuth callback:', { code, state });
+                // Log all route parameters for debugging
+                console.log('Route parameters:', route.params);
 
-                    // Here you would normally send this code to your backend
-                    // For now, we'll simulate a successful connection
-                    const platform = connectingPlatform || 'FACEBOOK';
-                    const updatedPlatforms = { ...connectedPlatforms };
-                    updatedPlatforms[platform.toLowerCase()] = true;
-                    setConnectedPlatforms(updatedPlatforms);
+                // Check if we have code parameter from OAuth callback
+                if (route.params?.code) {
+                    const { code } = route.params;
+                    const { state } = route.params || {};
+                    console.log('Received OAuth callback in route params:', { code, state });
 
-                    showDialog('Success', `Connected to ${platform}`);
+                    // Get the platform ID that was being connected
+                    // Default to Facebook since that's what we're fixing
+                    const platform = 'facebook';
+
+                    // Set connecting platform state for UI feedback
+                    setConnectingPlatform('FACEBOOK');
+
+                    // Redirect URI must match exactly what was used in the authorization request
+                    const redirectUri = `https://campaign-manager1271.netlify.app/platforms`;
+
+                    try {
+                        console.log('Sending code to backend for platform:', platform);
+
+                        // Call the backend API to exchange the code for an access token
+                        const response = await platformAPI.connectPlatform(platform, code, redirectUri);
+
+                        console.log('Platform connection response:', response.data);
+
+                        // Update the UI to show the platform is connected
+                        const updatedPlatforms = { ...connectedPlatforms };
+                        updatedPlatforms[platform] = true;
+                        setConnectedPlatforms(updatedPlatforms);
+
+                        // Show success message
+                        showDialog('Success', `Connected to ${platform.toUpperCase()}`);
+                    } catch (apiError) {
+                        console.error('Error connecting to platform:', apiError);
+
+                        let errorMessage = 'Failed to complete platform connection. ';
+
+                        // Extract more detailed error information if available
+                        if (apiError.response?.data?.message) {
+                            errorMessage += apiError.response.data.message;
+                        } else if (apiError.request) {
+                            // The request was made but no response was received
+                            errorMessage += 'No response received from server. Please check your internet connection.';
+                        } else {
+                            // Something happened in setting up the request
+                            errorMessage += `Error: ${apiError.message}`;
+                        }
+
+                        showDialog('Connection Error', errorMessage);
+                    }
+
+                    // Reset connecting state
                     setConnectingPlatform(null);
                 }
             } catch (error) {
@@ -125,7 +248,7 @@ const PlatformScreen = () => {
         };
 
         handleOAuthCallback();
-    }, [route.params]);
+    }, [route.params, connectedPlatforms]);
 
     const loadPlatformData = async () => {
         try {
@@ -185,8 +308,47 @@ const PlatformScreen = () => {
         try {
             setConnectingPlatform(platform.id);
 
+            // For Facebook and Instagram, check configuration status first
+            if (platform.id === 'FACEBOOK' || platform.id === 'INSTAGRAM') {
+                try {
+                    console.log('Checking Facebook configuration status...');
+                    const configResponse = await platformAPI.checkFacebookConfigStatus();
+                    console.log('Facebook config status:', configResponse.data);
+
+                    if (!configResponse.data.data.app_id_configured || !configResponse.data.data.app_secret_configured) {
+                        showDialog(
+                            'Facebook Configuration Error',
+                            'The server is missing Facebook API credentials. Please contact the administrator.'
+                        );
+                        setConnectingPlatform(null);
+                        return;
+                    }
+
+                    if (!configResponse.data.data.frontend_app_id_match) {
+                        showDialog(
+                            'Facebook Configuration Mismatch',
+                            'The Facebook App ID used in the frontend does not match the one configured on the server.'
+                        );
+                        // Continue anyway as it might still work
+                    }
+                } catch (configError) {
+                    console.error('Error checking Facebook configuration:', configError);
+                    showDialog(
+                        'Configuration Check Failed',
+                        'Could not verify Facebook configuration. The connection may not work properly.'
+                    );
+                    // Continue anyway
+                }
+            }
+
             // Generate a random state for OAuth security
             const state = Math.random().toString(36).substring(2, 15);
+
+            // Store the state in localStorage for Facebook to retrieve it later
+            if (Platform.OS === 'web' && (platform.id === 'FACEBOOK' || platform.id === 'INSTAGRAM')) {
+                localStorage.setItem('facebookAuthState', state);
+                console.log('Stored Facebook auth state in localStorage:', state);
+            }
 
             // Redirect URI for the OAuth flow - must match exactly what's in Facebook App settings
             // Including the trailing slash if that's how you configured it in Facebook
@@ -200,9 +362,16 @@ const PlatformScreen = () => {
             switch (platform.id) {
                 case "FACEBOOK":
                 case "INSTAGRAM":
-                    authUrl += `?client_id=512708801911830&redirect_uri=${encodeURIComponent(
-                        redirectUri
-                    )}&state=${state}&scope=ads_management,ads_read&config_id=1629488587771756&response_type=code`;
+                    // Make sure state is properly encoded
+                    const encodedState = encodeURIComponent(state);
+
+                    // Build the URL with explicit parameter ordering and encoding
+                    authUrl += '?client_id=512708801911830' +
+                              '&redirect_uri=' + encodeURIComponent(redirectUri) +
+                              '&state=' + encodedState +
+                              '&scope=ads_management,ads_read' +
+                              '&config_id=1629488587771756' +
+                              '&response_type=code';
                     console.log('Facebook Auth URL:', authUrl);
                     break;
                 case "GOOGLE":
@@ -261,6 +430,11 @@ const PlatformScreen = () => {
                 console.error(`Cannot open URL: ${authUrl}`);
                 showDialog("Error", `Cannot open authentication URL. Please check your internet connection and try again.`);
                 setConnectingPlatform(null);
+
+                // Clean up stored state on error
+                if (Platform.OS === 'web' && (platform.id === 'FACEBOOK' || platform.id === 'INSTAGRAM')) {
+                    localStorage.removeItem('facebookAuthState');
+                }
             }
         } catch (error) {
             console.error(`Error connecting to ${platform.id}:`, error);

@@ -250,6 +250,7 @@ export const platformAPI = {
     disconnectPlatform: (platform) =>
         apiClient.post(`/api/platforms/${platform}/disconnect`),
     getConnectedPlatforms: () => apiClient.get("/api/platforms/connected"),
+    checkFacebookConfigStatus: () => apiClient.get("/api/platforms/facebook/config-status"),
 };
 
 /**

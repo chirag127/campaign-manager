@@ -5,6 +5,7 @@ const {
     connectPlatform,
     disconnectPlatform,
     getConnectedPlatforms,
+    getFacebookConfigStatus,
 } = require("../controllers/platformController");
 const { protect } = require("../middleware/auth");
 
@@ -14,6 +15,9 @@ router.route("/").get(protect, getPlatforms);
 
 // Specific routes must come before parameterized routes
 router.get("/connected", protect, getConnectedPlatforms);
+
+// Facebook configuration status endpoint - public access
+router.get("/facebook/config-status", getFacebookConfigStatus);
 
 router.post("/:platform/connect", protect, connectPlatform);
 router.post("/:platform/disconnect", protect, disconnectPlatform);

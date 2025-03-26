@@ -258,6 +258,46 @@ exports.disconnectPlatform = async (req, res) => {
     }
 };
 
+// @desc    Get Facebook configuration status
+// @route   GET /api/platforms/facebook/config-status
+// @access  Public
+exports.getFacebookConfigStatus = async (req, res) => {
+    try {
+        // Check if Facebook App ID is configured
+        const appIdConfigured = !!process.env.FACEBOOK_APP_ID;
+
+        // Check if Facebook App Secret is configured
+        const appSecretConfigured = !!process.env.FACEBOOK_APP_SECRET;
+
+        // Check if the App ID in the backend matches the one used in the frontend
+        const frontendAppId = "512708801911830"; // This is hardcoded in the frontend
+        const frontendAppIdMatch = process.env.FACEBOOK_APP_ID === frontendAppId;
+
+        // Log the configuration status for debugging
+        console.log('Facebook configuration status:', {
+            app_id_configured: appIdConfigured,
+            app_secret_configured: appSecretConfigured,
+            frontend_app_id_match: frontendAppIdMatch,
+            backend_app_id: process.env.FACEBOOK_APP_ID || 'not set'
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                app_id_configured: appIdConfigured,
+                app_secret_configured: appSecretConfigured,
+                frontend_app_id_match: frontendAppIdMatch
+            }
+        });
+    } catch (error) {
+        console.error("Error in getFacebookConfigStatus:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message || "An unexpected error occurred"
+        });
+    }
+};
+
 // @desc    Get user's connected platforms
 // @route   GET /api/platforms/connected
 // @access  Private
