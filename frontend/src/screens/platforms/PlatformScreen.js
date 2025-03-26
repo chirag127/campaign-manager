@@ -41,11 +41,22 @@ const PlatformScreen = () => {
 
     // Parse URL query parameters for error codes and messages or OAuth callback
     useEffect(() => {
+        // Flag to prevent multiple processing of the same callback
+        const hasProcessedCallback = localStorage.getItem('hasProcessedCallback');
         const parseUrlParams = async () => {
             try {
                 // Get the current URL
                 const url = window.location.href;
                 const urlObj = new URL(url);
+
+                // Check if we've already processed this callback
+                if (urlObj.searchParams.has('code') && hasProcessedCallback === 'true') {
+                    console.log('Skipping OAuth callback processing - already processed');
+                    // Clean up the URL to prevent further processing
+                    const cleanUrl = url.split('?')[0];
+                    window.history.replaceState({}, document.title, cleanUrl);
+                    return;
+                }
 
                 // Check for error parameters
                 const errorCode = urlObj.searchParams.get('error_code');
@@ -83,6 +94,8 @@ const PlatformScreen = () => {
                 });
 
                 if (code) {
+                    // Set flag to prevent multiple processing
+                    localStorage.setItem('hasProcessedCallback', 'true');
                     console.log('Detected OAuth callback in URL parameters');
 
                     // Determine which platform is being connected
@@ -114,6 +127,9 @@ const PlatformScreen = () => {
                         // Clean up the URL to remove OAuth parameters
                         const cleanUrl = url.split('?')[0];
                         window.history.replaceState({}, document.title, cleanUrl);
+
+                        // Refresh platform data to ensure UI is up to date
+                        loadPlatformData();
                     } catch (apiError) {
                         console.error('Error connecting to platform:', apiError);
 
@@ -152,6 +168,12 @@ const PlatformScreen = () => {
                 } catch (e) {
                     console.error('Error cleaning URL:', e);
                 }
+            } finally {
+                // Clear the processing flag after a delay to ensure we don't process the same callback again
+                // but allow future callbacks to be processed
+                setTimeout(() => {
+                    localStorage.removeItem('hasProcessedCallback');
+                }, 5000);
             }
         };
 
@@ -159,10 +181,22 @@ const PlatformScreen = () => {
         if (Platform.OS === 'web') {
             parseUrlParams();
         }
+
+        // Cleanup function to ensure we don't leave stale flags
+        return () => {
+            if (Platform.OS === 'web') {
+                localStorage.removeItem('hasProcessedCallback');
+            }
+        };
     }, []);
 
     // Handle OAuth callback parameters if they exist in the route
+    // This is a secondary handler that will only run if the URL parameter handler didn't catch the callback
     useEffect(() => {
+        // Skip if we've already processed a callback via URL parameters
+        if (localStorage.getItem('hasProcessedCallback') === 'true') {
+            return;
+        }
         const handleOAuthCallback = async () => {
             try {
                 // Check for error parameters in route.params
@@ -189,6 +223,8 @@ const PlatformScreen = () => {
 
                 // Check if we have code parameter from OAuth callback
                 if (route.params?.code) {
+                    // Set flag to prevent multiple processing
+                    localStorage.setItem('hasProcessedCallback', 'true');
                     const { code } = route.params;
                     const { state } = route.params || {};
                     console.log('Received OAuth callback in route params:', { code, state });
@@ -218,6 +254,9 @@ const PlatformScreen = () => {
 
                         // Show success message
                         showDialog('Success', `Connected to ${platform.toUpperCase()}`);
+
+                        // Refresh platform data to ensure UI is up to date
+                        loadPlatformData();
                     } catch (apiError) {
                         console.error('Error connecting to platform:', apiError);
 
@@ -244,11 +283,18 @@ const PlatformScreen = () => {
                 console.error('Error handling OAuth callback:', error);
                 showDialog('Error', 'Failed to complete authentication. Please try again.');
                 setConnectingPlatform(null);
+            } finally {
+                // Clear the processing flag after a delay
+                setTimeout(() => {
+                    localStorage.removeItem('hasProcessedCallback');
+                }, 5000);
             }
         };
 
-        handleOAuthCallback();
-    }, [route.params, connectedPlatforms]);
+        if (route.params?.code) {
+            handleOAuthCallback();
+        }
+    }, [route.params]);
 
     const loadPlatformData = async () => {
         try {

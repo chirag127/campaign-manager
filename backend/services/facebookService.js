@@ -27,10 +27,32 @@ exports.exchangeCodeForTokens = async (code, redirectUri) => {
             expiresAt,
         };
     } catch (error) {
-        console.error(
-            "Error exchanging code for Facebook tokens:",
-            error.response?.data || error.message
-        );
+        // Log detailed error information
+        console.error("Error exchanging code for Facebook tokens:");
+
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.error("Response data:", error.response.data);
+            console.error("Response status:", error.response.status);
+            console.error("Response headers:", error.response.headers);
+
+            // Provide more specific error message based on the response
+            if (error.response.data && error.response.data.error) {
+                const fbError = error.response.data.error;
+                throw new Error(`Facebook API error: ${fbError.message || fbError.type || JSON.stringify(fbError)}`);
+            }
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error("No response received:", error.request);
+            throw new Error("Failed to receive response from Facebook API");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error("Error message:", error.message);
+            throw new Error(`Failed to exchange code for Facebook tokens: ${error.message}`);
+        }
+
+        // Default error if none of the above conditions are met
         throw new Error("Failed to exchange code for Facebook tokens");
     }
 };

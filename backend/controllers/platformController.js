@@ -159,9 +159,22 @@ exports.connectPlatform = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(500).json({
+        console.error(`Error connecting to ${platform} platform:`, error);
+
+        // Determine appropriate status code based on the error
+        let statusCode = 500;
+        if (error.message.includes('Invalid platform') ||
+            error.message.includes('Failed to exchange code')) {
+            statusCode = 400;
+        }
+
+        // Send detailed error response
+        res.status(statusCode).json({
             success: false,
             message: error.message,
+            platform: platform,
+            // Include additional details if available
+            details: error.details || null
         });
     }
 };
