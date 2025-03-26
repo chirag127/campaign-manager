@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import { shouldUseNativeDriver } from "../utils/animationUtils";
 import LoadingScreen from "../components/LoadingScreen";
+import GlobalLoading from "../components/GlobalLoading";
 
 // Auth Screens
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -141,17 +142,22 @@ const AppNavigator = () => {
     }
 
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {userToken ? (
-                <Stack.Screen name="Main" component={MainNavigator} />
-            ) : (
-                <Stack.Screen name="Auth" component={AuthNavigator} />
-            )}
-            {/* Legal screens accessible from anywhere */}
-            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: true, title: "Privacy Policy" }} />
-            <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: true, title: "Terms of Service" }} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={{ headerShown: true, title: "Delete Account" }} />
-        </Stack.Navigator>
+        <>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                {userToken ? (
+                    <Stack.Screen name="Main" component={MainNavigator} />
+                ) : (
+                    <Stack.Screen name="Auth" component={AuthNavigator} />
+                )}
+                {/* Legal screens accessible from anywhere */}
+                <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: true, title: "Privacy Policy" }} />
+                <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: true, title: "Terms of Service" }} />
+                <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} options={{ headerShown: true, title: "Delete Account" }} />
+            </Stack.Navigator>
+
+            {/* Global loading overlay */}
+            <GlobalLoading />
+        </>
     );
 };
 

@@ -2,6 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../config";
 import showDialog from "../utils/showDialog";
+import { showGlobalLoading, hideGlobalLoading } from "../context/LoadingContext";
 
 // Create axios instance
 const apiClient = axios.create({
@@ -283,7 +284,14 @@ export const handleApiCall = async (apiCall, options = {}) => {
         errorTitle,
         errorMessage,
         onError,
+        showLoading = false,
+        loadingMessage = "Loading...",
     } = options;
+
+    // Show loading indicator if requested
+    if (showLoading) {
+        showGlobalLoading(loadingMessage);
+    }
 
     try {
         const response = await apiCall;
@@ -303,6 +311,11 @@ export const handleApiCall = async (apiCall, options = {}) => {
         // unless we've specified custom error messages
 
         return null;
+    } finally {
+        // Hide loading indicator if it was shown
+        if (showLoading) {
+            hideGlobalLoading();
+        }
     }
 };
 

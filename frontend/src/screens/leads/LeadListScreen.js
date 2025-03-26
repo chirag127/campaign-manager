@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
     View,
     StyleSheet,
-    FlatList,
     RefreshControl,
     ScrollView,
 } from "react-native";
@@ -14,14 +13,17 @@ import {
     Paragraph,
     Button,
     Chip,
-    ActivityIndicator,
     Searchbar,
     useTheme,
     Menu,
     Divider,
     Banner,
 } from "react-native-paper";
-import { leadAPI, campaignAPI } from "../../api/apiClient";
+import { useLoading } from "../../context/LoadingContext";
+import { leadAPI, campaignAPI, handleApiCall } from "../../api/apiClient";
+import LoadingFlatList from "../../components/LoadingFlatList";
+import LoadingButton from "../../components/LoadingButton";
+import LoadingIndicator from "../../components/LoadingIndicator";
 import { LEAD_STATUSES } from "../../config";
 import {
     generateDummyLeads,
@@ -31,6 +33,7 @@ import {
 const LeadListScreen = ({ route, navigation }) => {
     const { campaignId } = route.params || {};
     const theme = useTheme();
+    const { setSectionLoading } = useLoading();
 
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -46,21 +49,37 @@ const LeadListScreen = ({ route, navigation }) => {
     const loadData = async () => {
         try {
             setLoading(true);
+            setSectionLoading('leads-list', true, 'Loading leads...');
 
-            // Get all leads
-            const leadsResponse = await leadAPI.getLeads();
-            const leadsData = leadsResponse.data.data;
-            setLeads(leadsData);
+            // Get all leads using handleApiCall with loading indicator
+            const leadsResponse = await handleApiCall(leadAPI.getLeads(), {
+                showLoading: false, // We're using section loading instead
+                errorTitle: "Failed to Load Leads",
+                errorMessage: "Could not load leads. Please try again."
+            });
+
+            if (leadsResponse) {
+                const leadsData = leadsResponse.data.data;
+                setLeads(leadsData);
+            }
 
             // Get all campaigns for filtering
-            const campaignsResponse = await campaignAPI.getCampaigns();
-            const campaignsData = campaignsResponse.data.data;
-            setCampaigns(campaignsData);
+            const campaignsResponse = await handleApiCall(campaignAPI.getCampaigns(), {
+                showLoading: false, // We're using section loading instead
+                errorTitle: "Failed to Load Campaigns",
+                errorMessage: "Could not load campaign filters. Please try again."
+            });
+
+            if (campaignsResponse) {
+                const campaignsData = campaignsResponse.data.data;
+                setCampaigns(campaignsData);
+            }
         } catch (error) {
             console.error("Error loading leads:", error);
         } finally {
             setLoading(false);
             setRefreshing(false);
+            setSectionLoading('leads-list', false);
         }
     };
 
@@ -216,7 +235,7 @@ const LeadListScreen = ({ route, navigation }) => {
 
                 <Text style={styles.orText}>or</Text>
 
-                <Button
+                <LoadingButton
                     mode="outlined"
                     onPress={() => {
                         setShowDummyData(true);
@@ -230,19 +249,12 @@ const LeadListScreen = ({ route, navigation }) => {
                     style={styles.dummyButton}
                 >
                     Show Sample Leads
-                </Button>
+                </LoadingButton>
             </View>
         );
     };
 
-    if (loading && !refreshing) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
-                <Text style={styles.loadingText}>Loading leads...</Text>
-            </View>
-        );
-    }
+    // Loading state is now handled by LoadingFlatList
 
     return (
         <View style={styles.container}>
@@ -347,16 +359,27 @@ const LeadListScreen = ({ route, navigation }) => {
                 </View>
             </View>
 
-            <FlatList
+            {/* Loading indicator for filters */}
+            <LoadingIndicator
+                sectionId="leads-list"
+                style={styles.filterLoadingIndicator}
+            />
+
+            <LoadingFlatList
                 data={filteredLeads}
                 renderItem={renderLeadItem}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={renderEmptyList}
+                loading={loading}
+                refreshing={refreshing}
+                loadingMessage="Loading leads..."
+                emptyMessage="No leads found"
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
+                        colors={[theme.colors.primary]}
                     />
                 }
             />
@@ -468,6 +491,10 @@ const styles = StyleSheet.create({
     dummyButton: {
         marginTop: 10,
         paddingHorizontal: 20,
+    },
+    filterLoadingIndicator: {
+        marginHorizontal: 10,
+        marginBottom: 5,
     },
 });
 
