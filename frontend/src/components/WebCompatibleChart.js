@@ -19,7 +19,27 @@ export const WebCompatibleLineChart = (props) => {
         useNativeDriver: shouldUseNativeDriver(),
     };
 
-    return <LineChart {...props} chartConfig={chartConfig} />;
+    // Filter out pointerEvents prop and responder props for web platform
+    const {
+        pointerEvents,
+        onStartShouldSetResponder,
+        onResponderGrant,
+        onResponderMove,
+        onResponderRelease,
+        onResponderTerminate,
+        onResponderTerminationRequest,
+        ...otherProps
+    } = props;
+
+    // Use style.pointerEvents instead if needed
+    const style = props.style ? { ...props.style } : {};
+    if (pointerEvents) {
+        style.pointerEvents = pointerEvents;
+    }
+
+    return (
+        <LineChart {...otherProps} chartConfig={chartConfig} style={style} />
+    );
 };
 
 /**
@@ -38,5 +58,23 @@ export const WebCompatibleBarChart = (props) => {
         useNativeDriver: shouldUseNativeDriver(),
     };
 
-    return <BarChart {...props} chartConfig={chartConfig} />;
+    // Filter out pointerEvents prop and responder props for web platform
+    const {
+        pointerEvents,
+        onStartShouldSetResponder,
+        onResponderGrant,
+        onResponderMove,
+        onResponderRelease,
+        onResponderTerminate,
+        onResponderTerminationRequest,
+        ...otherProps
+    } = props;
+
+    // Use style.pointerEvents instead if needed
+    const style = props.style ? { ...props.style } : {};
+    if (pointerEvents) {
+        style.pointerEvents = pointerEvents;
+    }
+
+    return <BarChart {...otherProps} chartConfig={chartConfig} style={style} />;
 };

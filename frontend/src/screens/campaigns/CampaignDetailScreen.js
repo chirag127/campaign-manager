@@ -24,11 +24,16 @@ import {
 import { Dimensions } from "react-native";
 import { campaignAPI, leadAPI } from "../../api/apiClient";
 import { PLATFORMS, CAMPAIGN_STATUSES } from "../../config";
+import {
+    shouldUseNativeDriver,
+    getShadowStyles,
+} from "../../utils/animationUtils";
 
 const screenWidth = Dimensions.get("window").width;
 
 const CampaignDetailScreen = ({ route, navigation }) => {
-    const { campaignId } = route.params;
+    const { id } = route.params;
+    const campaignId = id; // For backward compatibility with existing code
     const theme = useTheme();
 
     const [loading, setLoading] = useState(true);
@@ -69,7 +74,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             setLoading(true);
 
             // Get campaign details
-            const campaignResponse = await campaignAPI.getCampaign(campaignId);
+            const campaignResponse = await campaignAPI.getCampaign(id);
             const campaignData = campaignResponse.data.data;
             setCampaign(campaignData);
 
@@ -77,7 +82,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             const leadsResponse = await leadAPI.getLeads();
             const allLeads = leadsResponse.data.data;
             const campaignLeads = allLeads.filter(
-                (lead) => lead.campaign === campaignId
+                (lead) => lead.campaign === id
             );
             setLeads(campaignLeads);
 
@@ -125,7 +130,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             datasets: [
                 {
                     data: platformImpressions,
-                    colors: platformColors,
+                    color: (opacity = 1) => `rgba(25, 118, 210, ${opacity})`,
                 },
             ],
         });
@@ -152,7 +157,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
     const syncCampaignMetrics = async () => {
         try {
             setSyncingMetrics(true);
-            await campaignAPI.syncCampaignMetrics(campaignId);
+            await campaignAPI.syncCampaignMetrics(id);
             await loadCampaignData();
             showDialog("Success", "Campaign metrics synced successfully");
         } catch (error) {
@@ -169,7 +174,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
     const syncCampaignLeads = async () => {
         try {
             setSyncingLeads(true);
-            const response = await campaignAPI.syncCampaignLeads(campaignId);
+            const response = await campaignAPI.syncCampaignLeads(id);
             const { newLeadsCount } = response.data.data;
             await loadCampaignData();
             showDialog(
@@ -199,7 +204,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
             setLaunchingPlatform(selectedPlatform.platform);
             setLaunchDialogVisible(false);
 
-            await campaignAPI.launchCampaign(campaignId, selectedPlatform.platform);
+            await campaignAPI.launchCampaign(id, selectedPlatform.platform);
             await loadCampaignData();
 
             showDialog(
@@ -220,7 +225,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
 
     const handleEditCampaign = () => {
         setMenuVisible(false);
-        navigation.navigate("CampaignCreate", { campaignId });
+        navigation.navigate("CampaignCreate", { campaignId: id });
     };
 
     const handleDeleteCampaign = () => {
@@ -235,7 +240,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await campaignAPI.deleteCampaign(campaignId);
+                            await campaignAPI.deleteCampaign(id);
                             showDialog(
                                 "Success",
                                 "Campaign deleted successfully"
@@ -260,7 +265,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
         const newStatus = campaign.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
 
         try {
-            await campaignAPI.updateCampaign(campaignId, { status: newStatus });
+            await campaignAPI.updateCampaign(id, { status: newStatus });
             await loadCampaignData();
             showDialog(
                 "Success",
@@ -507,7 +512,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                     <Title style={styles.chartTitle}>
                         Impressions Over Time
                     </Title>
-                    <LineChart
+                    <WebCompatibleLineChart
                         data={metricsData}
                         width={screenWidth - 40}
                         height={220}
@@ -538,7 +543,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                     <Divider style={styles.divider} />
 
                     <Title style={styles.chartTitle}>Platform Comparison</Title>
-                    <BarChart
+                    <WebCompatibleBarChart
                         data={platformData}
                         width={screenWidth - 40}
                         height={220}
@@ -625,18 +630,27 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                                         Impressions
                                     </Text>
                                 </View>
-                                {platform.status !== "ACTIVE" && platform.platformCampaignId && (
-                                    <Button
-                                        mode="contained"
-                                        compact
-                                        style={styles.launchButton}
-                                        onPress={() => handleLaunchCampaign(platform)}
-                                        loading={launchingPlatform === platform.platform}
-                                        disabled={launchingPlatform === platform.platform}
-                                    >
-                                        Launch
-                                    </Button>
-                                )}
+                                {platform.status !== "ACTIVE" &&
+                                    platform.platformCampaignId && (
+                                        <Button
+                                            mode="contained"
+                                            compact
+                                            style={styles.launchButton}
+                                            onPress={() =>
+                                                handleLaunchCampaign(platform)
+                                            }
+                                            loading={
+                                                launchingPlatform ===
+                                                platform.platform
+                                            }
+                                            disabled={
+                                                launchingPlatform ===
+                                                platform.platform
+                                            }
+                                        >
+                                            Launch
+                                        </Button>
+                                    )}
                             </View>
                         );
                     })}
@@ -689,7 +703,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                         onPress={() =>
                             navigation.navigate("Leads", {
                                 screen: "LeadList",
-                                params: { campaignId },
+                                params: { campaignId: id },
                             })
                         }
                     >
@@ -708,12 +722,16 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                     <Dialog.Title>Launch Campaign</Dialog.Title>
                     <Dialog.Content>
                         <Paragraph>
-                            Are you sure you want to launch this campaign on {selectedPlatform?.platform}?
-                            This will make the campaign live and may incur charges on your ad account.
+                            Are you sure you want to launch this campaign on{" "}
+                            {selectedPlatform?.platform}? This will make the
+                            campaign live and may incur charges on your ad
+                            account.
                         </Paragraph>
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setLaunchDialogVisible(false)}>Cancel</Button>
+                        <Button onPress={() => setLaunchDialogVisible(false)}>
+                            Cancel
+                        </Button>
                         <Button onPress={confirmLaunchCampaign}>Launch</Button>
                     </Dialog.Actions>
                 </Dialog>
@@ -747,7 +765,7 @@ const styles = StyleSheet.create({
     },
     headerCard: {
         margin: 10,
-        elevation: 2,
+        ...getShadowStyles({ elevation: 2 }),
     },
     campaignHeader: {
         flexDirection: "row",
@@ -802,7 +820,7 @@ const styles = StyleSheet.create({
     },
     metricsCard: {
         margin: 10,
-        elevation: 2,
+        ...getShadowStyles({ elevation: 2 }),
     },
     sectionTitle: {
         fontSize: 18,
@@ -840,7 +858,7 @@ const styles = StyleSheet.create({
     },
     platformsCard: {
         margin: 10,
-        elevation: 2,
+        ...getShadowStyles({ elevation: 2 }),
     },
     platformItem: {
         flexDirection: "row",
@@ -888,7 +906,7 @@ const styles = StyleSheet.create({
     },
     leadsCard: {
         margin: 10,
-        elevation: 2,
+        ...getShadowStyles({ elevation: 2 }),
     },
     noLeadsText: {
         textAlign: "center",

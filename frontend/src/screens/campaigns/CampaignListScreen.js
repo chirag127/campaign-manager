@@ -112,8 +112,9 @@ const CampaignListScreen = ({ navigation }) => {
             <Card
                 style={styles.campaignCard}
                 onPress={() =>
-                    navigation.navigate("CampaignDetail", {
-                        campaignId: item._id,
+                    navigation.navigate({
+                        name: "CampaignDetail",
+                        params: { id: item._id },
                     })
                 }
             >
@@ -170,8 +171,9 @@ const CampaignListScreen = ({ navigation }) => {
                 <Card.Actions>
                     <Button
                         onPress={() =>
-                            navigation.navigate("CampaignDetail", {
-                                campaignId: item._id,
+                            navigation.navigate({
+                                name: "CampaignDetail",
+                                params: { id: item._id },
                             })
                         }
                     >

@@ -388,7 +388,7 @@ const LeadDetailScreen = ({ route, navigation }) => {
                             onPress={() =>
                                 navigation.navigate("Campaigns", {
                                     screen: "CampaignDetail",
-                                    params: { campaignId: campaign._id },
+                                    params: { id: campaign._id },
                                 })
                             }
                         >
