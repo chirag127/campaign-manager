@@ -75,6 +75,9 @@ exports.createCampaign = async (campaign, user) => {
 
         const accessToken = user.platformCredentials.facebook.accessToken;
 
+        console.log("Access Token:", accessToken);
+        console.log("Campaign Data:", campaign);
+
         // Get user's ad accounts
         const adAccountsResponse = await axios.get(
             `${FB_API_URL}/me/adaccounts`,
@@ -576,75 +579,102 @@ async function createAdsWithCreatives(
     accessToken
 ) {
     try {
+        let hasProcessedAnyAsset = false;
+        let lastError = null;
+
         // Process each creative asset
         for (const asset of campaign.creativeAssets) {
             // Skip if missing required fields
             if (!asset.url || !asset.title) continue;
 
-            // Upload the image or video to Facebook
-            let creativeId;
-            if (asset.type === "IMAGE") {
-                creativeId = await uploadImageAsset(
-                    asset.url,
-                    adAccountId,
-                    accessToken
-                );
-            } else if (asset.type === "VIDEO") {
-                creativeId = await uploadVideoAsset(
-                    asset.url,
-                    adAccountId,
-                    accessToken
-                );
-            } else {
-                // Skip unsupported asset types
-                continue;
-            }
+            try {
+                // Upload the image or video to Facebook
+                let creativeId;
+                if (asset.type === "IMAGE") {
+                    creativeId = await uploadImageAsset(
+                        asset.url,
+                        adAccountId,
+                        accessToken
+                    );
+                } else if (asset.type === "VIDEO") {
+                    creativeId = await uploadVideoAsset(
+                        asset.url,
+                        adAccountId,
+                        accessToken
+                    );
+                } else {
+                    // Skip unsupported asset types
+                    continue;
+                }
 
-            if (!creativeId) continue;
+                if (!creativeId) continue;
 
-            // Create the ad creative
-            const adCreativeResponse = await axios.post(
-                `${FB_API_URL}/${adAccountId}/adcreatives`,
-                {
-                    name: asset.title,
-                    object_story_spec: {
-                        page_id: await getPageId(accessToken), // Get the user's Facebook Page ID
-                        link_data: {
-                            message: asset.description || "",
-                            link: asset.url,
-                            image_hash:
-                                asset.type === "IMAGE" ? creativeId : null,
-                            video_id:
-                                asset.type === "VIDEO" ? creativeId : null,
-                            call_to_action: {
-                                type: mapCallToAction(asset.callToAction),
+                hasProcessedAnyAsset = true;
+
+                // Create the ad creative
+                const adCreativeResponse = await axios.post(
+                    `${FB_API_URL}/${adAccountId}/adcreatives`,
+                    {
+                        name: asset.title,
+                        object_story_spec: {
+                            page_id: await getPageId(accessToken), // Get the user's Facebook Page ID
+                            link_data: {
+                                message: asset.description || "",
+                                link: asset.url,
+                                image_hash:
+                                    asset.type === "IMAGE" ? creativeId : null,
+                                video_id:
+                                    asset.type === "VIDEO" ? creativeId : null,
+                                call_to_action: {
+                                    type: mapCallToAction(asset.callToAction),
+                                },
                             },
                         },
                     },
-                },
-                {
-                    params: {
-                        access_token: accessToken,
-                    },
-                }
-            );
+                    {
+                        params: {
+                            access_token: accessToken,
+                        },
+                    }
+                );
 
-            // Create the ad
-            await axios.post(
-                `${FB_API_URL}/${adAccountId}/ads`,
-                {
-                    name: `${campaign.name} - ${asset.title}`,
-                    adset_id: adSetId,
-                    creative: {
-                        creative_id: adCreativeResponse.data.id,
+                // Create the ad
+                await axios.post(
+                    `${FB_API_URL}/${adAccountId}/ads`,
+                    {
+                        name: `${campaign.name} - ${asset.title}`,
+                        adset_id: adSetId,
+                        creative: {
+                            creative_id: adCreativeResponse.data.id,
+                        },
+                        status:
+                            campaign.status === "ACTIVE" ? "ACTIVE" : "PAUSED",
                     },
-                    status: campaign.status === "ACTIVE" ? "ACTIVE" : "PAUSED",
-                },
-                {
-                    params: {
-                        access_token: accessToken,
-                    },
-                }
+                    {
+                        params: {
+                            access_token: accessToken,
+                        },
+                    }
+                );
+            } catch (assetError) {
+                console.error(
+                    `Error processing creative asset ${asset.title}:`,
+                    assetError.message
+                );
+                lastError = assetError;
+                // Continue with other assets even if one fails
+            }
+        }
+
+        // If we couldn't process any assets but have an error, throw it
+        if (!hasProcessedAnyAsset && lastError) {
+            throw lastError;
+        }
+
+        // If we couldn't process any assets but don't have a specific error, throw a generic one
+        if (!hasProcessedAnyAsset) {
+            throw new Error(
+                "Could not process any creative assets. Please check your image URLs and permissions."
             );
         }
 
@@ -654,7 +684,17 @@ async function createAdsWithCreatives(
             "Error creating Facebook ads:",
             error.response?.data || error.message
         );
-        throw new Error("Failed to create Facebook ads");
+
+        // Propagate specific errors
+        if (
+            error.message.includes(
+                "Facebook app doesn't have the necessary permissions"
+            )
+        ) {
+            throw error;
+        }
+
+        throw new Error("Failed to create Facebook ads: " + error.message);
     }
 }
 
@@ -684,7 +724,23 @@ async function uploadImageAsset(imageUrl, adAccountId, accessToken) {
             "Error uploading image to Facebook:",
             error.response?.data || error.message
         );
-        return null;
+
+        // Check for specific error codes
+        if (error.response?.data?.error) {
+            const fbError = error.response.data.error;
+
+            // Error code 3 indicates permission issues
+            if (fbError.code === 3) {
+                throw new Error(
+                    "Your Facebook app doesn't have the necessary permissions to upload images. " +
+                        "Please make sure your app has been approved for the 'ads_management' permission and has the Marketing API enabled."
+                );
+            }
+
+            throw new Error(`Facebook image upload error: ${fbError.message}`);
+        }
+
+        throw new Error("Failed to upload image to Facebook");
     }
 }
 
@@ -712,7 +768,23 @@ async function uploadVideoAsset(videoUrl, adAccountId, accessToken) {
             "Error uploading video to Facebook:",
             error.response?.data || error.message
         );
-        return null;
+
+        // Check for specific error codes
+        if (error.response?.data?.error) {
+            const fbError = error.response.data.error;
+
+            // Error code 3 indicates permission issues
+            if (fbError.code === 3) {
+                throw new Error(
+                    "Your Facebook app doesn't have the necessary permissions to upload videos. " +
+                    "Please make sure your app has been approved for the 'ads_management' permission and has the Marketing API enabled."
+                );
+            }
+
+            throw new Error(`Facebook video upload error: ${fbError.message}`);
+        }
+
+        throw new Error("Failed to upload video to Facebook");
     }
 }
 
