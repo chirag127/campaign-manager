@@ -59,6 +59,9 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
 
     // Pick an image from the device
     const pickImage = async () => {
+        // Prevent multiple calls if already uploading
+        if (uploading) return;
+
         if (assets.length >= maxAssets) {
             showDialog(
                 "Limit Reached",
@@ -67,10 +70,17 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
             return;
         }
 
-        const hasPermission = await requestPermissions();
-        if (!hasPermission) return;
+        // Set uploading to true to prevent multiple picker launches
+        setUploading(true);
 
         try {
+            // Check permissions first
+            const hasPermission = await requestPermissions();
+            if (!hasPermission) {
+                setUploading(false);
+                return;
+            }
+
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
@@ -81,15 +91,22 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const selectedImage = result.assets[0];
                 await uploadAsset(selectedImage.uri, "IMAGE");
+            } else {
+                // If user cancels, we need to reset uploading state
+                setUploading(false);
             }
         } catch (error) {
             console.error("Error picking image:", error);
             showDialog("Error", "Failed to pick image. Please try again.");
+            setUploading(false);
         }
     };
 
     // Pick a video from the device
     const pickVideo = async () => {
+        // Prevent multiple calls if already uploading
+        if (uploading) return;
+
         if (assets.length >= maxAssets) {
             showDialog(
                 "Limit Reached",
@@ -131,7 +148,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
 
     // Upload asset to server
     const uploadAsset = async (uri, type) => {
-        setUploading(true);
+        // uploading state is already set to true in pickImage
         try {
             // For web platform, we need to handle file differently
             if (Platform.OS === "web") {
@@ -213,6 +230,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
             console.error("Error uploading asset:", error);
             showDialog("Error", "Failed to upload asset. Please try again.");
         } finally {
+            // Reset uploading state when done
             setUploading(false);
         }
     };
