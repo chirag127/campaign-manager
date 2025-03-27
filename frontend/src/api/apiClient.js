@@ -2,7 +2,10 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../config";
 import showDialog from "../utils/showDialog";
-import { showGlobalLoading, hideGlobalLoading } from "../context/LoadingContext";
+import {
+    showGlobalLoading,
+    hideGlobalLoading,
+} from "../context/LoadingContext";
 
 // Create axios instance
 const apiClient = axios.create({
@@ -116,7 +119,7 @@ apiClient.interceptors.response.use(
                         [
                             {
                                 text: "Cancel",
-                                style: "cancel"
+                                style: "cancel",
                             },
                             {
                                 text: "Logout",
@@ -127,8 +130,8 @@ apiClient.interceptors.response.use(
                                         authContext.logout();
                                     }
                                 },
-                                style: "default"
-                            }
+                                style: "default",
+                            },
                         ]
                     );
 
@@ -213,7 +216,11 @@ export const authAPI = {
     verifyResetCode: (email, resetCode) =>
         apiClient.post("/api/auth/verify-reset-code", { email, resetCode }),
     resetPassword: (email, resetCode, password) =>
-        apiClient.post("/api/auth/reset-password", { email, resetCode, password }),
+        apiClient.post("/api/auth/reset-password", {
+            email,
+            resetCode,
+            password,
+        }),
 };
 
 // Campaign API
@@ -227,7 +234,8 @@ export const campaignAPI = {
     deleteCampaign: (id) => apiClient.delete(`/api/campaigns/${id}`),
     syncCampaignMetrics: (id) => apiClient.get(`/api/campaigns/${id}/sync`),
     syncCampaignLeads: (id) => apiClient.get(`/api/campaigns/${id}/sync-leads`),
-    launchCampaign: (id, platform) => apiClient.post(`/api/campaigns/${id}/launch/${platform.toLowerCase()}`),
+    launchCampaign: (id, platform) =>
+        apiClient.post(`/api/campaigns/${id}/launch/${platform.toLowerCase()}`),
 };
 
 // Lead API
@@ -251,7 +259,20 @@ export const platformAPI = {
     disconnectPlatform: (platform) =>
         apiClient.post(`/api/platforms/${platform}/disconnect`),
     getConnectedPlatforms: () => apiClient.get("/api/platforms/connected"),
-    checkFacebookConfigStatus: () => apiClient.get("/api/platforms/facebook/config-status"),
+    checkFacebookConfigStatus: () =>
+        apiClient.get("/api/platforms/facebook/config-status"),
+};
+
+// Upload API
+export const uploadAPI = {
+    uploadFile: (formData) => {
+        return axios.post(`${API_URL}/api/upload`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
+        });
+    },
 };
 
 /**

@@ -22,6 +22,7 @@ import {
     CAMPAIGN_STATUSES,
 } from "../../config";
 import showDialog from "../../utils/showDialog";
+import CreativeAssetUploader from "../../components/CreativeAssetUploader";
 
 const CampaignCreateScreen = ({ route, navigation }) => {
     const { campaignId } = route.params || {};
@@ -46,6 +47,7 @@ const CampaignCreateScreen = ({ route, navigation }) => {
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
     const [availablePlatforms, setAvailablePlatforms] = useState([]);
     const [connectedPlatforms, setConnectedPlatforms] = useState({});
+    const [creativeAssets, setCreativeAssets] = useState([]);
 
     // UI state
     const [loading, setLoading] = useState(isEditing);
@@ -56,7 +58,7 @@ const CampaignCreateScreen = ({ route, navigation }) => {
     useEffect(() => {
         const loadCampaignData = async () => {
             if (!isEditing) {
-              return;
+                return;
             }
 
             try {
@@ -90,12 +92,17 @@ const CampaignCreateScreen = ({ route, navigation }) => {
                 // Set selected platforms
                 const platforms = campaignData.platforms.map((p) => p.platform);
                 setSelectedPlatforms(platforms);
+
+                // Set creative assets if available
+                if (
+                    campaignData.creativeAssets &&
+                    campaignData.creativeAssets.length > 0
+                ) {
+                    setCreativeAssets(campaignData.creativeAssets);
+                }
             } catch (error) {
                 console.error("Error loading campaign data:", error);
-                (
-                    "Error",
-                    "Failed to load campaign data. Please try again."
-                );
+                "Error", "Failed to load campaign data. Please try again.";
             } finally {
                 setLoading(false);
             }
@@ -189,6 +196,7 @@ const CampaignCreateScreen = ({ route, navigation }) => {
                     platform,
                     status: "PENDING",
                 })),
+                creativeAssets: creativeAssets,
             };
 
             if (isEditing) {
@@ -474,6 +482,18 @@ const CampaignCreateScreen = ({ route, navigation }) => {
                     <HelperText type="error">{errors.platforms}</HelperText>
                 )}
 
+                <Text style={styles.sectionTitle}>Creative Assets</Text>
+                <Text style={styles.helperText}>
+                    Upload images or videos to create ads for your campaign.
+                    These will be used to create ads on the selected platforms.
+                </Text>
+
+                <CreativeAssetUploader
+                    assets={creativeAssets}
+                    onChange={setCreativeAssets}
+                    maxAssets={5}
+                />
+
                 <Divider style={styles.divider} />
 
                 <View style={styles.buttonContainer}>
@@ -528,6 +548,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: 20,
         marginBottom: 10,
+    },
+    helperText: {
+        marginBottom: 10,
+        fontSize: 14,
+        color: "#666",
     },
     dropdownContainer: {
         marginBottom: 15,

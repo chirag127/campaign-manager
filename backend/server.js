@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./config/db");
 
 // Load environment variables
@@ -30,6 +31,10 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/campaigns", require("./routes/campaignRoutes"));
 app.use("/api/leads", require("./routes/leadRoutes"));
 app.use("/api/platforms", require("./routes/platformRoutes"));
+app.use("/api/upload", require("./routes/uploadRoutes"));
+
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Default route
 app.get("/", (req, res) => {
