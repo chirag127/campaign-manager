@@ -117,6 +117,8 @@ exports.createCampaign = async (campaign, user) => {
             }
         );
 
+        console.log("Campaign Response:", campaignResponse.data);
+
         const campaignId = campaignResponse.data.id;
 
         // If campaign has target audience and creative assets, create ad sets and ads
@@ -134,6 +136,9 @@ exports.createCampaign = async (campaign, user) => {
                     accessToken
                 );
 
+                console.log("Ad Set ID:", adSetId);
+                // If ad set creation was successful, proceed to create ads
+
                 // Upload creative assets and create ads
                 await createAdsWithCreatives(
                     campaign,
@@ -141,6 +146,9 @@ exports.createCampaign = async (campaign, user) => {
                     adAccountId,
                     accessToken
                 );
+
+                console.log("Ads created successfully");
+
             } catch (adSetError) {
                 console.error(
                     "Error creating ad sets or ads:",
