@@ -76,6 +76,8 @@ exports.createCampaign = async (campaign, user) => {
         const accessToken = user.platformCredentials.facebook.accessToken;
 
         console.log("Access Token:", accessToken);
+
+        // accessToken = "EAAHSTlIC3BYBO3N9nrtgmYcQb7O748uNZBCdLhe9wJsNoWDAPKAMFWtnKYf7wOjPhTyLgJhl0Hde3tYBfSubIR3kFmB7CGBsoQtYfJsZAyV5hNhgjpYNbnr9gOTbKqAaHON6Q12C2PGfnCbpLKEZAF9c0FZBW6XVr8rxSl6ttvV1MikwSheWIcUZAp4e1hKZCLXLRDAGok"
         console.log("Campaign Data:", campaign);
 
         // Get user's ad accounts
