@@ -151,7 +151,18 @@ exports.createCampaign = async (campaign, user) => {
             "Error creating Facebook campaign:",
             error.response?.data || error.message
         );
-        throw new Error("Failed to create Facebook campaign");
+
+        // Provide more specific error message
+        if (error.response?.data?.error) {
+            const fbError = error.response.data.error;
+            throw new Error(
+                `Failed to create Facebook campaign: ${
+                    fbError.message || fbError.type || JSON.stringify(fbError)
+                }`
+            );
+        }
+
+        throw new Error(`Failed to create Facebook campaign: ${error.message}`);
     }
 };
 
@@ -421,20 +432,21 @@ exports.getCampaignLeads = async (platformCampaignId, user) => {
 
 // Helper function to map our objectives to Facebook's objectives
 function mapObjectiveToFacebook(objective) {
+    // Facebook has updated their objectives to use the new OUTCOME_* format
     const mapping = {
-        BRAND_AWARENESS: "BRAND_AWARENESS",
-        REACH: "REACH",
-        TRAFFIC: "TRAFFIC",
-        ENGAGEMENT: "ENGAGEMENT",
-        APP_INSTALLS: "APP_INSTALLS",
-        VIDEO_VIEWS: "VIDEO_VIEWS",
-        LEAD_GENERATION: "LEAD_GENERATION",
-        CONVERSIONS: "CONVERSIONS",
-        CATALOG_SALES: "CATALOG_SALES",
-        STORE_TRAFFIC: "STORE_TRAFFIC",
+        BRAND_AWARENESS: "OUTCOME_AWARENESS",
+        REACH: "OUTCOME_AWARENESS",
+        TRAFFIC: "OUTCOME_TRAFFIC",
+        ENGAGEMENT: "OUTCOME_ENGAGEMENT",
+        APP_INSTALLS: "OUTCOME_APP_PROMOTION",
+        VIDEO_VIEWS: "OUTCOME_AWARENESS",
+        LEAD_GENERATION: "OUTCOME_LEADS",
+        CONVERSIONS: "OUTCOME_SALES",
+        CATALOG_SALES: "OUTCOME_SALES",
+        STORE_TRAFFIC: "OUTCOME_TRAFFIC",
     };
 
-    return mapping[objective] || "REACH";
+    return mapping[objective] || "OUTCOME_AWARENESS";
 }
 
 // Create an ad set for the campaign
@@ -718,6 +730,7 @@ function mapCallToAction(callToAction) {
 
 // Get optimization goal based on campaign objective
 function getOptimizationGoal(objective) {
+    // Updated optimization goals to match the new Facebook objectives
     const mapping = {
         BRAND_AWARENESS: "BRAND_AWARENESS",
         REACH: "REACH",
@@ -731,6 +744,8 @@ function getOptimizationGoal(objective) {
         STORE_TRAFFIC: "STORE_VISITS",
     };
 
+    // Note: The optimization goals haven't changed as much as the campaign objectives
+    // But we should still handle the case where the objective doesn't map directly
     return mapping[objective] || "REACH";
 }
 

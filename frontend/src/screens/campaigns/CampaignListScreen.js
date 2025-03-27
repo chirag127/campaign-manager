@@ -5,8 +5,11 @@ import {
     FlatList,
     RefreshControl,
     ScrollView,
+    Platform,
+    Alert,
 } from "react-native";
 import { getAnimationConfig } from "../../utils/animationUtils";
+import showDialog from "../../utils/showDialog";
 import {
     Text,
     Card,
@@ -77,6 +80,59 @@ const CampaignListScreen = ({ navigation }) => {
     const onRefresh = () => {
         setRefreshing(true);
         loadCampaigns();
+    };
+
+    const handleDeleteCampaign = (id) => {
+        // Show confirmation dialog
+        if (Platform.OS === "web") {
+            if (
+                confirm(
+                    "Are you sure you want to delete this campaign? This action cannot be undone."
+                )
+            ) {
+                deleteCampaign(id);
+            }
+        } else {
+            Alert.alert(
+                "Delete Campaign",
+                "Are you sure you want to delete this campaign? This action cannot be undone.",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => deleteCampaign(id),
+                    },
+                ]
+            );
+        }
+    };
+
+    const deleteCampaign = async (id) => {
+        try {
+            setLoading(true);
+            const response = await campaignAPI.deleteCampaign(id);
+            if (response.data.success) {
+                // Show success message
+                showDialog("Success", "Campaign deleted successfully");
+                // Refresh the campaign list
+                loadCampaigns();
+            } else {
+                showDialog(
+                    "Error",
+                    response.data.message || "Failed to delete campaign"
+                );
+            }
+        } catch (error) {
+            console.error("Error deleting campaign:", error);
+            showDialog(
+                "Error",
+                error.response?.data?.message ||
+                    "Failed to delete campaign. Please try again."
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getStatusColor = (status) => {
@@ -168,7 +224,7 @@ const CampaignListScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </Card.Content>
-                <Card.Actions>
+                <Card.Actions style={styles.cardActions}>
                     <Button
                         onPress={() =>
                             navigation.navigate({
@@ -178,6 +234,14 @@ const CampaignListScreen = ({ navigation }) => {
                         }
                     >
                         View Details
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        textColor="#D32F2F"
+                        style={styles.deleteButton}
+                        onPress={() => handleDeleteCampaign(item._id)}
+                    >
+                        Delete
                     </Button>
                 </Card.Actions>
             </Card>
@@ -414,6 +478,12 @@ const styles = StyleSheet.create({
         margin: 16,
         right: 0,
         bottom: 0,
+    },
+    cardActions: {
+        justifyContent: "space-between",
+    },
+    deleteButton: {
+        borderColor: "#D32F2F",
     },
 });
 

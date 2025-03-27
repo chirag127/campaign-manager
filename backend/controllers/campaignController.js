@@ -49,6 +49,17 @@ exports.createCampaign = async (req, res) => {
                         `Error creating campaign on ${platformData.platform}:`,
                         error
                     );
+
+                    // Add error message to the platform data
+                    const platformIndex = campaign.platforms.findIndex(
+                        (p) => p.platform === platformData.platform
+                    );
+
+                    if (platformIndex !== -1) {
+                        campaign.platforms[platformIndex].status = "ERROR";
+                        campaign.platforms[platformIndex].error = error.message;
+                    }
+
                     // Continue with other platforms even if one fails
                 }
             }
@@ -254,7 +265,8 @@ exports.deleteCampaign = async (req, res) => {
             }
         }
 
-        await campaign.remove();
+        // Use deleteOne instead of remove (which is deprecated in newer Mongoose versions)
+        await Campaign.deleteOne({ _id: req.params.id });
 
         res.status(200).json({
             success: true,

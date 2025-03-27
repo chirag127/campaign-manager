@@ -250,7 +250,8 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                             console.error("Error deleting campaign:", error);
                             showDialog(
                                 "Error",
-                                "Failed to delete campaign. Please try again."
+                                error.response?.data?.message ||
+                                    "Failed to delete campaign. Please try again."
                             );
                         }
                     },
@@ -446,7 +447,7 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                         <Chip mode="outlined">{campaign.objective}</Chip>
                     </View>
                 </Card.Content>
-                <Card.Actions>
+                <Card.Actions style={styles.cardActions}>
                     <Button
                         mode={
                             campaign.status === "ACTIVE"
@@ -458,6 +459,14 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                         {campaign.status === "ACTIVE"
                             ? "Pause Campaign"
                             : "Activate Campaign"}
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        textColor="#D32F2F"
+                        style={styles.deleteButton}
+                        onPress={handleDeleteCampaign}
+                    >
+                        Delete Campaign
                     </Button>
                 </Card.Actions>
             </Card>
@@ -620,6 +629,12 @@ const CampaignDetailScreen = ({ route, navigation }) => {
                                             {platform.status}
                                         </Text>
                                     </Text>
+                                    {platform.status === "ERROR" &&
+                                        platform.error && (
+                                            <Text style={styles.platformError}>
+                                                Error: {platform.error}
+                                            </Text>
+                                        )}
                                 </View>
                                 <View style={styles.platformMetrics}>
                                     <Text style={styles.platformMetricValue}>
@@ -890,6 +905,12 @@ const styles = StyleSheet.create({
     platformStatus: {
         fontSize: 12,
     },
+    platformError: {
+        fontSize: 11,
+        color: "#D32F2F",
+        marginTop: 2,
+        fontStyle: "italic",
+    },
     platformMetrics: {
         alignItems: "center",
     },
@@ -942,6 +963,12 @@ const styles = StyleSheet.create({
     },
     footer: {
         height: 20,
+    },
+    cardActions: {
+        justifyContent: "space-between",
+    },
+    deleteButton: {
+        borderColor: "#D32F2F",
     },
 });
 

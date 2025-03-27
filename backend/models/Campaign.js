@@ -111,6 +111,9 @@ const CampaignSchema = new mongoose.Schema({
                 enum: ["PENDING", "ACTIVE", "PAUSED", "COMPLETED", "ERROR"],
                 default: "PENDING",
             },
+            error: {
+                type: String,
+            },
             budget: {
                 type: Number,
             },
