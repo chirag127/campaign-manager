@@ -199,21 +199,137 @@ const CampaignCreateScreen = ({ route, navigation }) => {
                 creativeAssets: creativeAssets,
             };
 
+            let response;
             if (isEditing) {
-                await campaignAPI.updateCampaign(campaignId, campaignData);
-                showDialog("Success", "Campaign updated successfully");
-            } else {
-                await campaignAPI.createCampaign(campaignData);
-                showDialog("Success", "Campaign created successfully");
-            }
+                response = await campaignAPI.updateCampaign(
+                    campaignId,
+                    campaignData
+                );
 
-            navigation.goBack();
+                // Check if there were any platform errors
+                const hasErrors = checkForPlatformErrors(response.data.data);
+
+                if (!hasErrors) {
+                    showDialog("Success", "Campaign updated successfully");
+                    navigation.goBack();
+                }
+            } else {
+                response = await campaignAPI.createCampaign(campaignData);
+                console.log(
+                    "Campaign creation response:",
+                    JSON.stringify(response.data)
+                );
+
+                // Check for platform errors in the response
+                if (
+                    response.data.platformErrors &&
+                    response.data.platformErrors.length > 0
+                ) {
+                    console.log(
+                        "Platform errors found in response:",
+                        response.data.platformErrors
+                    );
+
+                    // Create a message with all platform errors
+                    const errorMessages = response.data.platformErrors.map(
+                        (platform) => `${platform.platform}: ${platform.error}`
+                    );
+
+                    const errorMessage =
+                        "The campaign was created but there were errors with some platforms:\n\n" +
+                        errorMessages.join("\n\n") +
+                        "\n\nYou can still edit the campaign and try again.";
+
+                    showDialog("Platform Errors", errorMessage);
+                } else {
+                    // Check if there are any platforms with errors in the campaign data
+                    const hasErrors = checkForPlatformErrors(
+                        response.data.data
+                    );
+
+                    if (!hasErrors) {
+                        showDialog("Success", "Campaign created successfully");
+                    }
+                }
+
+                // Navigate back regardless of errors
+                // This ensures the user sees the campaign in the list
+                navigation.goBack();
+            }
         } catch (error) {
             console.error("Error saving campaign:", error);
-            showDialog("Error", "Failed to save campaign. Please try again.");
+            console.log("Error response:", error.response?.data);
+
+            // Display more specific error message if available
+            let errorMessage = "Failed to save campaign. Please try again.";
+
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+                console.log("Using error message from response:", errorMessage);
+            } else if (error.message) {
+                errorMessage = error.message;
+                console.log(
+                    "Using error message from error object:",
+                    errorMessage
+                );
+            }
+
+            showDialog("Error", errorMessage);
         } finally {
             setSubmitting(false);
         }
+    };
+
+    // Check if any platforms have errors and show them
+    const checkForPlatformErrors = (campaign) => {
+        console.log("Checking for platform errors in:", campaign);
+
+        if (
+            !campaign ||
+            !campaign.platforms ||
+            campaign.platforms.length === 0
+        ) {
+            console.log("No campaign or platforms to check");
+            return false;
+        }
+
+        // Log all platforms for debugging
+        campaign.platforms.forEach((platform, index) => {
+            console.log(
+                `Platform ${index}:`,
+                platform.platform,
+                "Status:",
+                platform.status,
+                "Error:",
+                platform.error
+            );
+        });
+
+        const platformsWithErrors = campaign.platforms.filter(
+            (platform) => platform.status === "ERROR" && platform.error
+        );
+
+        console.log("Platforms with errors:", platformsWithErrors);
+
+        if (platformsWithErrors.length > 0) {
+            // Create a message with all platform errors
+            const errorMessages = platformsWithErrors.map(
+                (platform) => `${platform.platform}: ${platform.error}`
+            );
+
+            const errorMessage =
+                "The campaign was created but there were errors with some platforms:\n\n" +
+                errorMessages.join("\n\n") +
+                "\n\nYou can still edit the campaign and try again.";
+
+            console.log("Showing error dialog with message:", errorMessage);
+
+            showDialog("Platform Errors", errorMessage);
+
+            return true;
+        }
+
+        return false;
     };
 
     const togglePlatform = (platformId) => {

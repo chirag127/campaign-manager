@@ -68,10 +68,30 @@ exports.createCampaign = async (req, res) => {
             await campaign.save();
         }
 
-        res.status(201).json({
-            success: true,
-            data: campaign,
-        });
+        // Check if any platforms had errors
+        const platformsWithErrors = campaign.platforms.filter(
+            (platform) => platform.status === "ERROR" && platform.error
+        );
+
+        if (platformsWithErrors.length > 0) {
+            // Campaign was created but with platform errors
+            res.status(201).json({
+                success: true,
+                message: "Campaign created with platform errors",
+                data: campaign,
+                platformErrors: platformsWithErrors.map((p) => ({
+                    platform: p.platform,
+                    error: p.error,
+                })),
+            });
+        } else {
+            // Campaign created successfully with no errors
+            res.status(201).json({
+                success: true,
+                message: "Campaign created successfully",
+                data: campaign,
+            });
+        }
     } catch (error) {
         res.status(500).json({
             success: false,

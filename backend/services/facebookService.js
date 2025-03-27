@@ -141,7 +141,8 @@ exports.createCampaign = async (campaign, user) => {
                     "Error creating ad sets or ads:",
                     adSetError.message
                 );
-                // Continue with just the campaign created
+                // Propagate the error with the detailed message
+                throw adSetError;
             }
         }
 
@@ -152,14 +153,28 @@ exports.createCampaign = async (campaign, user) => {
             error.response?.data || error.message
         );
 
+        // If it's already a processed error from createAdSet or createAdsWithCreatives, just propagate it
+        if (
+            error.message &&
+            (error.message.includes("Budget is too low") ||
+                error.message.includes("Facebook ad set"))
+        ) {
+            throw error;
+        }
+
         // Provide more specific error message
         if (error.response?.data?.error) {
             const fbError = error.response.data.error;
-            throw new Error(
-                `Failed to create Facebook campaign: ${
-                    fbError.message || fbError.type || JSON.stringify(fbError)
-                }`
-            );
+            let errorMsg = "Failed to create Facebook campaign";
+
+            // Check for specific error messages
+            if (fbError.error_user_title && fbError.error_user_msg) {
+                errorMsg = `${fbError.error_user_title}: ${fbError.error_user_msg}`;
+            } else if (fbError.message) {
+                errorMsg = fbError.message;
+            }
+
+            throw new Error(errorMsg);
         }
 
         throw new Error(`Failed to create Facebook campaign: ${error.message}`);
@@ -533,6 +548,22 @@ async function createAdSet(campaign, campaignId, adAccountId, accessToken) {
             "Error creating Facebook ad set:",
             error.response?.data || error.message
         );
+
+        // Extract detailed error message from Facebook API
+        if (error.response?.data?.error) {
+            const fbError = error.response.data.error;
+            let errorMsg = "Failed to create Facebook ad set";
+
+            // Check for specific error messages
+            if (fbError.error_user_title && fbError.error_user_msg) {
+                errorMsg = `${fbError.error_user_title}: ${fbError.error_user_msg}`;
+            } else if (fbError.message) {
+                errorMsg = fbError.message;
+            }
+
+            throw new Error(errorMsg);
+        }
+
         throw new Error("Failed to create Facebook ad set");
     }
 }
