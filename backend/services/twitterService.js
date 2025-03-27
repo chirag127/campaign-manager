@@ -343,6 +343,221 @@ exports.deleteCampaign = async (platformCampaignId, user) => {
     }
 };
 
+// Launch a campaign on Twitter (change status to ACTIVE and verify campaign is ready)
+exports.launchCampaign = async (platformCampaignId, user) => {
+    try {
+        // Check if user has connected to Twitter
+        if (!user.platformCredentials.twitter?.isConnected) {
+            throw new Error("User not connected to Twitter");
+        }
+
+        const accessToken = user.platformCredentials.twitter.accessToken;
+        const accessTokenSecret =
+            user.platformCredentials.twitter.accessTokenSecret;
+
+        // Create OAuth 1.0a instance
+        const oauth = OAuth({
+            consumer: {
+                key: process.env.TWITTER_API_KEY,
+                secret: process.env.TWITTER_API_SECRET,
+            },
+            signature_method: "HMAC-SHA1",
+            hash_function(base_string, key) {
+                return crypto
+                    .createHmac("sha1", key)
+                    .update(base_string)
+                    .digest("base64");
+            },
+        });
+
+        // Get user's ad accounts
+        const adAccountsResponse = await axios.get(
+            `${TWITTER_ADS_API_URL}/accounts`,
+            {
+                headers: {
+                    ...oauth.toHeader(
+                        oauth.authorize(
+                            {
+                                url: `${TWITTER_ADS_API_URL}/accounts`,
+                                method: "GET",
+                            },
+                            {
+                                key: accessToken,
+                                secret: accessTokenSecret,
+                            }
+                        )
+                    ),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (
+            !adAccountsResponse.data.data ||
+            adAccountsResponse.data.data.length === 0
+        ) {
+            throw new Error("No ad accounts found for this user");
+        }
+
+        // Use the first ad account
+        const adAccountId = adAccountsResponse.data.data[0].id;
+
+        // First, check if the campaign exists and get its details
+        const campaignResponse = await axios.get(
+            `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/campaigns/${platformCampaignId}`,
+            {
+                headers: {
+                    ...oauth.toHeader(
+                        oauth.authorize(
+                            {
+                                url: `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/campaigns/${platformCampaignId}`,
+                                method: "GET",
+                            },
+                            {
+                                key: accessToken,
+                                secret: accessTokenSecret,
+                            }
+                        )
+                    ),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (!campaignResponse.data.data) {
+            throw new Error(`Campaign with ID ${platformCampaignId} not found`);
+        }
+
+        // Check if campaign has line items (ad groups)
+        const lineItemsResponse = await axios.get(
+            `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/line_items`,
+            {
+                params: {
+                    campaign_ids: platformCampaignId,
+                },
+                headers: {
+                    ...oauth.toHeader(
+                        oauth.authorize(
+                            {
+                                url: `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/line_items`,
+                                method: "GET",
+                            },
+                            {
+                                key: accessToken,
+                                secret: accessTokenSecret,
+                            }
+                        )
+                    ),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (
+            !lineItemsResponse.data.data ||
+            lineItemsResponse.data.data.length === 0
+        ) {
+            throw new Error(
+                "Campaign does not have any line items (ad groups)"
+            );
+        }
+
+        // Check if campaign has promoted tweets (ads)
+        const promotedTweetsResponse = await axios.get(
+            `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/promoted_tweets`,
+            {
+                params: {
+                    line_item_ids: lineItemsResponse.data.data
+                        .map((item) => item.id)
+                        .join(","),
+                },
+                headers: {
+                    ...oauth.toHeader(
+                        oauth.authorize(
+                            {
+                                url: `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/promoted_tweets`,
+                                method: "GET",
+                            },
+                            {
+                                key: accessToken,
+                                secret: accessTokenSecret,
+                            }
+                        )
+                    ),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (
+            !promotedTweetsResponse.data.data ||
+            promotedTweetsResponse.data.data.length === 0
+        ) {
+            throw new Error("Campaign does not have any promoted tweets (ads)");
+        }
+
+        // Update campaign status to ACTIVE
+        await axios.put(
+            `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/campaigns/${platformCampaignId}`,
+            {
+                entity_status: "ACTIVE",
+            },
+            {
+                headers: {
+                    ...oauth.toHeader(
+                        oauth.authorize(
+                            {
+                                url: `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/campaigns/${platformCampaignId}`,
+                                method: "PUT",
+                            },
+                            {
+                                key: accessToken,
+                                secret: accessTokenSecret,
+                            }
+                        )
+                    ),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        // Also activate all line items (ad groups) in the campaign
+        for (const lineItem of lineItemsResponse.data.data) {
+            await axios.put(
+                `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/line_items/${lineItem.id}`,
+                {
+                    entity_status: "ACTIVE",
+                },
+                {
+                    headers: {
+                        ...oauth.toHeader(
+                            oauth.authorize(
+                                {
+                                    url: `${TWITTER_ADS_API_URL}/accounts/${adAccountId}/line_items/${lineItem.id}`,
+                                    method: "PUT",
+                                },
+                                {
+                                    key: accessToken,
+                                    secret: accessTokenSecret,
+                                }
+                            )
+                        ),
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        }
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Error launching Twitter campaign:",
+            error.response?.data || error.message
+        );
+        throw new Error(`Failed to launch Twitter campaign: ${error.message}`);
+    }
+};
+
 // Get campaign metrics from Twitter
 exports.getCampaignMetrics = async (platformCampaignId, user) => {
     try {

@@ -202,6 +202,113 @@ exports.deleteCampaign = async (platformCampaignId, user) => {
     }
 };
 
+// Launch a campaign on Snapchat (change status to ACTIVE and verify campaign is ready)
+exports.launchCampaign = async (platformCampaignId, user) => {
+    try {
+        // Check if user has connected to Snapchat
+        if (!user.platformCredentials.snapchat?.isConnected) {
+            throw new Error("User not connected to Snapchat");
+        }
+
+        const accessToken = user.platformCredentials.snapchat.accessToken;
+
+        // First, check if the campaign exists and get its details
+        const campaignResponse = await axios.get(
+            `${SNAPCHAT_API_URL}/campaigns/${platformCampaignId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        if (!campaignResponse.data.campaign) {
+            throw new Error(`Campaign with ID ${platformCampaignId} not found`);
+        }
+
+        // Check if campaign has ad squads (ad groups)
+        const adSquadsResponse = await axios.get(
+            `${SNAPCHAT_API_URL}/campaigns/${platformCampaignId}/adsquads`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        if (
+            !adSquadsResponse.data.adsquads ||
+            adSquadsResponse.data.adsquads.length === 0
+        ) {
+            throw new Error("Campaign does not have any ad squads (ad groups)");
+        }
+
+        // Check if ad squads have ads
+        let hasAds = false;
+        for (const adSquad of adSquadsResponse.data.adsquads) {
+            const adsResponse = await axios.get(
+                `${SNAPCHAT_API_URL}/adsquads/${adSquad.id}/ads`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            if (adsResponse.data.ads && adsResponse.data.ads.length > 0) {
+                hasAds = true;
+                break;
+            }
+        }
+
+        if (!hasAds) {
+            throw new Error("Campaign does not have any ads");
+        }
+
+        // Update campaign status to ACTIVE
+        await axios.put(
+            `${SNAPCHAT_API_URL}/campaigns/${platformCampaignId}`,
+            {
+                campaign: {
+                    status: "ACTIVE",
+                },
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        // Also activate all ad squads in the campaign
+        for (const adSquad of adSquadsResponse.data.adsquads) {
+            await axios.put(
+                `${SNAPCHAT_API_URL}/adsquads/${adSquad.id}`,
+                {
+                    adsquad: {
+                        status: "ACTIVE",
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        }
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Error launching Snapchat campaign:",
+            error.response?.data || error.message
+        );
+        throw new Error(`Failed to launch Snapchat campaign: ${error.message}`);
+    }
+};
+
 // Get campaign metrics from Snapchat
 exports.getCampaignMetrics = async (platformCampaignId, user) => {
     try {

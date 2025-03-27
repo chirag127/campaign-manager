@@ -6,7 +6,6 @@ const platformServices = require("../services");
 // @access  Private
 exports.createCampaign = async (req, res) => {
     try {
-
         // Add user to req.body
         req.body.user = req.user.id;
 
@@ -359,6 +358,27 @@ exports.launchCampaign = async (req, res) => {
     try {
         const { id, platform } = req.params;
 
+        // Validate platform parameter
+        const validPlatforms = [
+            "facebook",
+            "instagram",
+            "whatsapp",
+            "google",
+            "youtube",
+            "linkedin",
+            "twitter",
+            "snapchat",
+        ];
+
+        if (!validPlatforms.includes(platform.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid platform: ${platform}. Supported platforms are: ${validPlatforms.join(
+                    ", "
+                )}`,
+            });
+        }
+
         // Find campaign
         const campaign = await Campaign.findById(id);
 
@@ -370,15 +390,35 @@ exports.launchCampaign = async (req, res) => {
         }
 
         // Make sure user owns the campaign
-        if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+        if (
+            campaign.user.toString() !== req.user.id &&
+            req.user.role !== "admin"
+        ) {
             return res.status(401).json({
                 success: false,
                 message: `User ${req.user.id} is not authorized to launch this campaign`,
             });
         }
 
+        // Check if campaign is in a launchable state
+        if (campaign.status === "ACTIVE") {
+            return res.status(400).json({
+                success: false,
+                message: `Campaign is already active`,
+            });
+        }
+
+        if (campaign.status === "COMPLETED" || campaign.status === "ARCHIVED") {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot launch a ${campaign.status.toLowerCase()} campaign`,
+            });
+        }
+
         // Find the platform in the campaign's platforms array
-        const platformData = campaign.platforms.find(p => p.platform === platform.toUpperCase());
+        const platformData = campaign.platforms.find(
+            (p) => p.platform === platform.toUpperCase()
+        );
 
         if (!platformData) {
             return res.status(404).json({
@@ -394,6 +434,14 @@ exports.launchCampaign = async (req, res) => {
             });
         }
 
+        // Check if platform is already active
+        if (platformData.status === "ACTIVE") {
+            return res.status(400).json({
+                success: false,
+                message: `Campaign is already active on ${platform}`,
+            });
+        }
+
         // Get the appropriate service for the platform
         const service = platformServices[platform.toLowerCase()];
 
@@ -404,13 +452,59 @@ exports.launchCampaign = async (req, res) => {
             });
         }
 
+        // Check if user is connected to the platform
+        if (
+            !req.user.platformCredentials ||
+            !req.user.platformCredentials[platform.toLowerCase()] ||
+            !req.user.platformCredentials[platform.toLowerCase()].isConnected
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: `User is not connected to ${platform}. Please connect to ${platform} first.`,
+            });
+        }
+
         // Launch campaign on the platform
         await service.launchCampaign(platformData.platformCampaignId, req.user);
 
         // Update campaign status
         platformData.status = "ACTIVE";
-        campaign.status = "ACTIVE";
+
+        // If all platforms are active, set the campaign status to ACTIVE
+        const allPlatformsActive = campaign.platforms.every(
+            (p) => p.status === "ACTIVE"
+        );
+        if (allPlatformsActive) {
+            campaign.status = "ACTIVE";
+        }
+
         await campaign.save();
+
+        // Sync campaign metrics after launch
+        try {
+            if (service.getCampaignMetrics) {
+                const metrics = await service.getCampaignMetrics(
+                    platformData.platformCampaignId,
+                    req.user
+                );
+                if (metrics) {
+                    const platformIndex = campaign.platforms.findIndex(
+                        (p) => p.platform === platform.toUpperCase()
+                    );
+                    if (platformIndex !== -1) {
+                        campaign.platforms[platformIndex].metrics = metrics;
+                        campaign.platforms[platformIndex].lastSynced =
+                            Date.now();
+                        await campaign.save();
+                    }
+                }
+            }
+        } catch (syncError) {
+            console.error(
+                `Error syncing metrics after launch: ${syncError.message}`
+            );
+            // Continue even if metrics sync fails
+        }
 
         res.status(200).json({
             success: true,
@@ -418,7 +512,28 @@ exports.launchCampaign = async (req, res) => {
             data: campaign,
         });
     } catch (error) {
-        res.status(500).json({
+        console.error(`Error launching campaign: ${error.message}`);
+
+        // Determine appropriate status code based on error
+        let statusCode = 500;
+        if (
+            error.message.includes("not found") ||
+            error.message.includes("not exist")
+        ) {
+            statusCode = 404;
+        } else if (
+            error.message.includes("not authorized") ||
+            error.message.includes("not connected")
+        ) {
+            statusCode = 401;
+        } else if (
+            error.message.includes("does not have") ||
+            error.message.includes("invalid")
+        ) {
+            statusCode = 400;
+        }
+
+        res.status(statusCode).json({
             success: false,
             message: error.message,
         });

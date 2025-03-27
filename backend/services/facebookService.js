@@ -40,7 +40,13 @@ exports.exchangeCodeForTokens = async (code, redirectUri) => {
             // Provide more specific error message based on the response
             if (error.response.data && error.response.data.error) {
                 const fbError = error.response.data.error;
-                throw new Error(`Facebook API error: ${fbError.message || fbError.type || JSON.stringify(fbError)}`);
+                throw new Error(
+                    `Facebook API error: ${
+                        fbError.message ||
+                        fbError.type ||
+                        JSON.stringify(fbError)
+                    }`
+                );
             }
         } else if (error.request) {
             // The request was made but no response was received
@@ -49,7 +55,9 @@ exports.exchangeCodeForTokens = async (code, redirectUri) => {
         } else {
             // Something happened in setting up the request that triggered an Error
             console.error("Error message:", error.message);
-            throw new Error(`Failed to exchange code for Facebook tokens: ${error.message}`);
+            throw new Error(
+                `Failed to exchange code for Facebook tokens: ${error.message}`
+            );
         }
 
         // Default error if none of the above conditions are met
@@ -107,15 +115,32 @@ exports.createCampaign = async (campaign, user) => {
         const campaignId = campaignResponse.data.id;
 
         // If campaign has target audience and creative assets, create ad sets and ads
-        if (campaign.targetAudience && campaign.creativeAssets && campaign.creativeAssets.length > 0) {
+        if (
+            campaign.targetAudience &&
+            campaign.creativeAssets &&
+            campaign.creativeAssets.length > 0
+        ) {
             try {
                 // Create ad set
-                const adSetId = await createAdSet(campaign, campaignId, adAccountId, accessToken);
+                const adSetId = await createAdSet(
+                    campaign,
+                    campaignId,
+                    adAccountId,
+                    accessToken
+                );
 
                 // Upload creative assets and create ads
-                await createAdsWithCreatives(campaign, adSetId, adAccountId, accessToken);
+                await createAdsWithCreatives(
+                    campaign,
+                    adSetId,
+                    adAccountId,
+                    accessToken
+                );
             } catch (adSetError) {
-                console.error("Error creating ad sets or ads:", adSetError.message);
+                console.error(
+                    "Error creating ad sets or ads:",
+                    adSetError.message
+                );
                 // Continue with just the campaign created
             }
         }
@@ -422,12 +447,15 @@ async function createAdSet(campaign, campaignId, adAccountId, accessToken) {
         };
 
         // Add gender targeting if specified
-        if (campaign.targetAudience?.genders && campaign.targetAudience.genders.length > 0) {
+        if (
+            campaign.targetAudience?.genders &&
+            campaign.targetAudience.genders.length > 0
+        ) {
             // Facebook uses 1 for male, 2 for female
             const genderMapping = {
                 MALE: [1],
                 FEMALE: [2],
-                ALL: [1, 2]
+                ALL: [1, 2],
             };
 
             // Get the first gender in the array or default to ALL
@@ -436,23 +464,31 @@ async function createAdSet(campaign, campaignId, adAccountId, accessToken) {
         }
 
         // Add location targeting if specified
-        if (campaign.targetAudience?.locations && campaign.targetAudience.locations.length > 0) {
+        if (
+            campaign.targetAudience?.locations &&
+            campaign.targetAudience.locations.length > 0
+        ) {
             targeting.geo_locations = {
-                countries: campaign.targetAudience.locations
+                countries: campaign.targetAudience.locations,
             };
         } else {
             // Default to US if no locations specified
             targeting.geo_locations = {
-                countries: ["US"]
+                countries: ["US"],
             };
         }
 
         // Add interest targeting if specified
-        if (campaign.targetAudience?.interests && campaign.targetAudience.interests.length > 0) {
-            targeting.interests = campaign.targetAudience.interests.map(interest => ({
-                name: interest,
-                id: interest // This is a simplification; in reality, you'd need to use Facebook's interest IDs
-            }));
+        if (
+            campaign.targetAudience?.interests &&
+            campaign.targetAudience.interests.length > 0
+        ) {
+            targeting.interests = campaign.targetAudience.interests.map(
+                (interest) => ({
+                    name: interest,
+                    id: interest, // This is a simplification; in reality, you'd need to use Facebook's interest IDs
+                })
+            );
         }
 
         // Create the ad set
@@ -468,7 +504,9 @@ async function createAdSet(campaign, campaignId, adAccountId, accessToken) {
                 targeting,
                 status: campaign.status === "ACTIVE" ? "ACTIVE" : "PAUSED",
                 start_time: new Date(campaign.startDate).toISOString(),
-                end_time: campaign.endDate ? new Date(campaign.endDate).toISOString() : null,
+                end_time: campaign.endDate
+                    ? new Date(campaign.endDate).toISOString()
+                    : null,
             },
             {
                 params: {
@@ -488,7 +526,12 @@ async function createAdSet(campaign, campaignId, adAccountId, accessToken) {
 }
 
 // Create ads with creative assets
-async function createAdsWithCreatives(campaign, adSetId, adAccountId, accessToken) {
+async function createAdsWithCreatives(
+    campaign,
+    adSetId,
+    adAccountId,
+    accessToken
+) {
     try {
         // Process each creative asset
         for (const asset of campaign.creativeAssets) {
@@ -498,9 +541,17 @@ async function createAdsWithCreatives(campaign, adSetId, adAccountId, accessToke
             // Upload the image or video to Facebook
             let creativeId;
             if (asset.type === "IMAGE") {
-                creativeId = await uploadImageAsset(asset.url, adAccountId, accessToken);
+                creativeId = await uploadImageAsset(
+                    asset.url,
+                    adAccountId,
+                    accessToken
+                );
             } else if (asset.type === "VIDEO") {
-                creativeId = await uploadVideoAsset(asset.url, adAccountId, accessToken);
+                creativeId = await uploadVideoAsset(
+                    asset.url,
+                    adAccountId,
+                    accessToken
+                );
             } else {
                 // Skip unsupported asset types
                 continue;
@@ -518,8 +569,10 @@ async function createAdsWithCreatives(campaign, adSetId, adAccountId, accessToke
                         link_data: {
                             message: asset.description || "",
                             link: asset.url,
-                            image_hash: asset.type === "IMAGE" ? creativeId : null,
-                            video_id: asset.type === "VIDEO" ? creativeId : null,
+                            image_hash:
+                                asset.type === "IMAGE" ? creativeId : null,
+                            video_id:
+                                asset.type === "VIDEO" ? creativeId : null,
                             call_to_action: {
                                 type: mapCallToAction(asset.callToAction),
                             },
@@ -623,15 +676,12 @@ async function uploadVideoAsset(videoUrl, adAccountId, accessToken) {
 // Get the user's Facebook Page ID
 async function getPageId(accessToken) {
     try {
-        const response = await axios.get(
-            `${FB_API_URL}/me/accounts`,
-            {
-                params: {
-                    access_token: accessToken,
-                    fields: "id,name",
-                },
-            }
-        );
+        const response = await axios.get(`${FB_API_URL}/me/accounts`, {
+            params: {
+                access_token: accessToken,
+                fields: "id,name",
+            },
+        });
 
         if (!response.data.data || response.data.data.length === 0) {
             throw new Error("No Facebook Pages found for this user");
@@ -651,16 +701,16 @@ async function getPageId(accessToken) {
 // Map call to action to Facebook's format
 function mapCallToAction(callToAction) {
     const mapping = {
-        "LEARN_MORE": "LEARN_MORE",
-        "SIGN_UP": "SIGN_UP",
-        "DOWNLOAD": "DOWNLOAD",
-        "SHOP_NOW": "SHOP_NOW",
-        "BOOK_TRAVEL": "BOOK_TRAVEL",
-        "CONTACT_US": "CONTACT_US",
-        "DONATE_NOW": "DONATE_NOW",
-        "GET_OFFER": "GET_OFFER",
-        "GET_QUOTE": "GET_QUOTE",
-        "SUBSCRIBE": "SUBSCRIBE",
+        LEARN_MORE: "LEARN_MORE",
+        SIGN_UP: "SIGN_UP",
+        DOWNLOAD: "DOWNLOAD",
+        SHOP_NOW: "SHOP_NOW",
+        BOOK_TRAVEL: "BOOK_TRAVEL",
+        CONTACT_US: "CONTACT_US",
+        DONATE_NOW: "DONATE_NOW",
+        GET_OFFER: "GET_OFFER",
+        GET_QUOTE: "GET_QUOTE",
+        SUBSCRIBE: "SUBSCRIBE",
     };
 
     return mapping[callToAction] || "LEARN_MORE";
@@ -684,7 +734,7 @@ function getOptimizationGoal(objective) {
     return mapping[objective] || "REACH";
 }
 
-// Launch a campaign on Facebook (change status to ACTIVE)
+// Launch a campaign on Facebook (change status to ACTIVE and verify campaign is ready)
 exports.launchCampaign = async (platformCampaignId, user) => {
     try {
         // Check if user has connected to Facebook
@@ -693,6 +743,62 @@ exports.launchCampaign = async (platformCampaignId, user) => {
         }
 
         const accessToken = user.platformCredentials.facebook.accessToken;
+
+        // First, check if the campaign exists and get its details
+        const campaignResponse = await axios.get(
+            `${FB_API_URL}/${platformCampaignId}`,
+            {
+                params: {
+                    access_token: accessToken,
+                    fields: "id,name,status,objective,special_ad_categories",
+                },
+            }
+        );
+
+        if (!campaignResponse.data || !campaignResponse.data.id) {
+            throw new Error(`Campaign with ID ${platformCampaignId} not found`);
+        }
+
+        // Get ad sets for this campaign
+        const adSetsResponse = await axios.get(
+            `${FB_API_URL}/${platformCampaignId}/adsets`,
+            {
+                params: {
+                    access_token: accessToken,
+                    fields: "id,name,status,targeting,optimization_goal,billing_event,bid_amount,budget_remaining",
+                },
+            }
+        );
+
+        if (
+            !adSetsResponse.data.data ||
+            adSetsResponse.data.data.length === 0
+        ) {
+            throw new Error("Campaign does not have any ad sets");
+        }
+
+        // Check if ad sets have ads
+        let hasAds = false;
+        for (const adSet of adSetsResponse.data.data) {
+            const adsResponse = await axios.get(
+                `${FB_API_URL}/${adSet.id}/ads`,
+                {
+                    params: {
+                        access_token: accessToken,
+                        fields: "id,name,status,creative",
+                    },
+                }
+            );
+
+            if (adsResponse.data.data && adsResponse.data.data.length > 0) {
+                hasAds = true;
+                break;
+            }
+        }
+
+        if (!hasAds) {
+            throw new Error("Campaign does not have any ads");
+        }
 
         // Update campaign status to ACTIVE
         await axios.post(
@@ -707,12 +813,65 @@ exports.launchCampaign = async (platformCampaignId, user) => {
             }
         );
 
+        // Also activate all ad sets in the campaign
+        for (const adSet of adSetsResponse.data.data) {
+            await axios.post(
+                `${FB_API_URL}/${adSet.id}`,
+                {
+                    status: "ACTIVE",
+                },
+                {
+                    params: {
+                        access_token: accessToken,
+                    },
+                }
+            );
+
+            // Get ads for this ad set and activate them
+            const adsResponse = await axios.get(
+                `${FB_API_URL}/${adSet.id}/ads`,
+                {
+                    params: {
+                        access_token: accessToken,
+                        fields: "id,name,status",
+                    },
+                }
+            );
+
+            if (adsResponse.data.data && adsResponse.data.data.length > 0) {
+                for (const ad of adsResponse.data.data) {
+                    await axios.post(
+                        `${FB_API_URL}/${ad.id}`,
+                        {
+                            status: "ACTIVE",
+                        },
+                        {
+                            params: {
+                                access_token: accessToken,
+                            },
+                        }
+                    );
+                }
+            }
+        }
+
         return true;
     } catch (error) {
         console.error(
             "Error launching Facebook campaign:",
             error.response?.data || error.message
         );
-        throw new Error("Failed to launch Facebook campaign");
+
+        // Provide more specific error message
+        if (error.response?.data?.error) {
+            const fbError = error.response.data.error;
+            throw new Error(
+                `Failed to launch Facebook campaign: ${
+                    fbError.message || fbError.type || JSON.stringify(fbError)
+                }`
+            );
+        }
+
+        throw new Error(`Failed to launch Facebook campaign: ${error.message}`);
     }
-}
+};

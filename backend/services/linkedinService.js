@@ -341,6 +341,125 @@ exports.getCampaignMetrics = async (platformCampaignId, user) => {
     }
 };
 
+// Launch a campaign on LinkedIn (change status to ACTIVE and verify campaign is ready)
+exports.launchCampaign = async (platformCampaignId, user) => {
+    try {
+        // Check if user has connected to LinkedIn
+        if (!user.platformCredentials.linkedin?.isConnected) {
+            throw new Error("User not connected to LinkedIn");
+        }
+
+        const accessToken = user.platformCredentials.linkedin.accessToken;
+
+        // Get user's ad accounts
+        const adAccountsResponse = await axios.get(`${LI_MARKETING_API_URL}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        });
+
+        if (
+            !adAccountsResponse.data.elements ||
+            adAccountsResponse.data.elements.length === 0
+        ) {
+            throw new Error("No ad accounts found for this user");
+        }
+
+        // Use the first ad account
+        const adAccountId = adAccountsResponse.data.elements[0].id;
+
+        // First, check if the campaign exists and get its details
+        const campaignResponse = await axios.get(
+            `${LI_MARKETING_API_URL}/${adAccountId}/campaigns/${platformCampaignId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "X-Restli-Protocol-Version": "2.0.0",
+                },
+            }
+        );
+
+        if (!campaignResponse.data) {
+            throw new Error(`Campaign with ID ${platformCampaignId} not found`);
+        }
+
+        // Check if campaign has creatives/ads
+        const creativesResponse = await axios.get(
+            `${LI_MARKETING_API_URL}/${adAccountId}/creatives`,
+            {
+                params: {
+                    q: "search",
+                    search: {
+                        campaigns: [
+                            `urn:li:sponsoredCampaign:${platformCampaignId}`,
+                        ],
+                    },
+                },
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "X-Restli-Protocol-Version": "2.0.0",
+                },
+            }
+        );
+
+        if (
+            !creativesResponse.data.elements ||
+            creativesResponse.data.elements.length === 0
+        ) {
+            throw new Error("Campaign does not have any creatives or ads");
+        }
+
+        // Update campaign status to ACTIVE
+        await axios.post(
+            `${LI_MARKETING_API_URL}/${adAccountId}/campaigns/${platformCampaignId}`,
+            {
+                patch: {
+                    $set: {
+                        status: "ACTIVE",
+                    },
+                },
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "X-Restli-Protocol-Version": "2.0.0",
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        // Also activate all creatives associated with this campaign
+        for (const creative of creativesResponse.data.elements) {
+            await axios.post(
+                `${LI_MARKETING_API_URL}/${adAccountId}/creatives/${creative.id}`,
+                {
+                    patch: {
+                        $set: {
+                            status: "ACTIVE",
+                        },
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "X-Restli-Protocol-Version": "2.0.0",
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        }
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Error launching LinkedIn campaign:",
+            error.response?.data || error.message
+        );
+        throw new Error(`Failed to launch LinkedIn campaign: ${error.message}`);
+    }
+};
+
 // Get campaign leads from LinkedIn
 exports.getCampaignLeads = async (platformCampaignId, user) => {
     try {

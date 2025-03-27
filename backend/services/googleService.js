@@ -186,6 +186,115 @@ exports.deleteCampaign = async (platformCampaignId, user) => {
     }
 };
 
+// Launch a campaign on Google Ads (change status to ENABLED and verify campaign is ready)
+exports.launchCampaign = async (platformCampaignId, user) => {
+    try {
+        // Check if user has connected to Google
+        if (!user.platformCredentials.google?.isConnected) {
+            throw new Error("User not connected to Google");
+        }
+
+        // Create OAuth2 client
+        const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET
+        );
+
+        // Set credentials
+        oauth2Client.setCredentials({
+            access_token: user.platformCredentials.google.accessToken,
+            refresh_token: user.platformCredentials.google.refreshToken,
+        });
+
+        // Create Google Ads API client
+        const googleAdsClient = new google.ads({
+            version: "v17",
+            auth: oauth2Client,
+        });
+
+        // Get customer ID
+        const customerId = "1234567890"; // This would come from user's stored data
+
+        // First, check if the campaign is ready to be launched
+        const campaignResponse =
+            await googleAdsClient.customers.googleAds.search({
+                customerId,
+                query: `
+                SELECT
+                    campaign.id,
+                    campaign.status,
+                    campaign.campaign_budget,
+                    campaign.advertising_channel_type,
+                    campaign.advertising_channel_sub_type
+                FROM campaign
+                WHERE campaign.id = ${platformCampaignId}
+            `,
+            });
+
+        if (
+            !campaignResponse.results ||
+            campaignResponse.results.length === 0
+        ) {
+            throw new Error(`Campaign with ID ${platformCampaignId} not found`);
+        }
+
+        const campaignData = campaignResponse.results[0].campaign;
+
+        // Check if campaign has a budget
+        if (!campaignData.campaignBudget) {
+            throw new Error("Campaign does not have a budget set");
+        }
+
+        // Check if campaign has ad groups
+        const adGroupResponse =
+            await googleAdsClient.customers.googleAds.search({
+                customerId,
+                query: `
+                SELECT
+                    ad_group.id
+                FROM ad_group
+                WHERE ad_group.campaign = 'customers/${customerId}/campaigns/${platformCampaignId}'
+                LIMIT 1
+            `,
+            });
+
+        if (!adGroupResponse.results || adGroupResponse.results.length === 0) {
+            throw new Error("Campaign does not have any ad groups");
+        }
+
+        // Update campaign status to ENABLED (active)
+        await googleAdsClient.customers.campaigns.update({
+            updateMask: "status",
+            campaign: {
+                resourceName: `customers/${customerId}/campaigns/${platformCampaignId}`,
+                status: "ENABLED",
+            },
+        });
+
+        // Also enable all ad groups in the campaign
+        await googleAdsClient.customers.googleAds.mutate({
+            customerId,
+            mutateOperations: [
+                {
+                    adGroupOperation: {
+                        update: {
+                            resourceName: `customers/${customerId}/adGroups/*`,
+                            status: "ENABLED",
+                        },
+                        updateMask: "status",
+                    },
+                },
+            ],
+            partialFailure: true,
+        });
+
+        return true;
+    } catch (error) {
+        console.error("Error launching Google campaign:", error.message);
+        throw new Error(`Failed to launch Google campaign: ${error.message}`);
+    }
+};
+
 // Get campaign metrics from Google Ads
 exports.getCampaignMetrics = async (platformCampaignId, user) => {
     try {
