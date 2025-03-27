@@ -33,8 +33,7 @@ app.use("/api/leads", require("./routes/leadRoutes"));
 app.use("/api/platforms", require("./routes/platformRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
 
-// Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// We're not serving local files anymore since we're using FreeImageHost
 
 // Default route
 app.get("/", (req, res) => {

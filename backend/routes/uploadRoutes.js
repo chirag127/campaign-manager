@@ -3,28 +3,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { protect } = require("../middleware/auth");
+const { uploadToFreeImageHost } = require("../utils/imageUpload");
 
 const router = express.Router();
 
-// Configure storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, "../uploads");
-
-        // Create directory if it doesn't exist
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Create unique filename with original extension
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, uniqueSuffix + ext);
-    },
-});
+// Use memory storage since we'll be uploading to FreeImageHost
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
@@ -84,7 +68,7 @@ router.post(
     },
     upload.single("file"),
     handleMulterError,
-    (req, res) => {
+    async (req, res) => {
         try {
             if (!req.file) {
                 return res.status(400).json({
@@ -93,22 +77,34 @@ router.post(
                 });
             }
 
-            // Create file URL
-            const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${
-                req.file.filename
-            }`;
+            // Check if the file is an image
+            if (req.file.mimetype.startsWith("image/")) {
+                // Convert buffer to base64
+                const base64Image = req.file.buffer.toString("base64");
 
-            console.log("File uploaded successfully:", req.file.filename);
+                // Upload to FreeImageHost
+                const imageUrl = await uploadToFreeImageHost(base64Image);
 
-            res.status(200).json({
-                success: true,
-                data: {
-                    filename: req.file.filename,
-                    mimetype: req.file.mimetype,
-                    size: req.file.size,
-                    url: fileUrl,
-                },
-            });
+                console.log("Image uploaded to FreeImageHost:", imageUrl);
+
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        filename: req.file.originalname,
+                        mimetype: req.file.mimetype,
+                        size: req.file.size,
+                        url: imageUrl,
+                    },
+                });
+            } else {
+                // For non-image files (like videos), we'll need to handle differently
+                // FreeImageHost only supports images, so we might need another service for videos
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Only image uploads are currently supported with FreeImageHost",
+                });
+            }
         } catch (error) {
             console.error("Error uploading file:", error);
             res.status(500).json({

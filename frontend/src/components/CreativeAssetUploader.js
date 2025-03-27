@@ -98,6 +98,15 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
             return;
         }
 
+        // Show a message that only images are supported with FreeImageHost
+        showDialog(
+            "Feature Limitation",
+            "Currently, only image uploads are supported. Video uploads will be available in a future update."
+        );
+        return;
+
+        // Keeping the code below for future implementation
+        /*
         const hasPermission = await requestPermissions();
         if (!hasPermission) return;
 
@@ -117,6 +126,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
             console.error("Error picking video:", error);
             showDialog("Error", "Failed to pick video. Please try again.");
         }
+        */
     };
 
     // Upload asset to server
@@ -151,9 +161,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                     const newAsset = {
                         type,
                         url: uploadResponse.data.data.url,
-                        title: `${type === "IMAGE" ? "Image" : "Video"} ${
-                            assets.length + 1
-                        }`,
+                        title: `Image ${assets.length + 1}`,
                         description: "",
                         callToAction: "LEARN_MORE",
                     };
@@ -163,13 +171,20 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                 }
             } else {
                 // For mobile platforms
+                // Check if it's an image (FreeImageHost only supports images)
+                if (type !== "IMAGE") {
+                    setUploading(false);
+                    showDialog(
+                        "Feature Limitation",
+                        "Currently, only image uploads are supported. Video uploads will be available in a future update."
+                    );
+                    return;
+                }
                 const filename = uri.split("/").pop();
                 const match = /\\.(\w+)$/.exec(filename);
                 const fileType = match
                     ? `${type.toLowerCase()}/${match[1]}`
-                    : type === "IMAGE"
-                    ? "image/jpeg"
-                    : "video/mp4";
+                    : "image/jpeg";
 
                 // Create form data
                 const formData = new FormData();
@@ -185,9 +200,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                     const newAsset = {
                         type,
                         url: uploadResponse.data.data.url,
-                        title: `${type === "IMAGE" ? "Image" : "Video"} ${
-                            assets.length + 1
-                        }`,
+                        title: `Image ${assets.length + 1}`,
                         description: "",
                         callToAction: "LEARN_MORE",
                     };
