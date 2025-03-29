@@ -343,3 +343,17 @@ const sendTokenResponse = (user, statusCode, res) => {
         user,
     });
 };
+
+/*
+created register function to register a user
+created login function to login a user
+created getMe function to get the current logged in user
+created logout function to logout a user
+created deleteAccount function to delete a user account
+created forgotPassword function to send a reset password email to the user
+created resetPassword function to reset the password of the user
+created verifyResetCode function to verify the reset code sent to the user
+created sendTokenResponse function to send the token response to the client
+created updateUser function to update user details
+created changePassword function to allow users to change their password
+*/

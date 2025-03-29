@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Alert, Animated } from "react-native";
 import {
     TextInput,
     Button,
@@ -13,7 +13,10 @@ import {
     ActivityIndicator,
     Menu,
     Checkbox,
+    Surface,
 } from "react-native-paper";
+import { commonStyles, getShadow } from "../../utils/styleUtils";
+import theme from "../../theme/theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { campaignAPI, platformAPI } from "../../api/apiClient";
 import {
@@ -342,10 +345,25 @@ const CampaignCreateScreen = ({ route, navigation }) => {
         }
     };
 
+    // Animation for fade-in effect
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
+                <ActivityIndicator
+                    size="large"
+                    color={theme.colors.primary}
+                    animating={true}
+                />
                 <Text style={styles.loadingText}>Loading campaign data...</Text>
             </View>
         );
@@ -353,285 +371,320 @@ const CampaignCreateScreen = ({ route, navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.formContainer}>
-                <Title style={styles.formTitle}>
-                    {isEditing ? "Edit Campaign" : "Create New Campaign"}
-                </Title>
+            <Animated.View
+                style={[styles.formContainer, { opacity: fadeAnim }]}
+            >
+                <Surface
+                    style={[
+                        {
+                            padding: theme.spacing.md,
+                            borderRadius: theme.borderRadius.md,
+                            marginBottom: theme.spacing.md,
+                        },
+                        getShadow(2),
+                    ]}
+                >
+                    <Title style={styles.formTitle}>
+                        {isEditing ? "Edit Campaign" : "Create New Campaign"}
+                    </Title>
 
-                <TextInput
-                    label="Campaign Name *"
-                    value={name}
-                    onChangeText={setName}
-                    mode="outlined"
-                    style={styles.input}
-                    error={!!errors.name}
-                />
-                {errors.name && (
-                    <HelperText type="error">{errors.name}</HelperText>
-                )}
-
-                <TextInput
-                    label="Description"
-                    value={description}
-                    onChangeText={setDescription}
-                    mode="outlined"
-                    style={styles.input}
-                    multiline
-                    numberOfLines={3}
-                />
-
-                <Text style={styles.sectionTitle}>Campaign Settings</Text>
-
-                <View style={styles.dropdownContainer}>
-                    <Text style={styles.dropdownLabel}>Objective *</Text>
-                    <Menu
-                        visible={objectiveMenuVisible}
-                        onDismiss={() => setObjectiveMenuVisible(false)}
-                        anchor={
-                            <Button
-                                mode="outlined"
-                                onPress={() => setObjectiveMenuVisible(true)}
-                                style={[
-                                    styles.dropdownButton,
-                                    errors.objective && styles.errorBorder,
-                                ]}
-                            >
-                                {objective
-                                    ? CAMPAIGN_OBJECTIVES.find(
-                                          (obj) => obj.value === objective
-                                      )?.label
-                                    : "Select Objective"}
-                            </Button>
-                        }
-                    >
-                        {CAMPAIGN_OBJECTIVES.map((obj) => (
-                            <Menu.Item
-                                key={obj.value}
-                                onPress={() => {
-                                    setObjective(obj.value);
-                                    setObjectiveMenuVisible(false);
-                                }}
-                                title={obj.label}
-                            />
-                        ))}
-                    </Menu>
-                </View>
-                {errors.objective && (
-                    <HelperText type="error">{errors.objective}</HelperText>
-                )}
-
-                <View style={styles.dropdownContainer}>
-                    <Text style={styles.dropdownLabel}>Status</Text>
-                    <Menu
-                        visible={statusMenuVisible}
-                        onDismiss={() => setStatusMenuVisible(false)}
-                        anchor={
-                            <Button
-                                mode="outlined"
-                                onPress={() => setStatusMenuVisible(true)}
-                                style={styles.dropdownButton}
-                            >
-                                {
-                                    CAMPAIGN_STATUSES.find(
-                                        (s) => s.value === status
-                                    )?.label
-                                }
-                            </Button>
-                        }
-                    >
-                        {CAMPAIGN_STATUSES.map((s) => (
-                            <Menu.Item
-                                key={s.value}
-                                onPress={() => {
-                                    setStatus(s.value);
-                                    setStatusMenuVisible(false);
-                                }}
-                                title={s.label}
-                            />
-                        ))}
-                    </Menu>
-                </View>
-
-                <Text style={styles.sectionTitle}>Budget</Text>
-
-                <View style={styles.budgetContainer}>
                     <TextInput
-                        label="Daily Budget *"
-                        value={dailyBudget}
-                        onChangeText={setDailyBudget}
+                        label="Campaign Name *"
+                        value={name}
+                        onChangeText={setName}
                         mode="outlined"
-                        style={styles.budgetInput}
+                        style={styles.input}
+                        error={!!errors.name}
+                    />
+                    {errors.name && (
+                        <HelperText type="error">{errors.name}</HelperText>
+                    )}
+
+                    <TextInput
+                        label="Description"
+                        value={description}
+                        onChangeText={setDescription}
+                        mode="outlined"
+                        style={styles.input}
+                        multiline
+                        numberOfLines={3}
+                    />
+
+                    <Text style={styles.sectionTitle}>Campaign Settings</Text>
+
+                    <View style={styles.dropdownContainer}>
+                        <Text style={styles.dropdownLabel}>Objective *</Text>
+                        <Menu
+                            visible={objectiveMenuVisible}
+                            onDismiss={() => setObjectiveMenuVisible(false)}
+                            anchor={
+                                <Button
+                                    mode="outlined"
+                                    onPress={() =>
+                                        setObjectiveMenuVisible(true)
+                                    }
+                                    style={[
+                                        styles.dropdownButton,
+                                        errors.objective && styles.errorBorder,
+                                    ]}
+                                >
+                                    {objective
+                                        ? CAMPAIGN_OBJECTIVES.find(
+                                              (obj) => obj.value === objective
+                                          )?.label
+                                        : "Select Objective"}
+                                </Button>
+                            }
+                        >
+                            {CAMPAIGN_OBJECTIVES.map((obj) => (
+                                <Menu.Item
+                                    key={obj.value}
+                                    onPress={() => {
+                                        setObjective(obj.value);
+                                        setObjectiveMenuVisible(false);
+                                    }}
+                                    title={obj.label}
+                                />
+                            ))}
+                        </Menu>
+                    </View>
+                    {errors.objective && (
+                        <HelperText type="error">{errors.objective}</HelperText>
+                    )}
+
+                    <View style={styles.dropdownContainer}>
+                        <Text style={styles.dropdownLabel}>Status</Text>
+                        <Menu
+                            visible={statusMenuVisible}
+                            onDismiss={() => setStatusMenuVisible(false)}
+                            anchor={
+                                <Button
+                                    mode="outlined"
+                                    onPress={() => setStatusMenuVisible(true)}
+                                    style={styles.dropdownButton}
+                                >
+                                    {
+                                        CAMPAIGN_STATUSES.find(
+                                            (s) => s.value === status
+                                        )?.label
+                                    }
+                                </Button>
+                            }
+                        >
+                            {CAMPAIGN_STATUSES.map((s) => (
+                                <Menu.Item
+                                    key={s.value}
+                                    onPress={() => {
+                                        setStatus(s.value);
+                                        setStatusMenuVisible(false);
+                                    }}
+                                    title={s.label}
+                                />
+                            ))}
+                        </Menu>
+                    </View>
+
+                    <Text style={styles.sectionTitle}>Budget</Text>
+
+                    <View style={styles.budgetContainer}>
+                        <TextInput
+                            label="Daily Budget *"
+                            value={dailyBudget}
+                            onChangeText={setDailyBudget}
+                            mode="outlined"
+                            style={styles.budgetInput}
+                            keyboardType="numeric"
+                            error={!!errors.dailyBudget}
+                            left={<TextInput.Affix text="$" />}
+                        />
+                        <TextInput
+                            label="Currency"
+                            value={currency}
+                            onChangeText={setCurrency}
+                            mode="outlined"
+                            style={styles.currencyInput}
+                        />
+                    </View>
+                    {errors.dailyBudget && (
+                        <HelperText type="error">
+                            {errors.dailyBudget}
+                        </HelperText>
+                    )}
+
+                    <TextInput
+                        label="Lifetime Budget (Optional)"
+                        value={lifetimeBudget}
+                        onChangeText={setLifetimeBudget}
+                        mode="outlined"
+                        style={styles.input}
                         keyboardType="numeric"
-                        error={!!errors.dailyBudget}
                         left={<TextInput.Affix text="$" />}
                     />
-                    <TextInput
-                        label="Currency"
-                        value={currency}
-                        onChangeText={setCurrency}
-                        mode="outlined"
-                        style={styles.currencyInput}
-                    />
-                </View>
-                {errors.dailyBudget && (
-                    <HelperText type="error">{errors.dailyBudget}</HelperText>
-                )}
 
-                <TextInput
-                    label="Lifetime Budget (Optional)"
-                    value={lifetimeBudget}
-                    onChangeText={setLifetimeBudget}
-                    mode="outlined"
-                    style={styles.input}
-                    keyboardType="numeric"
-                    left={<TextInput.Affix text="$" />}
-                />
+                    <Text style={styles.sectionTitle}>Schedule</Text>
 
-                <Text style={styles.sectionTitle}>Schedule</Text>
-
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateLabel}>Start Date *</Text>
-                    <Button
-                        mode="outlined"
-                        onPress={() => setShowStartDatePicker(true)}
-                        style={styles.dateButton}
-                    >
-                        {startDate.toLocaleDateString()}
-                    </Button>
-                </View>
-
-                {showStartDatePicker && (
-                    <DateTimePicker
-                        value={startDate}
-                        mode="date"
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                            setShowStartDatePicker(false);
-                            if (selectedDate) {
-                                setStartDate(selectedDate);
-                            }
-                        }}
-                    />
-                )}
-
-                <View style={styles.switchContainer}>
-                    <Switch value={hasEndDate} onValueChange={setHasEndDate} />
-                    <Text style={styles.switchLabel}>Set End Date</Text>
-                </View>
-
-                {hasEndDate && (
                     <View style={styles.dateContainer}>
-                        <Text style={styles.dateLabel}>End Date *</Text>
+                        <Text style={styles.dateLabel}>Start Date *</Text>
                         <Button
                             mode="outlined"
-                            onPress={() => setShowEndDatePicker(true)}
-                            style={[
-                                styles.dateButton,
-                                errors.endDate && styles.errorBorder,
-                            ]}
+                            onPress={() => setShowStartDatePicker(true)}
+                            style={styles.dateButton}
                         >
-                            {endDate
-                                ? endDate.toLocaleDateString()
-                                : "Select End Date"}
+                            {startDate.toLocaleDateString()}
                         </Button>
                     </View>
-                )}
 
-                {hasEndDate && errors.endDate && (
-                    <HelperText type="error">{errors.endDate}</HelperText>
-                )}
+                    {showStartDatePicker && (
+                        <DateTimePicker
+                            value={startDate}
+                            mode="date"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                setShowStartDatePicker(false);
+                                if (selectedDate) {
+                                    setStartDate(selectedDate);
+                                }
+                            }}
+                        />
+                    )}
 
-                {showEndDatePicker && (
-                    <DateTimePicker
-                        value={endDate || new Date()}
-                        mode="date"
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                            setShowEndDatePicker(false);
-                            if (selectedDate) {
-                                setEndDate(selectedDate);
-                            }
-                        }}
+                    <View style={styles.switchContainer}>
+                        <Switch
+                            value={hasEndDate}
+                            onValueChange={setHasEndDate}
+                        />
+                        <Text style={styles.switchLabel}>Set End Date</Text>
+                    </View>
+
+                    {hasEndDate && (
+                        <View style={styles.dateContainer}>
+                            <Text style={styles.dateLabel}>End Date *</Text>
+                            <Button
+                                mode="outlined"
+                                onPress={() => setShowEndDatePicker(true)}
+                                style={[
+                                    styles.dateButton,
+                                    errors.endDate && styles.errorBorder,
+                                ]}
+                            >
+                                {endDate
+                                    ? endDate.toLocaleDateString()
+                                    : "Select End Date"}
+                            </Button>
+                        </View>
+                    )}
+
+                    {hasEndDate && errors.endDate && (
+                        <HelperText type="error">{errors.endDate}</HelperText>
+                    )}
+
+                    {showEndDatePicker && (
+                        <DateTimePicker
+                            value={endDate || new Date()}
+                            mode="date"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                setShowEndDatePicker(false);
+                                if (selectedDate) {
+                                    setEndDate(selectedDate);
+                                }
+                            }}
+                        />
+                    )}
+
+                    <Text style={styles.sectionTitle}>Platforms *</Text>
+
+                    {availablePlatforms.length === 0 ? (
+                        <View style={styles.noPlatformsContainer}>
+                            <Text style={styles.noPlatformsText}>
+                                No platforms connected. Please connect to
+                                platforms in the Platforms tab.
+                            </Text>
+                            <Button
+                                mode="contained"
+                                onPress={() => navigation.navigate("Platforms")}
+                                style={styles.connectButton}
+                            >
+                                Connect Platforms
+                            </Button>
+                        </View>
+                    ) : (
+                        <View style={styles.platformsContainer}>
+                            {availablePlatforms.map((platform) => (
+                                <View
+                                    key={platform.id}
+                                    style={styles.platformItem}
+                                >
+                                    <Checkbox
+                                        status={
+                                            selectedPlatforms.includes(
+                                                platform.id
+                                            )
+                                                ? "checked"
+                                                : "unchecked"
+                                        }
+                                        onPress={() =>
+                                            togglePlatform(platform.id)
+                                        }
+                                        color={platform.color}
+                                    />
+                                    <Text
+                                        style={styles.platformName}
+                                        onPress={() =>
+                                            togglePlatform(platform.id)
+                                        }
+                                    >
+                                        {platform.name}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
+                    {errors.platforms && (
+                        <HelperText type="error">{errors.platforms}</HelperText>
+                    )}
+
+                    <Text style={styles.sectionTitle}>Creative Assets</Text>
+                    <Text style={styles.helperText}>
+                        Upload images or videos to create ads for your campaign.
+                        These will be used to create ads on the selected
+                        platforms.
+                    </Text>
+
+                    <CreativeAssetUploader
+                        assets={creativeAssets}
+                        onChange={setCreativeAssets}
+                        maxAssets={5}
                     />
-                )}
 
-                <Text style={styles.sectionTitle}>Platforms *</Text>
+                    <Divider style={styles.divider} />
 
-                {availablePlatforms.length === 0 ? (
-                    <View style={styles.noPlatformsContainer}>
-                        <Text style={styles.noPlatformsText}>
-                            No platforms connected. Please connect to platforms
-                            in the Platforms tab.
-                        </Text>
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            mode="outlined"
+                            onPress={() => navigation.goBack()}
+                            style={styles.button}
+                            disabled={submitting}
+                            color={theme.colors.textSecondary}
+                        >
+                            Cancel
+                        </Button>
                         <Button
                             mode="contained"
-                            onPress={() => navigation.navigate("Platforms")}
-                            style={styles.connectButton}
+                            onPress={handleSubmit}
+                            style={styles.button}
+                            loading={submitting}
+                            disabled={
+                                submitting || availablePlatforms.length === 0
+                            }
+                            color={theme.colors.primary}
+                            labelStyle={{ color: "white", fontWeight: "bold" }}
                         >
-                            Connect Platforms
+                            {isEditing ? "Update Campaign" : "Create Campaign"}
                         </Button>
                     </View>
-                ) : (
-                    <View style={styles.platformsContainer}>
-                        {availablePlatforms.map((platform) => (
-                            <View key={platform.id} style={styles.platformItem}>
-                                <Checkbox
-                                    status={
-                                        selectedPlatforms.includes(platform.id)
-                                            ? "checked"
-                                            : "unchecked"
-                                    }
-                                    onPress={() => togglePlatform(platform.id)}
-                                    color={platform.color}
-                                />
-                                <Text
-                                    style={styles.platformName}
-                                    onPress={() => togglePlatform(platform.id)}
-                                >
-                                    {platform.name}
-                                </Text>
-                            </View>
-                        ))}
-                    </View>
-                )}
-                {errors.platforms && (
-                    <HelperText type="error">{errors.platforms}</HelperText>
-                )}
-
-                <Text style={styles.sectionTitle}>Creative Assets</Text>
-                <Text style={styles.helperText}>
-                    Upload images or videos to create ads for your campaign.
-                    These will be used to create ads on the selected platforms.
-                </Text>
-
-                <CreativeAssetUploader
-                    assets={creativeAssets}
-                    onChange={setCreativeAssets}
-                    maxAssets={5}
-                />
-
-                <Divider style={styles.divider} />
-
-                <View style={styles.buttonContainer}>
-                    <Button
-                        mode="outlined"
-                        onPress={() => navigation.goBack()}
-                        style={styles.button}
-                        disabled={submitting}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        mode="contained"
-                        onPress={handleSubmit}
-                        style={styles.button}
-                        loading={submitting}
-                        disabled={submitting || availablePlatforms.length === 0}
-                    >
-                        {isEditing ? "Update Campaign" : "Create Campaign"}
-                    </Button>
-                </View>
-            </View>
+                </Surface>
+            </Animated.View>
         </ScrollView>
     );
 };
@@ -639,116 +692,165 @@ const CampaignCreateScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F5F5F5",
+        backgroundColor: theme.colors.background,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: theme.colors.background,
     },
     loadingText: {
-        marginTop: 10,
+        marginTop: theme.spacing.md,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.primary,
     },
     formContainer: {
-        padding: 16,
+        padding: theme.spacing.md,
+        maxWidth: 800,
+        alignSelf: "center",
+        width: "100%",
     },
     formTitle: {
-        fontSize: 24,
-        marginBottom: 20,
+        fontSize: theme.typography.fontSizes.xxl,
+        fontWeight: theme.typography.fontWeights.bold,
+        marginBottom: theme.spacing.lg,
+        color: theme.colors.primary,
+        textAlign: "center",
     },
     input: {
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
+        backgroundColor: theme.colors.surface,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginTop: 20,
-        marginBottom: 10,
+        fontSize: theme.typography.fontSizes.lg,
+        fontWeight: theme.typography.fontWeights.bold,
+        marginTop: theme.spacing.lg,
+        marginBottom: theme.spacing.md,
+        color: theme.colors.primary,
+        borderLeftWidth: 4,
+        borderLeftColor: theme.colors.primary,
+        paddingLeft: theme.spacing.sm,
     },
     helperText: {
-        marginBottom: 10,
-        fontSize: 14,
-        color: "#666",
+        marginBottom: theme.spacing.md,
+        fontSize: theme.typography.fontSizes.sm,
+        color: theme.colors.textSecondary,
+        lineHeight: 20,
     },
     dropdownContainer: {
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
     },
     dropdownLabel: {
-        marginBottom: 5,
+        marginBottom: theme.spacing.xs,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.text,
     },
     dropdownButton: {
         width: "100%",
         justifyContent: "flex-start",
+        borderColor: theme.colors.border,
+        borderWidth: 1,
     },
     budgetContainer: {
         flexDirection: "row",
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
     },
     budgetInput: {
         flex: 3,
-        marginRight: 10,
+        marginRight: theme.spacing.md,
+        backgroundColor: theme.colors.surface,
     },
     currencyInput: {
         flex: 1,
+        backgroundColor: theme.colors.surface,
     },
     dateContainer: {
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
     },
     dateLabel: {
-        marginBottom: 5,
+        marginBottom: theme.spacing.xs,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.text,
     },
     dateButton: {
         width: "100%",
         justifyContent: "flex-start",
+        borderColor: theme.colors.border,
+        borderWidth: 1,
     },
     switchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
+        backgroundColor: theme.colors.surface,
+        padding: theme.spacing.sm,
+        borderRadius: theme.borderRadius.sm,
+        ...getShadow(1),
     },
     switchLabel: {
-        marginLeft: 10,
+        marginLeft: theme.spacing.sm,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.text,
     },
     platformsContainer: {
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
+        backgroundColor: theme.colors.surface,
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.md,
+        ...getShadow(1),
     },
     platformItem: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: theme.spacing.sm,
+        padding: theme.spacing.sm,
+        borderRadius: theme.borderRadius.sm,
+        backgroundColor: theme.colors.background,
     },
     platformName: {
-        marginLeft: 10,
-        fontSize: 16,
+        marginLeft: theme.spacing.sm,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.text,
     },
     noPlatformsContainer: {
         alignItems: "center",
-        padding: 20,
-        backgroundColor: "#EEEEEE",
-        borderRadius: 5,
-        marginBottom: 15,
+        padding: theme.spacing.lg,
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.md,
+        marginBottom: theme.spacing.md,
+        ...getShadow(2),
     },
     noPlatformsText: {
         textAlign: "center",
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.textSecondary,
     },
     connectButton: {
-        paddingHorizontal: 20,
+        paddingHorizontal: theme.spacing.lg,
+        borderRadius: theme.borderRadius.sm,
     },
     divider: {
-        marginVertical: 20,
+        marginVertical: theme.spacing.lg,
+        backgroundColor: theme.colors.border,
+        height: 1,
     },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 30,
+        marginBottom: theme.spacing.xl,
+        marginTop: theme.spacing.lg,
     },
     button: {
         flex: 1,
-        marginHorizontal: 5,
+        marginHorizontal: theme.spacing.xs,
+        borderRadius: theme.borderRadius.sm,
+        paddingVertical: theme.spacing.xs,
+        ...getShadow(2),
     },
     errorBorder: {
-        borderColor: "red",
+        borderColor: theme.colors.error,
     },
 });
 

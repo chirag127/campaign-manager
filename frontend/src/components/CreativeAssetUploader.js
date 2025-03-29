@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     StyleSheet,
     Image,
     Platform,
     TouchableOpacity,
+    Animated,
 } from "react-native";
 import {
     Button,
@@ -16,11 +17,14 @@ import {
     useTheme,
     ActivityIndicator,
     TextInput,
+    Surface,
 } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { uploadAPI } from "../api/apiClient";
 import showDialog from "../utils/showDialog";
+import { commonStyles, getShadow } from "../utils/styleUtils";
+import theme from "../theme/theme";
 
 const CALL_TO_ACTIONS = [
     "LEARN_MORE",
@@ -252,56 +256,114 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
         onChange(updatedAssets);
     };
 
+    // Animation value for card scale
+    const [scaleAnim] = useState(() => new Animated.Value(1));
+
+    // Animation for card press
+    const animatePress = () => {
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 0.95,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
     // Render asset card
     const renderAssetCard = (asset, index) => {
         const isSelected = selectedAsset === index;
 
         return (
-            <Card
+            <Animated.View
                 key={index}
-                style={[
-                    styles.assetCard,
-                    isSelected && {
-                        borderColor: theme.colors.primary,
-                        borderWidth: 2,
-                    },
-                ]}
-                onPress={() => {
-                    setSelectedAsset(index);
-                    setEditMode(true);
-                }}
+                style={[{ transform: [{ scale: scaleAnim }] }]}
             >
-                <Card.Content>
-                    <View style={styles.assetHeader}>
-                        <Title style={styles.assetTitle} numberOfLines={1}>
-                            {asset.title || `Asset ${index + 1}`}
-                        </Title>
-                        <IconButton
-                            icon="delete"
-                            size={20}
-                            onPress={() => removeAsset(index)}
-                        />
-                    </View>
-
-                    {asset.type === "IMAGE" ? (
-                        <Image
-                            source={{ uri: asset.url }}
-                            style={styles.assetPreview}
-                        />
-                    ) : (
-                        <View style={styles.videoPreview}>
-                            <IconButton icon="play" size={40} color="#fff" />
-                            <Text style={styles.videoLabel}>Video</Text>
+                <Surface
+                    style={[
+                        styles.assetCard,
+                        getShadow(isSelected ? 4 : 2),
+                        isSelected && {
+                            borderColor: theme.colors.primary,
+                            borderWidth: 2,
+                        },
+                    ]}
+                >
+                    <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => {
+                            animatePress();
+                            setSelectedAsset(index);
+                            setEditMode(true);
+                        }}
+                        style={styles.cardTouchable}
+                    >
+                        <View style={styles.assetHeader}>
+                            <Title style={styles.assetTitle} numberOfLines={1}>
+                                {asset.title || `Asset ${index + 1}`}
+                            </Title>
+                            <IconButton
+                                icon="delete"
+                                size={20}
+                                color={theme.colors.error}
+                                onPress={() => removeAsset(index)}
+                                style={styles.deleteButton}
+                            />
                         </View>
-                    )}
 
-                    <Chip style={styles.assetTypeChip}>{asset.type}</Chip>
+                        {asset.type === "IMAGE" ? (
+                            <View style={styles.imageContainer}>
+                                <Image
+                                    source={{ uri: asset.url }}
+                                    style={styles.assetPreview}
+                                    resizeMode="cover"
+                                />
+                            </View>
+                        ) : (
+                            <View style={styles.videoPreview}>
+                                <IconButton
+                                    icon="play"
+                                    size={40}
+                                    color="#fff"
+                                />
+                                <Text style={styles.videoLabel}>Video</Text>
+                            </View>
+                        )}
 
-                    {asset.callToAction && (
-                        <Chip style={styles.ctaChip}>{asset.callToAction}</Chip>
-                    )}
-                </Card.Content>
-            </Card>
+                        <View style={styles.chipContainer}>
+                            <Chip
+                                style={[
+                                    styles.assetTypeChip,
+                                    { backgroundColor: theme.colors.primary },
+                                ]}
+                                textStyle={{ color: "white" }}
+                            >
+                                {asset.type}
+                            </Chip>
+
+                            {asset.callToAction && (
+                                <Chip
+                                    style={[
+                                        styles.ctaChip,
+                                        {
+                                            backgroundColor:
+                                                theme.colors.secondary,
+                                        },
+                                    ]}
+                                    textStyle={{ color: "white" }}
+                                >
+                                    {asset.callToAction}
+                                </Chip>
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                </Surface>
+            </Animated.View>
         );
     };
 
@@ -312,9 +374,17 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
         const asset = assets[selectedAsset];
 
         return (
-            <Card style={styles.editorCard}>
-                <Card.Title title="Edit Asset Details" />
-                <Card.Content>
+            <Surface style={[styles.editorCard, getShadow(3)]}>
+                <View style={styles.editorHeader}>
+                    <Title style={styles.editorTitle}>Edit Asset Details</Title>
+                    <IconButton
+                        icon="close"
+                        size={24}
+                        onPress={() => setEditMode(false)}
+                        style={styles.closeButton}
+                    />
+                </View>
+                <View style={styles.editorContent}>
                     <TextInput
                         label="Title"
                         value={asset.title}
@@ -323,6 +393,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                         }
                         mode="outlined"
                         style={styles.input}
+                        theme={{ colors: { primary: theme.colors.primary } }}
                     />
 
                     <TextInput
@@ -339,6 +410,7 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                         style={styles.input}
                         multiline
                         numberOfLines={3}
+                        theme={{ colors: { primary: theme.colors.primary } }}
                     />
 
                     <Text style={styles.label}>Call to Action</Text>
@@ -356,6 +428,16 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                                 }
                                 style={styles.ctaOption}
                                 selectedColor={theme.colors.primary}
+                                textStyle={{
+                                    color:
+                                        asset.callToAction === cta
+                                            ? "white"
+                                            : theme.colors.text,
+                                    fontWeight:
+                                        asset.callToAction === cta
+                                            ? "bold"
+                                            : "normal",
+                                }}
                             >
                                 {cta}
                             </Chip>
@@ -366,17 +448,35 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                         mode="contained"
                         onPress={() => setEditMode(false)}
                         style={styles.doneButton}
+                        color={theme.colors.primary}
+                        labelStyle={{ color: "white", fontWeight: "bold" }}
                     >
-                        Done
+                        Save Changes
                     </Button>
-                </Card.Content>
-            </Card>
+                </View>
+            </Surface>
         );
     };
 
+    // Animation for fade-in effect
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
     return (
-        <View style={styles.container}>
-            <Title style={styles.title}>Creative Assets</Title>
+        <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+            <Surface style={styles.headerContainer}>
+                <Title style={styles.title}>Creative Assets</Title>
+                <Text style={styles.subtitle}>
+                    Add images to create engaging ads for your campaign
+                </Text>
+            </Surface>
 
             <View style={styles.buttonContainer}>
                 <Button
@@ -385,6 +485,9 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                     onPress={pickImage}
                     style={styles.uploadButton}
                     disabled={uploading || assets.length >= maxAssets}
+                    color={theme.colors.primary}
+                    labelStyle={{ color: "white", fontWeight: "bold" }}
+                    contentStyle={{ height: 45, justifyContent: "center" }}
                 >
                     Upload Image
                 </Button>
@@ -395,19 +498,23 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                     onPress={pickVideo}
                     style={styles.uploadButton}
                     disabled={uploading || assets.length >= maxAssets}
+                    color={theme.colors.secondary}
+                    labelStyle={{ color: "white", fontWeight: "bold" }}
+                    contentStyle={{ height: 45, justifyContent: "center" }}
                 >
                     Upload Video
                 </Button>
             </View>
 
             {uploading && (
-                <View style={styles.loadingContainer}>
+                <Surface style={styles.loadingContainer}>
                     <ActivityIndicator
                         size="large"
                         color={theme.colors.primary}
+                        animating={true}
                     />
                     <Text style={styles.loadingText}>Uploading asset...</Text>
-                </View>
+                </Surface>
             )}
 
             {assets.length > 0 ? (
@@ -417,104 +524,199 @@ const CreativeAssetUploader = ({ assets = [], onChange, maxAssets = 5 }) => {
                     )}
                 </View>
             ) : (
-                <Text style={styles.emptyText}>
-                    No creative assets added yet. Upload images or videos to
-                    create ads.
-                </Text>
+                <Surface style={styles.emptyContainer}>
+                    <IconButton
+                        icon="image-multiple"
+                        size={40}
+                        color={theme.colors.textLight}
+                    />
+                    <Text style={styles.emptyText}>
+                        No creative assets added yet. Upload images or videos to
+                        create engaging ads for your campaign.
+                    </Text>
+                </Surface>
             )}
 
             {renderAssetEditor()}
-        </View>
+        </Animated.View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 16,
+        marginVertical: theme.spacing.md,
+        paddingHorizontal: theme.spacing.sm,
+    },
+    headerContainer: {
+        padding: theme.spacing.md,
+        marginBottom: theme.spacing.md,
+        borderRadius: theme.borderRadius.md,
+        ...getShadow(2),
     },
     title: {
-        marginBottom: 8,
+        fontSize: theme.typography.fontSizes.xl,
+        fontWeight: theme.typography.fontWeights.bold,
+        color: theme.colors.primary,
+        marginBottom: theme.spacing.xs,
+    },
+    subtitle: {
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.textSecondary,
     },
     buttonContainer: {
         flexDirection: "row",
-        marginBottom: 16,
+        marginBottom: theme.spacing.lg,
+        justifyContent: "center",
     },
     uploadButton: {
-        marginRight: 8,
+        marginHorizontal: theme.spacing.sm,
+        borderRadius: theme.borderRadius.sm,
+        ...getShadow(2),
+        minWidth: 150,
     },
     loadingContainer: {
         alignItems: "center",
-        marginVertical: 16,
+        marginVertical: theme.spacing.lg,
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.md,
+        ...getShadow(1),
     },
     loadingText: {
-        marginTop: 8,
+        marginTop: theme.spacing.md,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.primary,
+        fontWeight: theme.typography.fontWeights.medium,
     },
     assetsContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
+        justifyContent: "space-between",
     },
     assetCard: {
         width: "48%",
-        marginBottom: 16,
-        marginRight: "2%",
+        marginBottom: theme.spacing.lg,
+        borderRadius: theme.borderRadius.md,
+        overflow: "hidden",
+    },
+    cardTouchable: {
+        padding: theme.spacing.md,
     },
     assetHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: theme.spacing.sm,
     },
     assetTitle: {
-        fontSize: 16,
+        fontSize: theme.typography.fontSizes.md,
+        fontWeight: theme.typography.fontWeights.semibold,
         flex: 1,
+        color: theme.colors.text,
+    },
+    deleteButton: {
+        margin: 0,
+        padding: 0,
+    },
+    imageContainer: {
+        borderRadius: theme.borderRadius.sm,
+        overflow: "hidden",
+        ...getShadow(1),
     },
     assetPreview: {
-        height: 120,
-        borderRadius: 4,
-        marginVertical: 8,
+        height: 140,
+        borderRadius: theme.borderRadius.sm,
+        backgroundColor: theme.colors.background,
     },
     videoPreview: {
-        height: 120,
+        height: 140,
         backgroundColor: "#000",
-        borderRadius: 4,
-        marginVertical: 8,
+        borderRadius: theme.borderRadius.sm,
+        marginVertical: theme.spacing.sm,
         justifyContent: "center",
         alignItems: "center",
+        ...getShadow(1),
     },
     videoLabel: {
         color: "#fff",
+        fontWeight: theme.typography.fontWeights.medium,
+    },
+    chipContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        marginTop: theme.spacing.sm,
     },
     assetTypeChip: {
-        alignSelf: "flex-start",
-        marginBottom: 4,
+        marginRight: theme.spacing.xs,
+        marginBottom: theme.spacing.xs,
+        height: 28,
     },
     ctaChip: {
-        alignSelf: "flex-start",
+        marginBottom: theme.spacing.xs,
+        height: 28,
+    },
+    emptyContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        padding: theme.spacing.xl,
+        borderRadius: theme.borderRadius.md,
+        backgroundColor: theme.colors.background,
+        ...getShadow(1),
     },
     emptyText: {
         textAlign: "center",
-        marginVertical: 24,
+        marginTop: theme.spacing.md,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.textSecondary,
         fontStyle: "italic",
+        maxWidth: 300,
     },
     editorCard: {
-        marginTop: 16,
+        marginTop: theme.spacing.lg,
+        borderRadius: theme.borderRadius.md,
+        overflow: "hidden",
+    },
+    editorHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: theme.spacing.md,
+        backgroundColor: theme.colors.primary,
+    },
+    editorTitle: {
+        color: "white",
+        fontSize: theme.typography.fontSizes.lg,
+        fontWeight: theme.typography.fontWeights.bold,
+    },
+    closeButton: {
+        margin: 0,
+    },
+    editorContent: {
+        padding: theme.spacing.md,
     },
     input: {
-        marginBottom: 12,
+        marginBottom: theme.spacing.md,
+        backgroundColor: theme.colors.surface,
     },
     label: {
-        marginBottom: 8,
-        fontWeight: "bold",
+        marginBottom: theme.spacing.sm,
+        fontWeight: theme.typography.fontWeights.semibold,
+        fontSize: theme.typography.fontSizes.md,
+        color: theme.colors.text,
     },
     ctaContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        marginBottom: 16,
+        marginBottom: theme.spacing.lg,
     },
     ctaOption: {
-        margin: 4,
+        margin: theme.spacing.xs,
+        borderRadius: theme.borderRadius.sm,
     },
     doneButton: {
-        marginTop: 8,
+        marginTop: theme.spacing.md,
+        borderRadius: theme.borderRadius.sm,
+        paddingVertical: theme.spacing.xs,
+        ...getShadow(2),
     },
 });
 
