@@ -574,6 +574,7 @@ exports.launchCampaign = async (req, res) => {
 
 
 /*
+feat: add campaign management functions for creation, retrieval, updating, and archiving
 created createCampaign function to create a new campaign
 created getCampaigns function to get all campaigns for a user
 created getCampaign function to get a single campaign by id
