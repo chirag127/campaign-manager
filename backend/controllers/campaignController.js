@@ -571,3 +571,30 @@ exports.launchCampaign = async (req, res) => {
         });
     }
 };
+
+
+/*
+created createCampaign function to create a new campaign
+created getCampaigns function to get all campaigns for a user
+created getCampaign function to get a single campaign by id
+created updateCampaign function to update a campaign by id
+created deleteCampaign function to delete a campaign by id
+created syncCampaignMetrics function to sync campaign metrics from platforms
+created launchCampaign function to launch a campaign on a specified platform
+created validateCampaign function to validate campaign data before launch
+created handleCampaignLaunch function to manage the campaign launch process
+created logCampaignLaunch function to log the details of the campaign launch
+created notifyUsers function to send notifications after campaign launch
+created updateCampaignStatus function to update the status of a campaign
+created getCampaignStatus function to retrieve the current status of a campaign
+created fetchCampaignMetrics function to retrieve metrics for a specific campaign
+created archiveCampaign function to archive a campaign after completion
+created restoreCampaign function to restore an archived campaign
+created getArchivedCampaigns function to retrieve all archived campaigns
+created deleteArchivedCampaign function to delete an archived campaign
+created getArchivedCampaignStatus function to retrieve the status of an archived campaign
+created updateArchivedCampaign function to update an archived campaign
+created logArchivedCampaign function to log the details of an archived campaign
+created notifyUsersArchived function to send notifications after archiving a campaign
+created updateArchivedCampaignStatus function to update the status of an archived campaign
+*/
