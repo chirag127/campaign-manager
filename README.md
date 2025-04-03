@@ -7,7 +7,7 @@ A comprehensive campaign management application that allows users to create and 
 1. Clone the repository
 
     ```
-    git clone https://github.com/yourusername/campaign-manager-app.git
+    git clone https://github.com/chirag127/campaign-manager-app.git
     cd campaign-manager-app
     ```
     2. Install backend dependencies

@@ -574,6 +574,8 @@ exports.launchCampaign = async (req, res) => {
 
 
 /*
+frontend part of the feedback button
+solving some of the issues with responsiveness on tablet and mobile
 feat: add campaign management functions for creation, retrieval, updating, and archiving
 created createCampaign function to create a new campaign
 created getCampaigns function to get all campaigns for a user
