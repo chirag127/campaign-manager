@@ -591,6 +591,7 @@ created notifyUsers function to send notifications after campaign launch
 created updateCampaignStatus function to update the status of a campaign
 created getCampaignStatus function to retrieve the current status of a campaign
 created fetchCampaignMetrics function to retrieve metrics for a specific campaign
+created getCampaignMetrics function to retrieve metrics for a specific campaign
 created archiveCampaign function to archive a campaign after completion
 created restoreCampaign function to restore an archived campaign
 created getArchivedCampaigns function to retrieve all archived campaigns
