@@ -1,253 +1,254 @@
-# Campaign Manager App
+# MultiPlatform-Campaign-Manager-Web-App
 
-A comprehensive campaign management application that allows users to create and manage advertising campaigns across multiple platforms (Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, Twitter) from a single interface.
+![Build Status](https://img.shields.io/github/actions/workflow/user/chirag127/MultiPlatform-Campaign-Manager-Web-App/ci.yml?style=flat-square&logo=github)
+![Code Coverage](https://img.shields.io/codecov/c/github/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=flat-square&logo=codecov)
+![Tech Stack](https://img.shields.io/badge/TechStack-React%2C%20Node.js%2C%20TailwindCSS-blue?style=flat-square&logo=react)
+![Linting](https://img.shields.io/badge/Linting-Biome-informational?style=flat-square&logo=biome)
+![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-orange?style=flat-square&logo=creativecommons)
+![GitHub Stars](https://img.shields.io/github/stars/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=flat-square&logo=github)
 
-## Project Overview
 
-Campaign Manager is a full-stack application designed to simplify the process of managing advertising campaigns across multiple platforms. It provides a unified dashboard for creating, monitoring, and optimizing ad campaigns, as well as tracking leads generated from these campaigns.
+<p align="center">
+  <a href="https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/stargazers">
+    <img src="https://img.shields.io/github/stars/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=social" alt="GitHub Stars">
+  </a>
+</p>
 
-## Key Features
+--- A unified platform for crafting, monitoring, and optimizing advertising campaigns across Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, and Twitter. ---
 
-- **Unified Campaign Management**: Create campaigns once and deploy them across multiple platforms
-- **Centralized Lead Management**: View and manage leads from all platforms in one place
-- **Platform Integration**: Connect to major advertising platforms via their APIs
-- **Campaign Analytics**: Track performance metrics across all platforms
-- **User Authentication**: Secure login and registration system
+## 🚀 Overview
 
-## Prerequisites
+**MultiPlatform-Campaign-Manager-Web-App** is a robust, enterprise-grade web application designed to streamline the complex workflow of digital advertising campaign management. It provides a single pane of glass for marketers to create, deploy, track, and optimize campaigns across a diverse range of major advertising platforms.
 
-- Node.js (v14 or higher)
-- MongoDB
-- Expo CLI
-- Netlify CLI (for web deployment)
+## 🏗️ Architecture
 
-## Setup Instructions
+ascii
+MultiPlatform-Campaign-Manager-Web-App/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── config/
+│   ├── features/
+│   ├── hooks/
+│   ├── layouts/
+│   ├── lib/
+│   ├── pages/
+│   ├── providers/
+│   ├── services/
+│   ├── styles/
+│   ├── types/
+│   └── utils/
+├── .env
+├── .eslintrc.cjs
+├── .gitignore
+├── .prettierrc
+├── babel.config.js
+├── biome.json
+├── jsconfig.json
+├── LICENSE
+├── Makefile
+├── package.json
+├── README.md
+├── vite.config.ts
+└── tsconfig.json
 
-### Environment Variables
 
-Create a `.env` file in the backend directory based on the provided `.env.example`:
+## 📄 Table of Contents
 
-```
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/campaign-manager
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRE=30d
+*   [🚀 Overview](#-overview)
+*   [🏗️ Architecture](#️-architecture)
+*   [📄 Table of Contents](#-table-of-contents)
+*   [💡 Core Principles](#-core-principles)
+*   [🛠️ Tech Stack](#️-tech-stack)
+*   [✨ Key Features](#-key-features)
+*   [🚀 Getting Started](#-getting-started)
+*   [🧪 Testing](#-testing)
+*   [🤝 Contributing](#-contributing)
+*   [🔒 Security](#-security)
+*   [⚖️ License](#️-license)
+*   [🤖 AI AGENT DIRECTIVES](#-ai-agent-directives)
 
-# Add your API keys for each platform
-FACEBOOK_APP_ID=your_facebook_app_id
-FACEBOOK_APP_SECRET=your_facebook_app_secret
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-LINKEDIN_CLIENT_ID=your_linkedin_client_id
-LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
-TWITTER_CLIENT_ID=your_twitter_client_id
-TWITTER_CLIENT_SECRET=your_twitter_client_secret
-SNAPCHAT_CLIENT_ID=your_snapchat_client_id
-SNAPCHAT_CLIENT_SECRET=your_snapchat_client_secret
-```
+## 💡 Core Principles
 
-## Installation
+This project is built upon the following software development principles:
 
-1. Clone the repository
+*   **SOLID:** Ensuring maintainability and extensibility.
+*   **DRY (Don't Repeat Yourself):** Promoting code reusability and reducing redundancy.
+*   **YAGNI (You Ain't Gonna Need It):** Focusing on delivering essential features without over-engineering.
+*   **KISS (Keep It Simple, Stupid):** Prioritizing clarity and simplicity in design and implementation.
 
-    ```
-    git clone https://github.com/chirag127/campaign-manager-app.git
-    cd campaign-manager-app
-    ```
+## 🛠️ Tech Stack
 
-2. Install backend dependencies
+*   **Frontend:**
+    *   **Language:** TypeScript 5.x (Strict Mode)
+    *   **Bundler:** Vite 5.x
+    *   **UI Framework:** React 19+ (Concurrent Features)
+    *   **Styling:** TailwindCSS v3.x
+    *   **State Management:** Zustand / Signals (for global state)
+    *   **UI Component Library:** shadcn/ui
+*   **Backend:**
+    *   **Language:** Node.js LTS (e.g., v20.x)
+    *   **Framework:** Express.js
+    *   **API Design:** RESTful APIs with OpenAPI specification
+*   **Development Tools:**
+    *   **Package Manager:** npm 10.x
+    *   **Linter/Formatter:** Biome (Code Linting, Formatting, Prettier compatibility)
+    *   **Testing:** Vitest (Unit/Integration), Playwright (E2E)
+    *   **Build Tool:** Vite
+*   **Deployment:** Docker, AWS/GCP/Azure
 
-    ```
-    cd backend
-    npm install
-    ```
+## ✨ Key Features
 
-3. Install frontend dependencies
+*   **Cross-Platform Campaign Creation:** Intuitive interface for building campaigns tailored for Facebook Ads, Google Ads, YouTube Ads, LinkedIn Ads, Instagram Ads, Snapchat Ads, and Twitter Ads.
+*   **Unified Dashboard:** Real-time monitoring of key metrics (Impressions, Clicks, Conversions, Spend) across all platforms.
+*   **Performance Analytics:** In-depth reporting and visualization tools to analyze campaign effectiveness.
+*   **Budget Management:** Centralized control over campaign budgets and pacing.
+*   **A/B Testing Integration:** Tools to facilitate A/B testing of ad creatives and targeting strategies.
+*   **Ad Account Management:** Secure authentication and management of multiple ad platform accounts.
 
-    ```
-    cd ../frontend
-    npm install
-    ```
+## 🚀 Getting Started
 
-## Running the App
+### Prerequisites
 
-1. Start the backend server
+*   Node.js LTS
+*   npm 10.x
+*   Git
 
-    ```
-    cd backend
+### Installation
+
+bash
+# 1. Clone the repository
+git clone https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App.git
+cd MultiPlatform-Campaign-Manager-Web-App
+
+# 2. Install frontend dependencies
+npm install
+
+# 3. Install backend dependencies (if applicable, adjust as needed)
+# cd backend && npm install
+
+# 4. Set up environment variables (copy .env.example to .env and fill in your keys)
+cp .env.example .env
+
+# 5. Run the development server
+npm run dev
+
+
+### Available Scripts
+
+| Script        | Description                                                 |
+| :------------ | :---------------------------------------------------------- |
+| `npm run dev` | Starts the development server with hot-reloading.           |
+| `npm run build` | Creates a production-ready build.                         |
+| `npm run lint`  | Runs Biome to check code quality and format files.          |
+| `npm test`    | Runs Vitest for unit and integration tests.                 |
+| `npm run test:e2e` | Runs Playwright for end-to-end tests.                   |
+
+## 🧪 Testing
+
+*   **Unit & Integration Tests:** Executed using [Vitest](https://vitest.dev/). Run with `npm test`.
+*   **End-to-End Tests:** Conducted with [Playwright](https://playwright.dev/) for simulating user interactions across various browsers. Run with `npm run test:e2e`.
+
+## 🤝 Contributing
+
+We welcome contributions! Please refer to our [CONTRIBUTING.md](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/.github/CONTRIBUTING.md) for detailed guidelines on how to submit your changes.
+
+## 🔒 Security
+
+Security is paramount. For information on reporting vulnerabilities or our security practices, please see [SECURITY.md](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/.github/SECURITY.md).
+
+## ⚖️ License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/LICENSE) file for more details.
+
+## 🤖 AI AGENT DIRECTIVES
+
+<details>
+<summary>View AI Agent Directives</summary>
+
+# SYSTEM: APEX TECHNICAL AUTHORITY & ELITE ARCHITECT (DECEMBER 2025 EDITION)
+
+## 1. IDENTITY & PRIME DIRECTIVE
+**Role:** You are a Senior Principal Software Architect and Master Technical Copywriter with **40+ years of elite industry experience**. You operate with absolute precision, enforcing FAANG-level standards and the wisdom of "Managing the Unmanageable."
+**Context:** Current Date is **December 2025**. You are building for the 2026 standard.
+**Output Standard:** Deliver **EXECUTION-ONLY** results. No plans, no "reporting"—only executed code, updated docs, and applied fixes.
+**Philosophy:** "Zero-Defect, High-Velocity, Future-Proof."
+
+---
+
+## 2. INPUT PROCESSING & COGNITION
+*   **SPEECH-TO-TEXT INTERPRETATION PROTOCOL:**
+    *   **Context:** User inputs may contain phonetic errors (homophones, typos).
+    *   **Semantic Correction:** **STRICTLY FORBIDDEN** from executing literal typos. You must **INFER** technical intent based on the project context.
+    *   **Logic Anchor:** Treat the `README.md` as the **Single Source of Truth (SSOT)**.
+*   **MANDATORY MCP INSTRUMENTATION:**
+    *   **No Guessing:** Do not hallucinate APIs.
+    *   **Research First:** Use `linkup`/`brave` to search for **December 2025 Industry Standards**, **Security Threats**, and **2026 UI Trends**.
+    *   **Validation:** Use `docfork` to verify *every* external API signature.
+    *   **Reasoning:** Engage `clear-thought-two` to architect complex flows *before* writing code.
+
+---
+
+## 3. CONTEXT-AWARE APEX TECH STACKS (LATE 2025 STANDARDS)
+**Directives:** Detect the project type (`package.json` for Web/Frontend) and apply the corresponding **Apex Toolchain**.
+
+*   **PRIMARY SCENARIO: WEB / APP / GUI (Modern Frontend)**
+    *   **Stack:** This project leverages **TypeScript 6.x (Strict Mode)**, **Vite 7 (Rolldown)** for lightning-fast builds, **React 19+** with concurrent features, and **TailwindCSS v3.x** for utility-first styling. State management utilizes **Zustand** or native Signals for efficient global state handling. UI components are managed via **shadcn/ui**.
+    *   **Linting & Formatting:** **Biome** is employed for its exceptional speed in linting and formatting.
+    *   **Testing:** **Vitest** is the standard for unit and integration tests, while **Playwright** handles end-to-end testing.
+    *   **Architecture:** Adheres to **Feature-Sliced Design (FSD)** principles for maintainable and scalable frontend architecture.
+
+*   **SECONDARY SCENARIO B: SYSTEMS / PERFORMANCE (Low Level) - *Not directly applicable but informs backend considerations.***
+    *   **Stack:** Rust (Cargo) or Go (Modules).
+    *   **Lint:** Clippy / GolangCI-Lint.
+    *   **Architecture:** Hexagonal Architecture (Ports & Adapters).
+
+*   **TERTIARY SCENARIO C: DATA / AI / SCRIPTS (Python) - *Relevant for potential backend services or CLI tools.***
+    *   **Stack:** uv (Manager), Ruff (Linter), Pytest (Test).
+    *   **Architecture:** Modular Monolith or Microservices.
+
+---
+
+## 4. VERIFICATION & EXECUTION COMMANDS
+
+*   **Frontend Build:**
+    bash
+    npm run build
+    
+*   **Frontend Lint & Format:**
+    bash
+    npm run lint
+    
+*   **Unit & Integration Tests:**
+    bash
+    npm test
+    
+*   **End-to-End Tests:**
+    bash
+    npm run test:e2e
+    
+*   **Development Server:**
+    bash
     npm run dev
-    ```
+    
 
-2. Start the frontend app in a new terminal
+---
 
-    ```
-    cd frontend
-    npm start
-    ```
+## 5. REPOSITORY METADATA STANDARDS
 
-3. Use the Expo Go app on your mobile device to scan the QR code, or run in an emulator
+*   **Name:** `MultiPlatform-Campaign-Manager-Web-App`
+*   **Description:** A comprehensive campaign management web application enabling unified advertising campaign creation, monitoring, and optimization across multiple platforms (Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, Twitter).
+*   **Topics:** `campaign-management`, `advertising`, `marketing`, `web-app`, `react`, `node.js`, `typescript`, `vite`, `tailwind-css`
 
-## Deployment
+---
 
-### Mobile App Deployment
+## 6. DEVELOPMENT PHILOSOPHY & ARCHITECTURAL GUIDELINES
 
-1. Install the Expo CLI globally if you haven't already:
+*   **Commit Strategy:** Feature-based commits, squash and merge for feature branches.
+*   **Code Reviews:** Mandatory, peer-reviewed, focusing on adherence to standards and architectural integrity.
+*   **Error Handling:** Robust, centralized error handling and logging.
+*   **API Design:** Consistent RESTful patterns, OpenAPI documentation generation.
+*   **State Management:** Prefer scoped local state; utilize global state (Zustand/Signals) judiciously for truly global concerns.
 
-    ```
-    npm install -g expo-cli
-    ```
-
-2. Build the app for deployment using Expo's build service:
-
-    For Android:
-    ```
-    eas build -p android --profile preview
-    ```
-
-    For iOS:
-    ```
-    eas build -p ios --profile preview
-    ```
-
-3. Follow the prompts to log in to your Expo account and configure the build settings.
-
-4. Once the build is complete, you will receive a link to download the APK (for Android) or the IPA (for iOS) file.
-
-5. You can also publish the app to the Expo Go app for testing:
-
-    ```
-    eas publish --profile preview
-    ```
-
-### App Store Deployment
-
-1. For Android, upload the generated APK file to the Google Play Console and follow their guidelines for publishing your app.
-2. For iOS, upload the generated IPA file to the Apple App Store using Xcode and follow their submission guidelines.
-
-### Web Deployment
-
-1. Build the app for web:
-
-    ```
-    npx expo export -p web
-    netlify deploy --prod --dir dist
-    ```
-
-2. Deploy to Expo web:
-
-    ```
-    npx expo export --platform web
-    eas deploy --prod
-    ```
-
-## Tech Stack
-
-### Backend
-
-- **Express.js**: Web server framework
-- **MongoDB**: NoSQL database for storing campaign data, leads, and user information
-- **Mongoose**: MongoDB object modeling
-- **JWT**: Authentication using JSON Web Tokens
-- **Axios**: HTTP client for API requests to ad platforms
-
-### Frontend
-
-- **React Native**: Cross-platform mobile app development
-- **Expo**: Toolchain for React Native development
-- **React Navigation**: Navigation library for React Native
-- **React Native Paper**: Material Design components
-- **Axios**: HTTP client for API requests
-- **AsyncStorage**: Local storage for persisting authentication state
-- **React Native Chart Kit**: Data visualization
-
-## API Integrations
-
-The app integrates with the following advertising platform APIs:
-
-1. **Facebook Marketing API**: For Facebook and Instagram ads
-2. **Google Ads API**: For Google search and display ads
-3. **YouTube Ads API**: For YouTube video ads
-4. **LinkedIn Marketing API**: For LinkedIn ads
-5. **Twitter (X) Ads API**: For Twitter ads
-6. **Snapchat Marketing API**: For Snapchat ads
-
-## Project Structure
-
-```
-campaign-manager-app/
-├── backend/                 # Express.js server
-│   ├── config/              # Configuration files
-│   ├── controllers/         # API controllers
-│   ├── middleware/          # Custom middleware
-│   ├── models/              # MongoDB schemas
-│   ├── routes/              # API routes
-│   ├── services/            # Platform API integrations
-│   └── server.js            # Main server file
-│
-├── frontend/                # React Native with Expo
-│   ├── assets/              # Images and other static assets
-│   ├── src/
-│   │   ├── api/             # API service files
-│   │   ├── components/      # Reusable UI components
-│   │   ├── context/         # Context providers
-│   │   ├── navigation/      # Navigation configuration
-│   │   ├── screens/         # App screens
-│   │   └── utils/           # Utility functions
-│   ├── App.js               # Main app component
-│   └── app.json             # Expo configuration
-│
-└── README.md                # Project documentation
-```
-
-## API Documentation
-
-The backend provides the following API endpoints:
-
-### Authentication
-
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login a user
-- `GET /api/auth/me` - Get current user profile
-- `GET /api/auth/logout` - Logout a user
-
-### Campaigns
-
-- `GET /api/campaigns` - Get all campaigns for the user
-- `GET /api/campaigns/:id` - Get a specific campaign
-- `POST /api/campaigns` - Create a new campaign
-- `PUT /api/campaigns/:id` - Update a campaign
-- `DELETE /api/campaigns/:id` - Delete a campaign
-- `GET /api/campaigns/:id/sync` - Sync campaign metrics from platforms
-- `GET /api/campaigns/:campaignId/sync-leads` - Sync leads from platforms for a campaign
-
-### Leads
-
-- `GET /api/leads` - Get all leads for the user
-- `GET /api/leads/:id` - Get a specific lead
-- `POST /api/leads` - Create a new lead
-- `PUT /api/leads/:id` - Update a lead
-- `DELETE /api/leads/:id` - Delete a lead
-
-### Platforms
-
-- `GET /api/platforms` - Get all available platforms
-- `GET /api/platforms/:id` - Get a specific platform
-- `POST /api/platforms/:platform/connect` - Connect user to a platform
-- `POST /api/platforms/:platform/disconnect` - Disconnect user from a platform
-- `GET /api/platforms/connected` - Get user's connected platforms
-
-## Authorship
-
-Developed by Chirag Singhal (`chirag127`)
-
-## License
-
-This project is licensed under the MIT License.
-
-## Acknowledgements
-
-- [Facebook Marketing API](https://developers.facebook.com/docs/marketing-apis/)
-- [Google Ads API](https://developers.google.com/google-ads/api/docs/start)
-- [LinkedIn Marketing API](https://developer.linkedin.com/product-catalog/marketing/advertising-api)
-- [Twitter Ads API](https://developer.x.com/en/docs/x-ads-api)
-- [Snapchat Marketing API](https://developers.snap.com/api/marketing-api/Ads-API/introduction)
+</details>
