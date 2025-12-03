@@ -1,58 +1,49 @@
-name: CI
-
-# This workflow will do a combination of formatting, linting, testing and building
-# For more information see: https://docs.github.com/en/actions/automating-build-and-test-with-github-actions
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x] # Use Node.js 20.x as the latest LTS and common base for modern JS projects
+    timeout-minutes: 15
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Node.js ${{ matrix.node-version }}
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm' # Cache npm dependencies
+        node-version: '20' # Using a recent LTS version for production stability
+        cache: 'npm' # Cache npm dependencies for faster builds
 
     - name: Install Dependencies
-      run: npm ci
+      run: npm ci # Ensures a clean and consistent dependency installation
 
-    # This step assumes linting and formatting checks are part of the npm scripts.
-    # Based on the 'Apex Technical Authority' standards, Biome is preferred, but if the repo
-    # uses npm scripts that integrate standard JS linters (like ESLint/Prettier) or Ruff (for JS/TS), 
-    # this step will run those.
-    - name: Lint and Format Check
-      run: npm run lint # Assuming 'lint' script in package.json handles formatting and linting checks
+    - name: Run Biome Linter and Formatter Check
+      run: npx biome check --linter --formatter --max-diagnostics 0 . # Checks for linting and formatting errors, fails if any found
 
-    # This step assumes testing is configured via npm scripts and uses Vitest (as per common JS stack). 
-    # If the project deviates and uses Jest or another runner, update this command.
-    - name: Run Unit Tests
-      run: npm test # Assuming 'test' script in package.json runs Vitest or similar
+    - name: Run Unit Tests with Vitest
+      run: npm test # Assuming package.json has "test": "vitest"
 
-    # Add E2E tests if applicable, e.g., using Playwright. For a web app, this is crucial.
-    # This requires a build step first.
-    # - name: Build for E2E Tests
-    #   run: npm run build # Assuming 'build' script creates a production-ready build
+    - name: Build Project
+      run: npm run build # Creates a production-ready build of the web application
 
-    # - name: Run End-to-End Tests
-    #   run: npx playwright install && npm run e2e-test # Assuming 'e2e-test' script runs Playwright tests
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium # Install only necessary browsers
 
-    # Example for code coverage reporting if using a service like Codecov or Coveralls
-    # - name: Upload coverage reports to Codecov
-    #   uses: codecov/codecov-action@v4
-    #   env:
-    #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/pull/*/merge'
+    - name: Serve Build for E2E Tests
+      run: npm run preview &
+      env:
+        PORT: 3000 # Specify a port for the preview server
+
+    - name: Run E2E Tests with Playwright
+      run: npx playwright test # Executes end-to-end tests against the served build
+      env:
+        PLAYWRIGHT_BASE_URL: http://localhost:3000 # Point Playwright to the local server
