@@ -1,98 +1,38 @@
---- 
-name: OmniCampaign Pull Request
-about: Propose a change to the OmniCampaign web application.
-title: "[TYPE] Short Description of Change"
-labels: 'PR: Review Required'
-assignees: ''
----
+## Pull Request Checklist
 
-## 🚀 Pull Request Checklist
+Before submitting your pull request, please ensure that the following requirements are met:
 
-Please ensure you've completed all relevant steps before submitting your PR. This helps us merge your changes faster and maintain high code quality.
+- [ ] **Code Style:** Ensure your code adheres to the project's coding style guidelines. Run `biome format` and `biome lint` locally to catch any style issues. Prefer Prettier config if one is available in the project
+- [ ] **Unit Tests:** Write comprehensive unit tests for any new or modified code. Aim for high code coverage.
+- [ ] **Integration Tests:** If applicable, include integration tests to verify the interactions between different components.
+- [ ] **Documentation:** Update relevant documentation to reflect the changes introduced by your pull request.
+- [ ] **Comments:** Add clear and concise comments to explain complex logic or non-obvious code sections.
+- [ ] **Branch:** Create your pull request from a dedicated branch, not from `main` or `master`.
+- [ ] **Commit Messages:** Write meaningful commit messages that follow the conventional commits standard.
+- [ ] **Dependencies:** Ensure that all dependencies are properly managed and updated.
+- [ ] **Security:** Address any potential security vulnerabilities identified during code review.
+- [ ] **Performance:** Optimize code for performance and efficiency.
+- [ ] **Changelog:** Update the CHANGELOG.md file (if it exists) with a summary of your changes.
 
-- [ ] I have read and followed the [CONTRIBUTING.md](https://github.com/chirag127/OmniCampaign-AI-Powered-Multi-Platform-Ad-Manager-Web-App/blob/main/.github/CONTRIBUTING.md) guidelines.
-- [ ] My code follows the project's established [code style](#code-style).
-- [ ] I have performed a self-review of my own code.
-- [ ] I have added **thorough** tests that prove my fix is effective or my feature works.
-- [ ] New and existing unit/integration tests pass locally with my changes (`npm test`).
-- [ ] Any UI changes have been tested across common browsers (Chrome, Firefox, Safari, Edge).
-- [ ] I have updated the documentation where necessary (e.g., README.md, API docs, inline comments).
-- [ ] My changes do not introduce new linting warnings or errors.
-- [ ] I have checked for and resolved any merge conflicts.
-- [ ] This PR does not introduce any breaking changes or deprecated features. (If it does, please explain in "Breaking Changes").
-- [ ] For major features, I have considered the performance implications and potential security vulnerabilities.
+## Description
 
----
+Please provide a detailed description of the changes introduced by your pull request. Explain the problem you are solving, the approach you have taken, and any relevant context or background information.
 
-## 🎯 What does this PR do?
+## Related Issues
 
-Please provide a clear and concise description of the changes introduced by this pull request.
-If this PR addresses an existing issue, please link it here: `Fixes #ISSUE_NUMBER` or `Resolves #ISSUE_NUMBER`.
+If your pull request addresses any specific issues, please link them below:
 
----
+- Issue # [Insert Issue Number Here]
 
-## ✨ Type of Change
+## Additional Notes
 
-What type of change does your PR introduce? (Select all that apply)
+Include any additional information or context that may be helpful for reviewers. This could include:
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Refactoring (code improvement without changing external behavior)
-- [ ] Documentation update (e.g., README, inline comments, JSDoc)
-- [ ] Build/CI/CD update (e.g., GitHub Actions, Vite config)
-- [ ] Chore (e.g., dependency updates, linting rules)
+- Trade-offs considered
+- Alternative approaches explored
+- Known limitations
+- Future improvements
 
----
+## Screenshots (if applicable)
 
-## 📸 Screenshots / Gifs (If applicable)
-
-If your changes involve UI modifications, please include screenshots or animated GIFs demonstrating the changes.
-
----
-
-## 🧪 How to Test This PR
-
-Please describe the steps needed to test your changes. Include specific commands, user flows, or scenarios.
-
-1.  Clone the repository: `git clone https://github.com/chirag127/OmniCampaign-AI-Powered-Multi-Platform-Ad-Manager-Web-App.git`
-2.  Navigate to the project directory: `cd OmniCampaign-AI-Powered-Multi-Platform-Ad-Manager-Web-App`
-3.  Install dependencies: `npm install`
-4.  Start the development server: `npm run dev`
-5.  Open your browser to `http://localhost:5173` (or whatever `npm run dev` outputs).
-6.  **[ADD SPECIFIC TESTING STEPS HERE]**
-    *   Example: Log in with credentials `user/pass`.
-    *   Example: Navigate to "Campaigns" tab.
-    *   Example: Create a new campaign with these settings...
-
----
-
-## 💻 Code Style
-
-This project adheres to strict code quality standards enforced by **Biome**.
-Please ensure your code is formatted and linted correctly.
-
-To check and fix formatting:
-bash
-npx biome format --write .
-npx biome lint --apply-unsafe .
-
-
----
-
-## 📝 Reviewer Notes
-
-Any specific areas or concerns you'd like the reviewer to pay extra attention to?
-For example: "Please review the `src/components/CampaignAnalytics.jsx` file for performance implications."
-
----
-
-## 🔒 Security Considerations
-
-If your changes involve security-sensitive areas (e.g., authentication, data handling, API calls), please describe any security considerations addressed or new ones introduced.
-
----
-
-## 📄 License
-
-By submitting this pull request, you agree to license your contributions under the [CC BY-NC 4.0 License](https://github.com/chirag127/OmniCampaign-AI-Powered-Multi-Platform-Ad-Manager-Web-App/blob/main/LICENSE).
+If your pull request introduces any visual changes, please include screenshots to illustrate the before and after states.
