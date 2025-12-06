@@ -1,53 +1,81 @@
 ---
-name: "🐞 Bug Report"
-about: "Report a reproducible bug to help improve OmniCampaign."
-labels: ["bug", "priority: high"]
-assignees: []
+name: Bug Report
+about: Report a bug in the OmniCampaign system.
+title: "BUG: [Concise description of the bug]"
+labels: bug
+assignees: "chirag127"
+
+body:
+  - type: markdown
+    attributes:
+      value: |3-line
+        # Bug Report for OmniCampaign-MultiPlatform-Ad-Management-Web-App
+
+        Please provide a clear and detailed description of the bug you encountered. Ensure all relevant information is included to help us diagnose and resolve the issue efficiently.
+
+        **Repository:** `https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App`
+
+---1-
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Please specify the operating system, browser (including version), and Node.js version you are using.
+      placeholder: "e.g., macOS 13.6, Chrome 119.0.6045.159, Node.js 18.18.0"
+    validations:
+      required: true
+
+  - type: input
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a clear, step-by-step sequence of actions that will lead to the bug.
+      placeholder: "1. Log in to the application.
+2. Navigate to the 'Campaigns' section.
+3. Click 'Create New Campaign' ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "e.g., The campaign should be saved and appear in the list."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Please be specific.
+      placeholder: "e.g., An error message appeared, and the campaign was not saved."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information, such as screenshots, logs, or context about the campaign setup.
+      placeholder: "(Optional) You can paste screenshots here or describe related campaign settings."
+    validations:
+      required: false
+
 ---
 
-## 🐞 Bug Report
+## AI Agent Directives Compliance Check
 
-### Is this a regression?
+This report is being filed against the **OmniCampaign-MultiPlatform-Ad-Management-Web-App** (`https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App`).
 
-- [ ] Yes, this used to work in a previous version.
-- [ ] No, this is a new issue or I'm not sure.
+By reporting this bug, you are helping to maintain the high standards of the Apex Technical Authority. Please ensure your report is clear and actionable, enabling our AI agents to identify and fix the issue promptly according to the following principles:
 
-### Current Behavior
+*   **Tech Stack:** TypeScript, React, TailwindCSS v4, Node.js, Vite.
+*   **Architecture:** Feature-Sliced Design (FSD) for Frontend, likely Modular Monolith or Microservices for Backend.
+*   **Linting/Formatting:** Biome.
+*   **Testing:** Vitest (Unit), Playwright (E2E).
+*   **Principles:** SOLID, DRY, YAGNI.
 
-A clear and concise description of the bug's current behavior. What is happening that shouldn't be?
-
-### Expected Behavior
-
-A clear and concise description of what you expected to happen. What should the system do instead?
-
-### Steps To Reproduce
-
-**Please provide a clear and detailed set of steps to reproduce the bug.**
-
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-### Screenshots / Videos
-
-If applicable, add screenshots or a short video to help explain your problem. (You can drag and drop files directly into this issue).
-
-### Environment
-
-markdown
-- OS: [e.g. macOS, Windows, Linux]
-- Browser: [e.g. Chrome, Firefox, Safari]
-- Browser Version: [e.g. 120.0.6099.199]
-- OmniCampaign Version: [e.g. 1.0.0, commit hash]
-- Node.js Version: [e.g. 18.17.1]
-- npm/yarn/uv Version: [e.g. 9.6.7]
-
-
-### Possible Solution
-
-If you have a proposed fix, a workaround, or insights into the root cause, please describe it here.
-
-### Additional Context
-
-Add any other context about the problem here. This could include error messages from the browser console, network requests, or relevant log entries.
+Your detailed input is crucial for our Zero-Defect, High-Velocity, Future-Proof development cycle.
