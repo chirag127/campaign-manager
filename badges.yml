@@ -1,0 +1,66 @@
+# .github/badges.yml
+# This file serves as a centralized registry for all repository badges.
+# It allows for easy updates and consistency across documentation.
+# Style Guide: Use 'flat-square' for a modern, clean look.
+
+badges:
+  - name: "Build Status"
+    url: "https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/actions/workflows/ci.yml"
+    markdown: "[
+![Build Status](https://img.shields.io/github/actions/workflow/status/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/ci.yml?branch=main&style=flat-square)
+](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/actions/workflows/ci.yml)"
+
+  - name: "License"
+    url: "https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/LICENSE"
+    markdown: "[
+![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg?style=flat-square)
+](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/LICENSE)"
+
+  - name: "GitHub Stars"
+    url: "https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/stargazers"
+    markdown: "[
+![GitHub Stars](https://img.shields.io/github/stars/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App?style=flat-square)
+](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/stargazers)"
+
+  - name: "Last Commit"
+    url: "https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/commits/main"
+    markdown: "[
+![GitHub last commit](https://img.shields.io/github/last-commit/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App?style=flat-square)
+](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/commits/main)"
+
+  - name: "Repo Size"
+    url: "https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App"
+    markdown: "[
+![GitHub repo size](https://img.shields.io/github/repo-size/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App?style=flat-square)
+](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App)"
+
+tech_stack:
+  - name: "TypeScript"
+    markdown: "
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+"
+
+  - name: "React"
+    markdown: "
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+"
+
+  - name: "Node.js"
+    markdown: "
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+"
+
+  - name: "Vite"
+    markdown: "
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+"
+
+  - name: "Tailwind CSS"
+    markdown: "
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+"
+
+  - name: "Biome"
+    markdown: "
+![Formatted with Biome](https://img.shields.io/badge/Formatted_with-Biome-60A5FA?style=flat-square&logo=biome&logoColor=white)
+"
