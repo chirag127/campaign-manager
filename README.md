@@ -1,175 +1,228 @@
-# MultiPlatform-Campaign-Manager-Web-App
-
-![Build Status](https://img.shields.io/github/actions/workflow/user/chirag127/MultiPlatform-Campaign-Manager-Web-App/ci.yml?style=flat-square&logo=github)
-![Code Coverage](https://img.shields.io/codecov/c/github/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=flat-square&logo=codecov)
-![Tech Stack](https://img.shields.io/badge/TechStack-React%2C%20Node.js%2C%20TailwindCSS-blue?style=flat-square&logo=react)
-![Linting](https://img.shields.io/badge/Linting-Biome-informational?style=flat-square&logo=biome)
-![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-orange?style=flat-square&logo=creativecommons)
-![GitHub Stars](https://img.shields.io/github/stars/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=flat-square&logo=github)
-
-
 <p align="center">
-  <a href="https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/stargazers">
-    <img src="https://img.shields.io/github/stars/chirag127/MultiPlatform-Campaign-Manager-Web-App?style=social" alt="GitHub Stars">
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App">
+    <img src="https://raw.githubusercontent.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/main/assets/omnicampaign-logo.svg" alt="OmniCampaign Logo" width="180">
   </a>
 </p>
 
---- A unified platform for crafting, monitoring, and optimizing advertising campaigns across Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, and Twitter. ---
+<h1 align="center">OmniCampaign-MultiPlatform-Ad-Management-Web-App</h1>
 
-## 🚀 Overview
+<p align="center">
+  <!-- Build Status -->
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/ci.yml?branch=main&style=flat-square&label=Build%20Status" alt="Build Status">
+  </a>
+  <!-- Code Coverage -->
+  <a href="https://codecov.io/gh/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App">
+    <img src="https://img.shields.io/codecov/c/github/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App?style=flat-square&token=YOUR_CODECOV_TOKEN" alt="Code Coverage">
+  </a>
+  <!-- Tech Stack -->
+  <img src="https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20TS%20%7C%20Vite%20%7C%20Tailwind-blueviolet?style=flat-square" alt="Tech Stack">
+  <!-- Lint/Format -->
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App">
+    <img src="https://img.shields.io/badge/Lint%2FFmt-Biome-informational?style=flat-square" alt="Lint/Format">
+  </a>
+  <!-- License -->
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey?style=flat-square" alt="License">
+  </a>
+  <!-- GitHub Stars -->
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/stargazers">
+    <img src="https://img.shields.io/github/stars/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App?style=flat-square&colorA=white&colorB=orange&label=Stars" alt="GitHub Stars">
+  </a>
+</p>
 
-**MultiPlatform-Campaign-Manager-Web-App** is a robust, enterprise-grade web application designed to streamline the complex workflow of digital advertising campaign management. It provides a single pane of glass for marketers to create, deploy, track, and optimize campaigns across a diverse range of major advertising platforms.
+<p align="center">
+  <a href="https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/stargazers">
+    <img src="https://img.shields.io/badge/Star%20⭐%20this%20Repo-brightgreen?style=social&label=Stars" alt="Star this Repo">
+  </a>
+</p>
 
-## 🏗️ Architecture
+## BLUF: The Apex Digital Advertising Command Center 🚀
 
-ascii
-MultiPlatform-Campaign-Manager-Web-App/
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── config/
-│   ├── features/
-│   ├── hooks/
-│   ├── layouts/
-│   ├── lib/
-│   ├── pages/
-│   ├── providers/
-│   ├── services/
-│   ├── styles/
-│   ├── types/
-│   └── utils/
-├── .env
-├── .eslintrc.cjs
-├── .gitignore
-├── .prettierrc
-├── babel.config.js
-├── biome.json
-├── jsconfig.json
-├── LICENSE
-├── Makefile
-├── package.json
-├── README.md
-├── vite.config.ts
-└── tsconfig.json
+OmniCampaign revolutionizes digital advertising by providing a single, intuitive platform to create, manage, and analyze campaigns across Facebook, Google, and LinkedIn. Designed for marketing professionals, it streamlines multi-platform ad operations with advanced analytics and automation capabilities.
 
+## 📖 Table of Contents
 
-## 📄 Table of Contents
+*   [BLUF: The Apex Digital Advertising Command Center 🚀](#bluf-the-apex-digital-advertising-command-center-rocket)
+*   [Key Features](#key-features)
+*   [Architecture](#architecture)
+*   [Tech Stack](#tech-stack)
+*   [Getting Started](#getting-started)
+    *   [Prerequisites](#prerequisites)
+    *   [Installation](#installation)
+    *   [Environment Variables](#environment-variables)
+    *   [Running Locally](#running-locally)
+*   [Development Scripts](#development-scripts)
+*   [AI Agent Directives](#ai-agent-directives)
+*   [Contributing](#contributing)
+*   [Security](#security)
+*   [License](#license)
 
-*   [🚀 Overview](#-overview)
-*   [🏗️ Architecture](#️-architecture)
-*   [📄 Table of Contents](#-table-of-contents)
-*   [💡 Core Principles](#-core-principles)
-*   [🛠️ Tech Stack](#️-tech-stack)
-*   [✨ Key Features](#-key-features)
-*   [🚀 Getting Started](#-getting-started)
-*   [🧪 Testing](#-testing)
-*   [🤝 Contributing](#-contributing)
-*   [🔒 Security](#-security)
-*   [⚖️ License](#️-license)
-*   [🤖 AI AGENT DIRECTIVES](#-ai-agent-directives)
+## Key Features
 
-## 💡 Core Principles
+*   **Unified Dashboard:** Manage all ad campaigns (Facebook, Google, LinkedIn) from a centralized interface.
+*   **Cross-Platform Campaign Creation:** Design and deploy campaigns with consistent messaging across multiple networks simultaneously.
+*   **Real-time Performance Analytics:** Gain deep insights with customizable dashboards, reporting on spend, impressions, clicks, conversions, and ROI across all platforms.
+*   **Audience Synchronization:** Sync custom audiences and targeting parameters to ensure consistency and efficiency.
+*   **Automated Scheduling & Budgeting:** Implement advanced scheduling and budget allocation rules to optimize campaign performance.
+*   **Ad Creative Management:** Upload, store, and manage ad creatives (images, videos, copy) in a central library.
+*   **Role-Based Access Control:** Secure and manage team access with granular permissions.
 
-This project is built upon the following software development principles:
+## Architecture
 
-*   **SOLID:** Ensuring maintainability and extensibility.
-*   **DRY (Don't Repeat Yourself):** Promoting code reusability and reducing redundancy.
-*   **YAGNI (You Ain't Gonna Need It):** Focusing on delivering essential features without over-engineering.
-*   **KISS (Keep It Simple, Stupid):** Prioritizing clarity and simplicity in design and implementation.
+OmniCampaign employs a robust, scalable architecture blending **Feature-Sliced Design (FSD)** for the frontend and **Hexagonal Architecture (Ports & Adapters)** for the backend. This ensures clear separation of concerns, high maintainability, and adaptability to evolving API landscapes.
 
-## 🛠️ Tech Stack
+mermaid
+graph TD
+    subgraph Frontend (React/Vite/TS/Tailwind)
+        A[App Layer] --> B(Pages)
+        B --> C(Widgets)
+        C --> D(Features)
+        D --> E(Entities)
+        E --> F(Shared)
+    end
+
+    subgraph Backend (Node.js/Express/TS)
+        G[Application Layer] --> H(Domain Layer)
+        H --> I(Infrastructure Layer)
+        I --> J(API Adapters)
+        J --> K[External Ads APIs]
+        I --> L[Database]
+    end
+
+    Frontend <--> M(REST/GraphQL API)
+    M <--> Backend
+    K(External Ads APIs) --> N(Facebook API)
+    K --> O(Google Ads API)
+    K --> P(LinkedIn Ads API)
+
+*   **Frontend (Feature-Sliced Design):** Organizes code by feature domains, promoting modularity and reducing inter-module dependencies. Layers (App, Pages, Widgets, Features, Entities, Shared) enforce strict boundaries.
+*   **Backend (Hexagonal Architecture):** Decouples the core business logic (Domain Layer) from external concerns like databases and external APIs. Adapters for Facebook, Google, and LinkedIn APIs ensure flexibility and easier integration of new ad platforms.
+
+## Tech Stack
 
 *   **Frontend:**
-    *   **Language:** TypeScript 5.x (Strict Mode)
-    *   **Bundler:** Vite 5.x
-    *   **UI Framework:** React 19+ (Concurrent Features)
-    *   **Styling:** TailwindCSS v3.x
-    *   **State Management:** Zustand / Signals (for global state)
-    *   **UI Component Library:** shadcn/ui
+    *   **Framework:** React 18+
+    *   **Language:** TypeScript 5.x+
+    *   **Build Tool:** Vite 7 (using Rolldown)
+    *   **Styling:** TailwindCSS v4
+    *   **State Management:** TanStack Query, Zustand (or similar, depending on complexity)
+    *   **Linting/Formatting:** Biome
+    *   **Testing:** Vitest (Unit), Playwright (E2E)
 *   **Backend:**
-    *   **Language:** Node.js LTS (e.g., v20.x)
+    *   **Runtime:** Node.js 20+
     *   **Framework:** Express.js
-    *   **API Design:** RESTful APIs with OpenAPI specification
-*   **Development Tools:**
-    *   **Package Manager:** npm 10.x
-    *   **Linter/Formatter:** Biome (Code Linting, Formatting, Prettier compatibility)
-    *   **Testing:** Vitest (Unit/Integration), Playwright (E2E)
-    *   **Build Tool:** Vite
-*   **Deployment:** Docker, AWS/GCP/Azure
+    *   **Language:** TypeScript 5.x+
+    *   **Database:** PostgreSQL (or MongoDB/MySQL, configurable)
+    *   **ORM:** Prisma (or TypeORM)
+    *   **Authentication:** JWT, OAuth (for Ad APIs)
+    *   **Linting/Formatting:** ESLint, Prettier
+    *   **Testing:** Jest, Supertest
+*   **CI/CD:** GitHub Actions
 
-## ✨ Key Features
+## Getting Started
 
-*   **Cross-Platform Campaign Creation:** Intuitive interface for building campaigns tailored for Facebook Ads, Google Ads, YouTube Ads, LinkedIn Ads, Instagram Ads, Snapchat Ads, and Twitter Ads.
-*   **Unified Dashboard:** Real-time monitoring of key metrics (Impressions, Clicks, Conversions, Spend) across all platforms.
-*   **Performance Analytics:** In-depth reporting and visualization tools to analyze campaign effectiveness.
-*   **Budget Management:** Centralized control over campaign budgets and pacing.
-*   **A/B Testing Integration:** Tools to facilitate A/B testing of ad creatives and targeting strategies.
-*   **Ad Account Management:** Secure authentication and management of multiple ad platform accounts.
-
-## 🚀 Getting Started
+Follow these steps to set up OmniCampaign locally.
 
 ### Prerequisites
 
-*   Node.js LTS
-*   npm 10.x
-*   Git
+Before you begin, ensure you have the following installed:
+
+*   [Node.js](https://nodejs.org/) (v20 or higher)
+*   [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/) (recommended `npm`)
+*   [Git](https://git-scm.com/)
+*   [PostgreSQL](https://www.postgresql.org/download/) (or your chosen database)
 
 ### Installation
 
-bash
-# 1. Clone the repository
-git clone https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App.git
-cd MultiPlatform-Campaign-Manager-Web-App
+1.  **Clone the repository:**
+    bash
+    git clone https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App.git
+    cd OmniCampaign-MultiPlatform-Ad-Management-Web-App
+    
 
-# 2. Install frontend dependencies
-npm install
+2.  **Install frontend dependencies:**
+    bash
+    cd frontend
+    npm install
+    
 
-# 3. Install backend dependencies (if applicable, adjust as needed)
-# cd backend && npm install
+3.  **Install backend dependencies:**
+    bash
+    cd ../backend
+    npm install
+    
 
-# 4. Set up environment variables (copy .env.example to .env and fill in your keys)
-cp .env.example .env
+### Environment Variables
 
-# 5. Run the development server
-npm run dev
+Create a `.env` file in both the `frontend` and `backend` directories based on the provided `.env.example` files.
+
+**`backend/.env` example:**
+
+dotenv
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/omnicampaign"
+JWT_SECRET="YOUR_SUPER_SECRET_KEY"
+FACEBOOK_APP_ID="YOUR_FACEBOOK_APP_ID"
+FACEBOOK_APP_SECRET="YOUR_FACEBOOK_APP_SECRET"
+FACEBOOK_REDIRECT_URI="http://localhost:3000/auth/facebook/callback"
+GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
+GOOGLE_REDIRECT_URI="http://localhost:3000/auth/google/callback"
+LINKEDIN_CLIENT_ID="YOUR_LINKEDIN_CLIENT_ID"
+LINKEDIN_CLIENT_SECRET="YOUR_LINKEDIN_CLIENT_SECRET"
+LINKEDIN_REDIRECT_URI="http://localhost:3000/auth/linkedin/callback"
 
 
-### Available Scripts
+**`frontend/.env` example:**
 
-| Script        | Description                                                 |
-| :------------ | :---------------------------------------------------------- |
-| `npm run dev` | Starts the development server with hot-reloading.           |
-| `npm run build` | Creates a production-ready build.                         |
-| `npm run lint`  | Runs Biome to check code quality and format files.          |
-| `npm test`    | Runs Vitest for unit and integration tests.                 |
-| `npm run test:e2e` | Runs Playwright for end-to-end tests.                   |
+dotenv
+VITE_API_BASE_URL="http://localhost:5000/api"
+VITE_FACEBOOK_CLIENT_ID="YOUR_FACEBOOK_APP_ID"
+VITE_GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID"
+VITE_LINKEDIN_CLIENT_ID="YOUR_LINKEDIN_CLIENT_ID"
 
-## 🧪 Testing
 
-*   **Unit & Integration Tests:** Executed using [Vitest](https://vitest.dev/). Run with `npm test`.
-*   **End-to-End Tests:** Conducted with [Playwright](https://playwright.dev/) for simulating user interactions across various browsers. Run with `npm run test:e2e`.
+### Running Locally
 
-## 🤝 Contributing
+1.  **Start the backend server:**
+    bash
+    cd backend
+    npm run dev
+    # The backend will typically run on http://localhost:5000
+    
 
-We welcome contributions! Please refer to our [CONTRIBUTING.md](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/.github/CONTRIBUTING.md) for detailed guidelines on how to submit your changes.
+2.  **Start the frontend development server:**
+    bash
+    cd frontend
+    npm run dev
+    # The frontend will typically run on http://localhost:3000
+    
 
-## 🔒 Security
+3.  Open your browser and navigate to `http://localhost:3000` to access OmniCampaign.
 
-Security is paramount. For information on reporting vulnerabilities or our security practices, please see [SECURITY.md](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/.github/SECURITY.md).
+## Development Scripts
 
-## ⚖️ License
+The following scripts are available in the respective `frontend` and `backend` directories:
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](https://github.com/chirag127/MultiPlatform-Campaign-Manager-Web-App/blob/main/LICENSE) file for more details.
+| Script          | Description                                         |
+| :-------------- | :-------------------------------------------------- |
+| `npm run dev`   | Starts the development server with hot-reloading.   |
+| `npm run build` | Builds the application for production.              |
+| `npm run lint`  | Runs the linter (Biome/ESLint) to check for errors. |
+| `npm run format`| Auto-formats code using Biome/Prettier.             |
+| `npm test`      | Runs unit and integration tests.                    |
+| `npm run test:e2e`| Runs end-to-end tests (frontend only).             |
+| `npm run db:migrate`| Applies database migrations (backend only).         |
+| `npm run start` | Starts the production server (backend only).        |
 
-## 🤖 AI AGENT DIRECTIVES
+## 🤖 AI Agent Directives
 
 <details>
-<summary>View AI Agent Directives</summary>
+<summary><b>SYSTEM: APEX TECHNICAL AUTHORITY & ELITE ARCHITECT (DECEMBER 2025 EDITION)</b></summary>
+<br>
 
-# SYSTEM: APEX TECHNICAL AUTHORITY & ELITE ARCHITECT (DECEMBER 2025 EDITION)
-
-## 1. IDENTITY & PRIME DIRECTIVE
+### 1. IDENTITY & PRIME DIRECTIVE
 **Role:** You are a Senior Principal Software Architect and Master Technical Copywriter with **40+ years of elite industry experience**. You operate with absolute precision, enforcing FAANG-level standards and the wisdom of "Managing the Unmanageable."
 **Context:** Current Date is **December 2025**. You are building for the 2026 standard.
 **Output Standard:** Deliver **EXECUTION-ONLY** results. No plans, no "reporting"—only executed code, updated docs, and applied fixes.
@@ -177,7 +230,7 @@ This project is licensed under the Creative Commons Attribution-NonCommercial 4.
 
 ---
 
-## 2. INPUT PROCESSING & COGNITION
+### 2. INPUT PROCESSING & COGNITION
 *   **SPEECH-TO-TEXT INTERPRETATION PROTOCOL:**
     *   **Context:** User inputs may contain phonetic errors (homophones, typos).
     *   **Semantic Correction:** **STRICTLY FORBIDDEN** from executing literal typos. You must **INFER** technical intent based on the project context.
@@ -190,65 +243,55 @@ This project is licensed under the Creative Commons Attribution-NonCommercial 4.
 
 ---
 
-## 3. CONTEXT-AWARE APEX TECH STACKS (LATE 2025 STANDARDS)
-**Directives:** Detect the project type (`package.json` for Web/Frontend) and apply the corresponding **Apex Toolchain**.
+### 3. CONTEXT-AWARE APEX TECH STACKS (LATE 2025 STANDARDS)
+**Directives:** Detect the project type and apply the corresponding **Apex Toolchain**. This repository, `OmniCampaign-MultiPlatform-Ad-Management-Web-App`, is a **Web Application** built with a modern JavaScript/TypeScript stack.
 
-*   **PRIMARY SCENARIO: WEB / APP / GUI (Modern Frontend)**
-    *   **Stack:** This project leverages **TypeScript 6.x (Strict Mode)**, **Vite 7 (Rolldown)** for lightning-fast builds, **React 19+** with concurrent features, and **TailwindCSS v3.x** for utility-first styling. State management utilizes **Zustand** or native Signals for efficient global state handling. UI components are managed via **shadcn/ui**.
-    *   **Linting & Formatting:** **Biome** is employed for its exceptional speed in linting and formatting.
-    *   **Testing:** **Vitest** is the standard for unit and integration tests, while **Playwright** handles end-to-end testing.
-    *   **Architecture:** Adheres to **Feature-Sliced Design (FSD)** principles for maintainable and scalable frontend architecture.
+*   **PRIMARY SCENARIO: WEB / APP / GUI (TypeScript)**
+    *   **Stack:** This project leverages **TypeScript 5.x+ (Strict Mode)** for type safety and maintainability. The frontend is built with **React 18+**, bundled with **Vite 7** (utilizing Rolldown for performance), and styled with **TailwindCSS v4**. The backend utilizes **Node.js 20+** with **Express.js** for API development. Data persistence is managed via **PostgreSQL** with an ORM like **Prisma**.
+    *   **Architecture:** The frontend adheres to a **Feature-Sliced Design (FSD)**, organizing code by domains and enforcing strict layer boundaries (App, Pages, Widgets, Features, Entities, Shared). The backend implements a **Hexagonal Architecture (Ports & Adapters)**, ensuring the core business logic is decoupled from external concerns (database, external APIs).
+    *   **API Integration:** Emphasizes robust and fault-tolerant integration with **Facebook Ads API**, **Google Ads API**, and **LinkedIn Ads API**. This includes secure OAuth flows, intelligent token management, comprehensive error handling, and adherence to platform-specific rate limits and best practices.
+    *   **Performance & Scalability:** Implement caching strategies (e.g., Redis), efficient database indexing, and asynchronous job processing for long-running tasks (e.g., ad campaign creation/update synchronization).
+    *   **Security:** Prioritize API security, input validation, output encoding, secure configuration management, and regular dependency scanning.
+    *   **Verification Commands:**
+        *   Frontend: `cd frontend && npm install && npm run dev && npm run build && npm run lint && npm test && npm run test:e2e`
+        *   Backend: `cd backend && npm install && npm run dev && npm run build && npm run lint && npm test && npm run db:migrate && npm run start`
 
-*   **SECONDARY SCENARIO B: SYSTEMS / PERFORMANCE (Low Level) - *Not directly applicable but informs backend considerations.***
+*   **SECONDARY SCENARIO B: SYSTEMS / PERFORMANCE (Rust/Go) - *Not applicable for this project's primary function. Reference only for potential future microservices or performance-critical modules.***
     *   **Stack:** Rust (Cargo) or Go (Modules).
     *   **Lint:** Clippy / GolangCI-Lint.
     *   **Architecture:** Hexagonal Architecture (Ports & Adapters).
 
-*   **TERTIARY SCENARIO C: DATA / AI / SCRIPTS (Python) - *Relevant for potential backend services or CLI tools.***
+*   **SECONDARY SCENARIO C: DATA / AI / SCRIPTS (Python) - *Not applicable for this project's primary function. Reference only for potential future AI-driven analytics or data processing microservices.***
     *   **Stack:** uv (Manager), Ruff (Linter), Pytest (Test).
     *   **Architecture:** Modular Monolith or Microservices.
 
 ---
 
-## 4. VERIFICATION & EXECUTION COMMANDS
-
-*   **Frontend Build:**
-    bash
-    npm run build
-    
-*   **Frontend Lint & Format:**
-    bash
-    npm run lint
-    
-*   **Unit & Integration Tests:**
-    bash
-    npm test
-    
-*   **End-to-End Tests:**
-    bash
-    npm run test:e2e
-    
-*   **Development Server:**
-    bash
-    npm run dev
-    
+### 4. ARCHITECTURAL PATTERNS & PRINCIPLES
+*   **SOLID Principles:** Ensure Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion are strictly adhered to, especially in the backend's domain layer and frontend's feature modules.
+*   **DRY (Don't Repeat Yourself):** Abstract common logic into reusable components, hooks, utilities, or services.
+*   **YAGNI (You Aren't Gonna Need It):** Build only what is necessary for the current requirements, prioritizing iterative development and value delivery.
+*   **Clean Code:** Maintain high standards for readability, maintainability, and testability.
+*   **Test-Driven Development (TDD):** Adopt TDD practices where appropriate, ensuring comprehensive test coverage for critical paths.
 
 ---
 
-## 5. REPOSITORY METADATA STANDARDS
-
-*   **Name:** `MultiPlatform-Campaign-Manager-Web-App`
-*   **Description:** A comprehensive campaign management web application enabling unified advertising campaign creation, monitoring, and optimization across multiple platforms (Facebook, Google, YouTube, LinkedIn, Instagram, Snapchat, Twitter).
-*   **Topics:** `campaign-management`, `advertising`, `marketing`, `web-app`, `react`, `node.js`, `typescript`, `vite`, `tailwind-css`
-
----
-
-## 6. DEVELOPMENT PHILOSOPHY & ARCHITECTURAL GUIDELINES
-
-*   **Commit Strategy:** Feature-based commits, squash and merge for feature branches.
-*   **Code Reviews:** Mandatory, peer-reviewed, focusing on adherence to standards and architectural integrity.
-*   **Error Handling:** Robust, centralized error handling and logging.
-*   **API Design:** Consistent RESTful patterns, OpenAPI documentation generation.
-*   **State Management:** Prefer scoped local state; utilize global state (Zustand/Signals) judiciously for truly global concerns.
+### 5. EXECUTION & VERIFICATION PROTOCOL
+*   **Pre-commit Hooks:** Implement Git hooks to automate linting, formatting, and basic test checks before committing.
+*   **CI/CD Pipeline:** Ensure robust GitHub Actions workflows for continuous integration (build, test, lint) and continuous deployment (staging/production).
+*   **Documentation:** Maintain up-to-date and accurate documentation for all APIs, modules, and deployment procedures.
+*   **Monitoring & Alerting:** Integrate application performance monitoring (APM) and alerting for production environments.
 
 </details>
+
+## Contributing
+
+We welcome contributions! Please see our [CONTRIBUTING.md](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/.github/CONTRIBUTING.md) for guidelines on how to get started, report issues, and propose changes.
+
+## Security
+
+For information on security vulnerabilities and how to report them, please refer to our [SECURITY.md](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/.github/SECURITY.md).
+
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/LICENSE). See the [LICENSE](https://github.com/chirag127/OmniCampaign-MultiPlatform-Ad-Management-Web-App/blob/main/LICENSE) file for details.
